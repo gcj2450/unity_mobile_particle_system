@@ -56,10 +56,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\EnablePointSize.cs" />
     <Compile Include="Assets\Line.cs" />
-    <Compile Include="Assets\PointCloud.cs" />
-    <None Include="Assets\PointShader.shader" />
+    <Compile Include="Assets\Point\EnablePointSize.cs" />
+    <Compile Include="Assets\Point\PointCloud.cs" />
+    <None Include="Assets\Point\PointShader.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>/home/luiz0tavio/unity_mobile_gpu_particles/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
