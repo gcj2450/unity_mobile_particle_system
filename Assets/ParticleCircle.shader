@@ -10,13 +10,14 @@
              #pragma fragment frag
  
              struct fragmentInput {
-                 float4 pos : SV_POSITION;
-                 float2 uv  : TEXTCOORD0;
+                 float4 pos    : SV_POSITION;
+                 float2 uv     : TEXTCOORD0;
+                 float3 normal : NORMAL;
              };
              
              struct vertexInput {
-                float4  pos  : POSITION;
-                float2  uv   : TEXCOORD0;
+                float4 pos : POSITION;
+                float2 uv  : TEXCOORD0;
              };
  
              fragmentInput vert (vertexInput v)
