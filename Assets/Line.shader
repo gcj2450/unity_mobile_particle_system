@@ -1,6 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Unlit/LineShader"
+Shader "Unlit/Line"
 {
      Properties {
          _Color ("Color", Color) = (1,0,0,0)
