@@ -27,11 +27,11 @@ public class Line : MonoBehaviour
             mf.mesh = mesh;
     
             Vector3[] vertices = new Vector3[4];
-    
-            vertices[0] = new Vector3(i, i, 0);
-            vertices[1] = new Vector3(size, i, 0);
-            vertices[2] = new Vector3(i, size, 0);
-            vertices[3] = new Vector3(size, size, 0);
+
+            vertices[0] = new Vector3(x-size, y-size, 0);
+            vertices[1] = new Vector3(x+size, y-size, 0);
+            vertices[2] = new Vector3(x-size, y+size, 0);
+            vertices[3] = new Vector3(x+size, y+size, 0);
     
             mesh.vertices = vertices;
     
