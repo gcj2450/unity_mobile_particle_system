@@ -2,18 +2,16 @@
 
 public class Line : MonoBehaviour
 {
-    
-    public float size;
-
     public int x;
     public int y;
     public int z;
 
+    public float size;
     public int totalParticles;
 
     public void Start() 
     {
-        Shader shader = Shader.Find("Unlit/Line");
+        Shader shader = Shader.Find("Unlit/ParticleCircle");
         
         for (int i = 0; i < totalParticles; i++)
         {
@@ -35,7 +33,7 @@ public class Line : MonoBehaviour
     
             mesh.vertices = vertices;
     
-            int[] tri= new int[6];
+            int[] tri = new int[6];
 
             tri[0] = 0;
             tri[1] = 2;
