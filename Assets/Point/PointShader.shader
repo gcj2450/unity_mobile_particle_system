@@ -6,12 +6,12 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
-		LOD 100
-
+    
 		Pass
 		{
 			CGPROGRAM
+			#pragma target 3.0
+			
 			#pragma vertex vert
 			#pragma fragment frag
 			

@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 1070176207}
   - component: {fileID: 1070176206}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,9 +152,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1070176204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2972b80be07f4d459d19e212eff5d9f, type: 3}
+  m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lineCount: 100
+  radius: 3
 --- !u!23 &1070176207
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -170,7 +172,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: d455352861d0c425cbd2e89842bec7bc, type: 2}
+  - {fileID: 2100000, guid: be99ca3d569724396b0c44870bc38bb1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
