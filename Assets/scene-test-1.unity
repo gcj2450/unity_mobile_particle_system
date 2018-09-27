@@ -218,7 +218,7 @@ MonoBehaviour:
   y: 0
   z: 0
   size: 1
-  totalParticles: 1
+  totalParticles: 20
 --- !u!1 &1931540010
 GameObject:
   m_ObjectHideFlags: 0

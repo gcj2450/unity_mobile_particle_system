@@ -51,12 +51,14 @@ public class ParticleCircle : MonoBehaviour
             uv[3] = new Vector2(1, 1);
             mesh.uv = uv;
             
-            Vector2[] uv2 = new Vector2[4];
-            uv2[0] = new Vector2(i, i);
-            uv2[1] = new Vector2(i, i);
-            uv2[2] = new Vector2(i, i);
-            uv2[3] = new Vector2(i, i);
-            mesh.uv2 = uv2;
+            // Passing ID as UV2.
+            // @TODO improve this!
+            Vector2[] id = new Vector2[4];
+            id[0] = new Vector2(i, i);
+            id[1] = new Vector2(i, i);
+            id[2] = new Vector2(i, i);
+            id[3] = new Vector2(i, i);
+            mesh.uv2 = id;
         }
     }
 }
