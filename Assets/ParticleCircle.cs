@@ -10,6 +10,7 @@ public class ParticleCircle : MonoBehaviour
     public float size;
     public int totalParticles;
 
+    private float totalTime;
     private  List<GameObject> particles;
     
     public void Start() 
@@ -17,6 +18,7 @@ public class ParticleCircle : MonoBehaviour
         Shader shader = Shader.Find("Unlit/ParticleCircle");
 
         particles = new List<GameObject>();
+        totalTime = 0f;
             
         for (int i = 0; i < totalParticles; i++)
         {
@@ -66,17 +68,19 @@ public class ParticleCircle : MonoBehaviour
 
     public void Update()
     {
+        totalTime += Time.deltaTime;
         for (int i = 0; i < totalParticles; i++)
         {
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
-            
+
             Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(mf.mesh.uv2[0].x, mf.mesh.uv2[0].y + 0.01f);
-            id[1] = new Vector2(mf.mesh.uv2[1].x, mf.mesh.uv2[1].y + 0.01f);
-            id[2] = new Vector2(mf.mesh.uv2[2].x, mf.mesh.uv2[2].y + 0.01f);
-            id[3] = new Vector2(mf.mesh.uv2[3].x, mf.mesh.uv2[3].y + 0.01f);
+            id[0] = new Vector2(i, totalTime);
+            id[1] = new Vector2(i, totalTime);
+            id[2] = new Vector2(i, totalTime);
+            id[3] = new Vector2(i, totalTime);
 
             mf.mesh.uv2 = id;
         }
+
     }
 }
