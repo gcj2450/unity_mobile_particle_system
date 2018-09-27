@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class ParticleCircle : MonoBehaviour
 {
@@ -11,11 +10,14 @@ public class ParticleCircle : MonoBehaviour
     public float size;
     public int totalParticles;
 
+    private  List<GameObject> particles;
+    
     public void Start() 
     {
         Shader shader = Shader.Find("Unlit/ParticleCircle");
-        List<GameObject> particles = new List<GameObject>();
-        
+
+        particles = new List<GameObject>();
+            
         for (int i = 0; i < totalParticles; i++)
         {
             particles.Add(GameObject.CreatePrimitive(PrimitiveType.Quad));
@@ -51,14 +53,30 @@ public class ParticleCircle : MonoBehaviour
             uv[3] = new Vector2(1, 1);
             mesh.uv = uv;
             
-            // Passing ID as UV2.
+            // Passing ID and Time as UV2.
             // @TODO improve this!
             Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(i, i);
-            id[1] = new Vector2(i, i);
-            id[2] = new Vector2(i, i);
-            id[3] = new Vector2(i, i);
+            id[0] = new Vector2(i, 0);
+            id[1] = new Vector2(i, 0);
+            id[2] = new Vector2(i, 0);
+            id[3] = new Vector2(i, 0);
             mesh.uv2 = id;
+        }
+    }
+
+    public void Update()
+    {
+        for (int i = 0; i < totalParticles; i++)
+        {
+            MeshFilter mf = particles[i].GetComponent<MeshFilter>();
+            
+            Vector2[] id = new Vector2[4];
+            id[0] = new Vector2(mf.mesh.uv2[0].x, mf.mesh.uv2[0].y + 0.01f);
+            id[1] = new Vector2(mf.mesh.uv2[1].x, mf.mesh.uv2[1].y + 0.01f);
+            id[2] = new Vector2(mf.mesh.uv2[2].x, mf.mesh.uv2[2].y + 0.01f);
+            id[3] = new Vector2(mf.mesh.uv2[3].x, mf.mesh.uv2[3].y + 0.01f);
+
+            mf.mesh.uv2 = id;
         }
     }
 }
