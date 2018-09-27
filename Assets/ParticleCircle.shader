@@ -11,12 +11,13 @@
  
              struct fragmentInput {
                  float4 pos    : SV_POSITION;
-                 float2 uv     : TEXTCOORD0;
+                 float2 uv     : TEXCOORD0;
                  float3 normal : NORMAL;
              };
              
              struct vertexInput {
                 float4 pos : POSITION;
+                float2 id  : TEXCOORD2;
                 float2 uv  : TEXCOORD0;
              };
  
@@ -26,6 +27,8 @@
  
                  o.pos = UnityObjectToClipPos(v.pos);
                  o.uv = v.uv.xy - fixed2(0.5, 0.5);
+                 
+                 o.pos.xy += v.id.x;
                  
                  return o;
              }
