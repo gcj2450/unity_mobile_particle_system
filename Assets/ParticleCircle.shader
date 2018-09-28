@@ -64,14 +64,13 @@
                 return s;
              }
              
-             float3 getPostion(float3 pos_initial, float time, float id)
+             float3 getPostion(float3 p, float time, float id)
              {
                 float3 v = float3(0.f, 0.f, 0.f);
 
                 float x = 0.f;
-                for (int t = 0; t < ITERATIONS; t++) {
+                for (int t = 0; t < ITERATIONS; t++)
                     v += hash31(id);
-                }
                 v = v / ITERATIONS; // Normalize
                 
                 // Range from (0 <= x <= 1) to (-1 <= x <= 1)
@@ -82,23 +81,25 @@
                 
                 // (optional)
                 v = mapCubeToSphere(v);
-
-                v = 10 * v; // Scale velocity
+                
+                v = 10 * v; // Scale velocity @TODO: pass as param to shader.
                 
                 float3 acc = float3(0.f, -9.81f, 0.f); // Gravity acceleration
                 
                 // Parabola: P(t) = P0 + V0*t + 0.05*Acc*t2;
-                return pos_initial + v*time + 0.05f*acc*pow(time, 2); 
+                return p + v*time + 0.05f*acc*pow(time, 2); 
              }  
  
              fragmentInput vert (vertexInput v)
              {
                  fragmentInput o;
 
-                 //@TODO find ways to improve this
-                 v.pos.xyz += 0.0001f;
-                 
                  v.pos.xyz = getPostion(v.pos.xyz, v.id_time.y, v.id_time.x);
+ 
+                 float3 circle_normal = normalize(_WorldSpaceCameraPos - v.pos); 
+                 float circle_d = dot(v.pos, circle_normal);
+ 
+                 
  
                  o.pos = UnityObjectToClipPos(v.pos);
                  o.uv  = v.uv.xy - fixed2(0.5, 0.5);
