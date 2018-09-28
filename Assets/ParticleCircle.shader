@@ -64,13 +64,20 @@
                 return s;
              }
              
+             int getMeshId(float vertex_id)
+             {
+                return ceil(vertex_id / 4);
+             }
+             
              float3 getPostion(float3 p, float time, float id)
              {
                 float3 v = float3(0.f, 0.f, 0.f);
 
                 float x = 0.f;
-                for (int t = 0; t < ITERATIONS; t++)
-                    v += hash31(id);
+                for (int t = 0; t < ITERATIONS; t++) {
+                    v += hash31(getMeshId(id));
+                }
+                    
                 v = v / ITERATIONS; // Normalize
                 
                 // Range from (0 <= x <= 1) to (-1 <= x <= 1)

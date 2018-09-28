@@ -63,15 +63,15 @@ public class ParticleCircle : MonoBehaviour
             uv[3] = new Vector2(1, 1);
             mesh.uv = uv;
 
-            float mesh_id = i + 1;
+            float mesh_id = 4*i + 1;
             float time = 0f;
             
             // Passing ID and Time as UV2.
             Vector2[] id_time = new Vector2[4];
             id_time[0] = new Vector2(mesh_id, time);
-            id_time[1] = new Vector2(mesh_id, time);
-            id_time[2] = new Vector2(mesh_id, time);
-            id_time[3] = new Vector2(mesh_id, time);
+            id_time[1] = new Vector2(mesh_id+1, time);
+            id_time[2] = new Vector2(mesh_id+2, time);
+            id_time[3] = new Vector2(mesh_id+3, time);
             mesh.uv2 = id_time;
         }
     }
