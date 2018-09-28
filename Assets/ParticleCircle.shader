@@ -21,21 +21,23 @@
                 float2 uv  : TEXCOORD0;
              };
              
-             float randomness(float p)
+             float randomHash(float p)
              {
                 float HASHSCALE1 = 0.1031;
                 
-                float x = frac(p / 1000.f);
-                float y = frac(p / 1000.f);
-                float z = frac(p / 1000.f);
+                while(float(p) / 10.f > 1.f) {
+                    p = float(p) / 10.f;
+                }
                 
-                float3 p3 = float3(x, y, z) * HASHSCALE1;
+                float frac_p = frac(p);
+                float3 p3 = float3(frac_p, frac_p, frac_p) * HASHSCALE1;
                 p3 += dot(p3, p3.yzx + 19.19);
                 
                 return frac((p3.x + p3.y) * p3.z);
              }
              
-             float random (float2 _st) {
+             float randomSin(float2 _st) 
+             {
                 return frac(sin(dot(_st.xy, float2(12.9898f,78.233f)))*43758.5453123f);
              }
              
@@ -45,16 +47,22 @@
 
                 float x = 0.f;
                 for (int t = 0; t < 4; t++) {
-                    x += random(id);
+                    x += randomHash(id);
                 }
                 x = x / 4.f;
                 if (x > .5f) {
                     x = -1 * (x-.5f);
                 }
                
+                float y = 0.f;
+                for (int t = 0; t < 4; t++) {
+                    y += randomHash(randomHash(randomHash(id) * 100) * 100);
+                }
+                y = y / 4.f;
+               
                 float z = 0.f;
                 for (int t = 0; t < 4; t++) {
-                    z += random(random(id) * 100);
+                    z += randomHash(randomHash(id) * 100);
                 }
                 z = z / 4.f;
                 if (z > .5f) {
@@ -62,7 +70,7 @@
                 }
 
                 float3 acc = float3(0.f, -9.81f, 0.f); // Gravity acceleration
-                float3 v_initial = float3(x * 10, 5, z *10);
+                float3 v_initial = float3(x * 10, y * 5, z *10);
                 
                 return pos_initial + v_initial*time + 0.05f*acc*pow(time, 2); 
              }  
