@@ -25,9 +25,9 @@
              {
                 float HASHSCALE1 = 0.1031;
                 
-                float x = frac(p);
-                float y = frac(p);
-                float z = frac(p);
+                float x = frac(p / 1000.f);
+                float y = frac(p / 1000.f);
+                float z = frac(p / 1000.f);
                 
                 float3 p3 = float3(x, y, z) * HASHSCALE1;
                 p3 += dot(p3, p3.yzx + 19.19);
@@ -35,12 +35,34 @@
                 return frac((p3.x + p3.y) * p3.z);
              }
              
+             float random (float2 _st) {
+                return frac(sin(dot(_st.xy, float2(12.9898f,78.233f)))*43758.5453123f);
+             }
+             
              float3 getPostion(float3 pos_initial, float time, float id)
              {
                 // Parabola: P(t) = P0 + V0*t + 0.05*Acc*t2;
 
+                float x = 0.f;
+                for (int t = 0; t < 4; t++) {
+                    x += random(id);
+                }
+                x = x / 4.f;
+                if (x > .5f) {
+                    x = -1 * (x-.5f);
+                }
+               
+                float z = 0.f;
+                for (int t = 0; t < 4; t++) {
+                    z += random(random(id) * 100);
+                }
+                z = z / 4.f;
+                if (z > .5f) {
+                    z = -1 * (z-.5f);
+                }
+
                 float3 acc = float3(0.f, -9.81f, 0.f); // Gravity acceleration
-                float3 v_initial = float3(0.f, 0.f, 2.f);
+                float3 v_initial = float3(x * 10, 5, z *10);
                 
                 return pos_initial + v_initial*time + 0.05f*acc*pow(time, 2); 
              }  
@@ -66,7 +88,7 @@
                  }
                  
                  discard;
-                 return fixed4(0, 0, 0, 0); // for compile reasons.
+                 return fixed4(0, 0, 0, 0); // just for compile reasons.
              }
              
              ENDCG
