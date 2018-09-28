@@ -41,10 +41,10 @@ public class ParticleCircle : MonoBehaviour
     
             //@TODO find orthogonal plan from camera and get their vertices.
             Vector3[] vertices = new Vector3[4];
-            vertices[0] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y-particleSize, 0);
-            vertices[1] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y-particleSize, 0);
-            vertices[2] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y+particleSize, 0);
-            vertices[3] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y+particleSize, 0);
+            vertices[0] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y-particleSize, 10f);
+            vertices[1] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y-particleSize, 10f);
+            vertices[2] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y+particleSize, 10f);
+            vertices[3] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y+particleSize, 10f);
             mesh.vertices = vertices;
     
             int[] tri = new int[6];
@@ -66,10 +66,10 @@ public class ParticleCircle : MonoBehaviour
             // Passing ID and Time as UV2.
             // @TODO improve this!
             Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(i, 0);
-            id[1] = new Vector2(i, 0);
-            id[2] = new Vector2(i, 0);
-            id[3] = new Vector2(i, 0);
+            id[0] = new Vector2(i+1, 0);
+            id[1] = new Vector2(i+1, 0);
+            id[2] = new Vector2(i+1, 0);
+            id[3] = new Vector2(i+1, 0);
             mesh.uv2 = id;
         }
     }
@@ -80,21 +80,20 @@ public class ParticleCircle : MonoBehaviour
         for(int i = 0; i < totalParticles; i++) {
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
             Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(i, totalTime);
-            id[1] = new Vector2(i, totalTime);
-            id[2] = new Vector2(i, totalTime);
-            id[3] = new Vector2(i, totalTime);
+            id[0] = new Vector2(i+1, totalTime);
+            id[1] = new Vector2(i+1, totalTime);
+            id[2] = new Vector2(i+1, totalTime);
+            id[3] = new Vector2(i+1, totalTime);
 
             mf.mesh.uv2 = id;
         }
 
         if (totalTime >= lifeTimeInSeconds) {
-            for (int i = 0; i < totalParticles; i++) {
+            for (int i = 0; i < totalParticles; i++) 
                 Destroy(particles[i]);
-            }
-            if (respawn){
-                Start();
-            }
+            particles.Clear();
+            
+            if (respawn) Start();
         }
     }
 }
