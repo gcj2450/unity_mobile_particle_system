@@ -64,13 +64,12 @@ public class ParticleCircle : MonoBehaviour
             mesh.uv = uv;
             
             // Passing ID and Time as UV2.
-            // @TODO improve this!
-            Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(i+1, 0);
-            id[1] = new Vector2(i+1, 0);
-            id[2] = new Vector2(i+1, 0);
-            id[3] = new Vector2(i+1, 0);
-            mesh.uv2 = id;
+            Vector2[] id_time = new Vector2[4];
+            id_time[0] = new Vector2(i+1, 0);
+            id_time[1] = new Vector2(i+1, 0);
+            id_time[2] = new Vector2(i+1, 0);
+            id_time[3] = new Vector2(i+1, 0);
+            mesh.uv2 = id_time;
         }
     }
 

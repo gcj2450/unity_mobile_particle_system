@@ -21,9 +21,9 @@
              };
              
              struct vertexInput {
-                float4 pos : POSITION;
-                float2 id  : TEXCOORD2;
-                float2 uv  : TEXCOORD0;
+                float4 pos      : POSITION;
+                float2 id_time  : TEXCOORD2;
+                float2 uv       : TEXCOORD0;
              };
              
              float randomHash(float p)
@@ -98,7 +98,7 @@
                  //@TODO find ways to improve this
                  v.pos.xyz += 0.0001f;
                  
-                 v.pos.xyz = getPostion(v.pos.xyz, v.id.y, v.id.x);
+                 v.pos.xyz = getPostion(v.pos.xyz, v.id_time.y, v.id_time.x);
  
                  o.pos = UnityObjectToClipPos(v.pos);
                  o.uv  = v.uv.xy - fixed2(0.5, 0.5);
