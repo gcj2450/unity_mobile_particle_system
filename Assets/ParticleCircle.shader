@@ -117,13 +117,11 @@
              fixed4 frag(fragmentInput i) : SV_Target 
              {
                  float distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
-                 
-                 if (distance <= 0.5f) {
-                     return fixed4(0, 1, 0, 1);
-                 }
-                 
-                 discard;
-                 return fixed4(0, 0, 0, 0); // just for compile reasons.
+
+                 if (distance > 0.5f)
+                    discard;
+
+                 return fixed4(0, 1, 0, 1);
              }
              
              ENDCG
