@@ -68,9 +68,10 @@
                 v = v / ITERATIONS; // Normalize
                 
                 if (v.x > .5f) v.x = -1 * (v.x - .5f);
+                if (v.y > .5f) v.y = -1 * (v.y - .5f);
                 if (v.z > .5f) v.z = -1 * (v.z - .5f);
 
-                v.xz = 2 * v.xz; // Scale velocity
+                v = 2 * v; // Scale velocity
                 
                 v = mapCubeToSphere(v);
 

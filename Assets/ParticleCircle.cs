@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ParticleCircle : MonoBehaviour
 {
-
     [System.Serializable]
     public struct Position
     {
@@ -13,10 +12,10 @@ public class ParticleCircle : MonoBehaviour
     }
     
     public Position emitterPosition;
-    public float particleSize = 0.05f;
-    public int totalParticles = 2000;
-    public int lifeTimeInSeconds = 10;
-    public bool respawn = false;
+    public float particleSize           = 0.05f;
+    public int totalParticles           = 2000;
+    public int lifeTimeInSeconds        = 10;
+    public bool respawn                 = false;
 
     private float totalTime;
     private  List<GameObject> particles;
