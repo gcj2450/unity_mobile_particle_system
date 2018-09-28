@@ -3,17 +3,25 @@ using UnityEngine;
 
 public class ParticleCircle : MonoBehaviour
 {
-    public int x;
-    public int y;
-    public int z;
 
-    public float size;
-    public int totalParticles;
+    [System.Serializable]
+    public struct Position
+    {
+        public int x;
+        public int y;
+        public int z;
+    }
+    
+    public Position emitterPosition;
+    public float particleSize = 0.05f;
+    public int totalParticles = 2000;
+    public int lifeTimeInSeconds = 10;
+    public bool respawn = false;
 
     private float totalTime;
     private  List<GameObject> particles;
     
-    public void Start() 
+    public void Start()
     {
         Shader shader = Shader.Find("Unlit/ParticleCircle");
 
@@ -32,11 +40,12 @@ public class ParticleCircle : MonoBehaviour
             var mesh = new Mesh();
             mf.mesh = mesh;
     
+            //@TODO find orthogonal plan from camera and get their vertices.
             Vector3[] vertices = new Vector3[4];
-            vertices[0] = new Vector3(x-size, y-size, 0);
-            vertices[1] = new Vector3(x+size, y-size, 0);
-            vertices[2] = new Vector3(x-size, y+size, 0);
-            vertices[3] = new Vector3(x+size, y+size, 0);
+            vertices[0] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y-particleSize, 0);
+            vertices[1] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y-particleSize, 0);
+            vertices[2] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y+particleSize, 0);
+            vertices[3] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y+particleSize, 0);
             mesh.vertices = vertices;
     
             int[] tri = new int[6];
@@ -69,10 +78,8 @@ public class ParticleCircle : MonoBehaviour
     public void Update()
     {
         totalTime += Time.deltaTime;
-        for (int i = 0; i < totalParticles; i++)
-        {
+        for(int i = 0; i < totalParticles; i++) {
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
-
             Vector2[] id = new Vector2[4];
             id[0] = new Vector2(i, totalTime);
             id[1] = new Vector2(i, totalTime);
@@ -82,5 +89,13 @@ public class ParticleCircle : MonoBehaviour
             mf.mesh.uv2 = id;
         }
 
+        if (totalTime >= lifeTimeInSeconds) {
+            for (int i = 0; i < totalParticles; i++) {
+                Destroy(particles[i]);
+            }
+            if (respawn){
+                Start();
+            }
+        }
     }
 }
