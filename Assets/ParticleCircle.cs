@@ -39,12 +39,11 @@ public class ParticleCircle : MonoBehaviour
             var mesh = new Mesh();
             mf.mesh = mesh;
     
-            //@TODO find orthogonal plan from camera and get their vertices.
             Vector3[] vertices = new Vector3[4];
-            vertices[0] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y-particleSize, 10f);
-            vertices[1] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y-particleSize, 10f);
-            vertices[2] = new Vector3(emitterPosition.x-particleSize, emitterPosition.y+particleSize, 10f);
-            vertices[3] = new Vector3(emitterPosition.x+particleSize, emitterPosition.y+particleSize, 10f);
+            vertices[0] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[1] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[2] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[3] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
             mesh.vertices = vertices;
     
             int[] tri = new int[6];
@@ -80,12 +79,14 @@ public class ParticleCircle : MonoBehaviour
     {
         totalTime += Time.deltaTime;
         for(int i = 0; i < totalParticles; i++) {
+
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
+            
             Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(i+1, totalTime);
-            id[1] = new Vector2(i+1, totalTime);
-            id[2] = new Vector2(i+1, totalTime);
-            id[3] = new Vector2(i+1, totalTime);
+            id[0] = new Vector2(mf.mesh.uv2[0].x, totalTime);
+            id[1] = new Vector2(mf.mesh.uv2[1].x, totalTime);
+            id[2] = new Vector2(mf.mesh.uv2[2].x, totalTime);
+            id[3] = new Vector2(mf.mesh.uv2[3].x, totalTime);
 
             mf.mesh.uv2 = id;
         }
