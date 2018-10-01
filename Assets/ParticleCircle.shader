@@ -3,6 +3,8 @@
     SubShader {
        
         Pass {
+            Cull Off
+
             CGPROGRAM
  
             #pragma target 2.0
@@ -111,7 +113,7 @@
                 fragmentInput o;
 
                 float3 v_pos = {0.f, 0.f, 0.f};
-                float particle_radius = 2;
+                float particle_radius = 1;
 
                 float3 center_pos = getPostion(float3(0, 0, 0), v.id_time.y, v.id_time.x);
                 float3 circle_normal = normalize(_WorldSpaceCameraPos - center_pos); 
@@ -119,24 +121,26 @@
                 
                 float circle_d = -dot(circle_normal, center_pos);
                 
-                float3 vec1 = normalize(float3(0.f, 0.f, -circle_d/circle_normal.z) - center_pos);
-                //float3 vec1 = normalize(float3(-circle_normal.y, circle_normal.x, circle_normal.z) - center_pos);
+                // Orthonormal basis vectors of the circle plane.
+                float3 vec1 = normalize(float3(0.f, 0.f, -(circle_d/circle_normal.z)) - center_pos);
                 float3 vec2 = normalize(cross(vec1, circle_normal));
-                
+
+                // Based on uv, use clockwise rule and the basis to draw a square from center_pos.
                 if(v.uv.x == 0) {
                     if(v.uv.y == 0) {
-                        v_pos = center_pos - circumradius*vec1;  
+                        v_pos = center_pos - circumradius*vec2;
                     } else if(v.uv.y == 1){
-                        v_pos = center_pos - circumradius*vec2;  
+                        v_pos = center_pos - circumradius*vec1;
                     }
                 } else if(v.uv.x == 1) {
                     if(v.uv.y == 0) {
-                        v_pos = center_pos + circumradius*vec1;  
+                        v_pos = center_pos + circumradius*vec1;
                     } else if(v.uv.y == 1){
-                        v_pos = center_pos + circumradius*vec2;  
+                        v_pos = center_pos + circumradius*vec2;
                     }
                 }
 
+                // View transformation.
                 o.pos = UnityObjectToClipPos(v_pos);
                 o.uv  = v.uv.xy - fixed2(0.5, 0.5);
 
