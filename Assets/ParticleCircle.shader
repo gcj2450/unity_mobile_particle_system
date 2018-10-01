@@ -1,5 +1,10 @@
 ﻿Shader "Unlit/ParticleCircle"
 {
+    Properties {
+        _ParticleSize ("Particle Size", Float) = 0.05
+        _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
+    }
+    
     SubShader {
        
         Pass {
@@ -10,6 +15,9 @@
             #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
+            
+            uniform float _ParticleSize = 0.05f;
+            uniform float _ParticleSpeedScale = 10.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -100,24 +108,24 @@
                 // (optional) particles will spread in a cube format without this.
                 v = mapCubeToSphere(v);
                
-                v = 10 * v; // Scale velocity @TODO: pass as param to shader.
+                v = _ParticleSpeedScale * v; // Scale velocity @TODO: pass as param to shader.
                
                 float3 acc = float3(0.f, -9.81f, 0.f); // Gravity acceleration
                
                 // Parabola: P(t) = P0 + V0*t + 0.05*Acc*t2;
                 return p + v*time + 0.05f*acc*pow(time, 2); 
             }  
+            
 
             fragmentInput vert (vertexInput v)
             {
                 fragmentInput o;
 
-                float3 v_pos = {0.f, 0.f, 0.f};
-                float particle_radius = 1;
+                float3 v_pos = {0.f,0.f, 0.f};
 
                 float3 center_pos = getPostion(float3(0, 0, 0), v.id_time.y, v.id_time.x);
                 float3 circle_normal = normalize(_WorldSpaceCameraPos - center_pos); 
-                float circumradius = sqrt(pow(particle_radius, 2) / 2.f);
+                float circumradius = sqrt(pow(_ParticleSize, 2) / 2.f);
                 
                 float circle_d = -dot(circle_normal, center_pos);
                 

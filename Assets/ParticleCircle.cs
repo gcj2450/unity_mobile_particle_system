@@ -13,6 +13,7 @@ public class ParticleCircle : MonoBehaviour
     
     public Position emitterPosition;
     public float particleSize           = 0.05f;
+    public float particleSpeedScale     = 10.0f;
     public int totalParticles           = 2000;
     public int lifeTimeInSeconds        = 10;
     public bool respawn                 = false;
@@ -33,6 +34,8 @@ public class ParticleCircle : MonoBehaviour
             
             Renderer renderer = particles[i].GetComponent<Renderer>();
             renderer.material.shader = shader;
+            renderer.material.SetFloat("_ParticleSize", particleSize);
+            renderer.material.SetFloat("_ParticleSpeedScale", particleSpeedScale);
             
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
 
