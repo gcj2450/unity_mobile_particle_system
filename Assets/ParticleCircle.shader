@@ -123,7 +123,7 @@
 
                 float3 v_pos = {0.f,0.f, 0.f};
 
-                float3 center_pos = getPostion(float3(0, 0, 0), v.id_time.y, v.id_time.x);
+                float3 center_pos = getPostion(v.pos, v.id_time.y, v.id_time.x);
                 float3 circle_normal = normalize(_WorldSpaceCameraPos - center_pos); 
                 float circumradius = sqrt(pow(_ParticleSize, 2) / 2.f);
                 
