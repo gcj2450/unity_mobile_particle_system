@@ -218,7 +218,7 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
-  particleSize: 1
+  particleSize: 0.05
   particleSpeedScale: 10
   totalParticles: 2000
   lifeTimeInSeconds: 10
