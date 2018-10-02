@@ -65,15 +65,14 @@ public class ParticleCircle : MonoBehaviour
             uv[3] = new Vector2(1, 1);
             mesh.uv = uv;
 
-            float mesh_id = 4*i + 1;
             float time = 0f;
             
             // Passing ID and Time as UV2.
             Vector2[] id_time = new Vector2[4];
-            id_time[0] = new Vector2(mesh_id, time);
-            id_time[1] = new Vector2(mesh_id+1, time);
-            id_time[2] = new Vector2(mesh_id+2, time);
-            id_time[3] = new Vector2(mesh_id+3, time);
+            id_time[0] = new Vector2(i+1, time);
+            id_time[1] = new Vector2(i+1, time);
+            id_time[2] = new Vector2(i+1, time);
+            id_time[3] = new Vector2(i+1, time);
             mesh.uv2 = id_time;
         }
     }
@@ -85,13 +84,13 @@ public class ParticleCircle : MonoBehaviour
 
             MeshFilter mf = particles[i].GetComponent<MeshFilter>();
             
-            Vector2[] id = new Vector2[4];
-            id[0] = new Vector2(mf.mesh.uv2[0].x, totalTime);
-            id[1] = new Vector2(mf.mesh.uv2[1].x, totalTime);
-            id[2] = new Vector2(mf.mesh.uv2[2].x, totalTime);
-            id[3] = new Vector2(mf.mesh.uv2[3].x, totalTime);
+            Vector2[] id_time = new Vector2[4];
+            id_time[0] = new Vector2(mf.mesh.uv2[0].x, totalTime);
+            id_time[1] = new Vector2(mf.mesh.uv2[1].x, totalTime);
+            id_time[2] = new Vector2(mf.mesh.uv2[2].x, totalTime);
+            id_time[3] = new Vector2(mf.mesh.uv2[3].x, totalTime);
 
-            mf.mesh.uv2 = id;
+            mf.mesh.uv2 = id_time;
         }
 
         if (totalTime >= lifeTimeInSeconds) {
