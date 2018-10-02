@@ -124,7 +124,6 @@ GameObject:
   - component: {fileID: 1363224034}
   - component: {fileID: 1363224033}
   - component: {fileID: 1363224036}
-  - component: {fileID: 1363224037}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -200,17 +199,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1363224032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7fbc896138c84b59b80eec9a8e9bc99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1363224037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1363224032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -220,9 +208,11 @@ MonoBehaviour:
     z: 0
   particleSize: 0.05
   particleSpeedScale: 10
-  totalParticles: 2000
+  totalParticles: 20
   lifeTimeInSeconds: 10
-  respawn: 1
+  respawn: 0
+  particles: {fileID: 0}
+  sh: {fileID: 0}
 --- !u!1 &1931540010
 GameObject:
   m_ObjectHideFlags: 0
