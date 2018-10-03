@@ -143,7 +143,7 @@
             fragmentInput vert (vertexInput v)
             {
                 // Get quad center new position (time has changed).
-                float3 center_pos = getNewPos(v.pos, v.id_time.x, v.id_time.y);
+                float3 center_pos = getNewPos(v.pos, v.id_time.x, _Time.y);
                 // With the center, get quad vertex position based on vertex uv.
                 float3 v_pos = getBillboardVertex(center_pos, v.uv);
 

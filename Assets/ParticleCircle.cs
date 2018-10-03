@@ -77,26 +77,4 @@ public class ParticleCircle : MonoBehaviour
         particles.GetComponent<MeshFilter>().mesh = mesh;
     }
 
-    public void Update()
-    {
-        totalTime += Time.deltaTime;
-        Mesh mesh = particles.GetComponent<MeshFilter>().mesh;
-
-        Vector2[] id_time = mesh.uv2;
-        for(int i = 0; i < totalParticles; i++)
-        {
-            int idx4 = i * 4;
-            id_time[idx4 + 0].y = totalTime;
-            id_time[idx4 + 1].y = totalTime;
-            id_time[idx4 + 2].y = totalTime;
-            id_time[idx4 + 3].y = totalTime;
-        }
-        mesh.uv2 = id_time;
-
-        if (totalTime >= lifeTimeInSeconds) {
-            Destroy(particles);
-            if (respawn) Start();
-            else enabled = false;
-        }
-    }
 }
