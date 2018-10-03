@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ParticleCircle : MonoBehaviour
 {
@@ -42,28 +41,31 @@ public class ParticleCircle : MonoBehaviour
 
         for (int i = 0; i < totalParticles; i++)
         {
-            vertices[i*4 + 0] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[i*4 + 1] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[i*4 + 2] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[i*4 + 3] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            int idx4 = i * 4;
+            int index6 = i * 6;
+
+            vertices[idx4 + 0] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[idx4 + 1] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[idx4 + 2] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[idx4 + 3] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
     
-            tri[i*6 + 0] = i*4 + 0;
-            tri[i*6 + 1] = i*4 + 2;
-            tri[i*6 + 2] = i*4 + 1;
-            tri[i*6 + 3] = i*4 + 2;
-            tri[i*6 + 4] = i*4 + 3;
-            tri[i*6 + 5] = i*4 + 1;
+            tri[index6 + 0] = idx4 + 0;
+            tri[index6 + 1] = idx4 + 2;
+            tri[index6 + 2] = idx4 + 1;
+            tri[index6 + 3] = idx4 + 2;
+            tri[index6 + 4] = idx4 + 3;
+            tri[index6 + 5] = idx4 + 1;
     
-            uv[i*4 + 0] = new Vector2(0, 0);
-            uv[i*4 + 1] = new Vector2(1, 0);
-            uv[i*4 + 2] = new Vector2(0, 1);
-            uv[i*4 + 3] = new Vector2(1, 1);
+            uv[idx4 + 0] = new Vector2(0, 0);
+            uv[idx4 + 1] = new Vector2(1, 0);
+            uv[idx4 + 2] = new Vector2(0, 1);
+            uv[idx4 + 3] = new Vector2(1, 1);
             
             // Passing ID and Initial Time as UV2.
-            id_time[i*4 + 0] = new Vector2(i+1, 0);
-            id_time[i*4 + 1] = new Vector2(i+1, 0);
-            id_time[i*4 + 2] = new Vector2(i+1, 0);
-            id_time[i*4 + 3] = new Vector2(i+1, 0);
+            id_time[idx4 + 0] = new Vector2(i+1, 0);
+            id_time[idx4 + 1] = new Vector2(i+1, 0);
+            id_time[idx4 + 2] = new Vector2(i+1, 0);
+            id_time[idx4 + 3] = new Vector2(i+1, 0);
         }
 
         Mesh mesh = new Mesh();
@@ -78,20 +80,23 @@ public class ParticleCircle : MonoBehaviour
     public void Update()
     {
         totalTime += Time.deltaTime;
-        MeshFilter mf = particles.GetComponent<MeshFilter>();
+        Mesh mesh = particles.GetComponent<MeshFilter>().mesh;
 
-        Vector2[] id_time = new Vector2[4*totalParticles];
-        for(int i = 0; i < totalParticles; i++) {
-            id_time[i*4 + 0] = new Vector2(mf.mesh.uv2[i*4 + 0].x, totalTime);
-            id_time[i*4 + 1] = new Vector2(mf.mesh.uv2[i*4 + 1].x, totalTime);
-            id_time[i*4 + 2] = new Vector2(mf.mesh.uv2[i*4 + 2].x, totalTime);
-            id_time[i*4 + 3] = new Vector2(mf.mesh.uv2[i*4 + 3].x, totalTime);
+        Vector2[] id_time = mesh.uv2;
+        for(int i = 0; i < totalParticles; i++)
+        {
+            int idx4 = i * 4;
+            mesh.uv2[idx4 + 0].y = totalTime;
+            mesh.uv2[idx4 + 1].y = totalTime;
+            mesh.uv2[idx4 + 2].y = totalTime;
+            mesh.uv2[idx4 + 3].y = totalTime;
         }
-
-        mf.mesh.uv2 = id_time;
+        mesh.uv2 = id_time;
 
         if (totalTime >= lifeTimeInSeconds) {
+            Destroy(particles);
             if (respawn) Start();
+            else enabled = false;
         }
     }
 }
