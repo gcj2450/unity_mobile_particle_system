@@ -86,10 +86,10 @@ public class ParticleCircle : MonoBehaviour
         for(int i = 0; i < totalParticles; i++)
         {
             int idx4 = i * 4;
-            mesh.uv2[idx4 + 0].y = totalTime;
-            mesh.uv2[idx4 + 1].y = totalTime;
-            mesh.uv2[idx4 + 2].y = totalTime;
-            mesh.uv2[idx4 + 3].y = totalTime;
+            id_time[idx4 + 0].y = totalTime;
+            id_time[idx4 + 1].y = totalTime;
+            id_time[idx4 + 2].y = totalTime;
+            id_time[idx4 + 3].y = totalTime;
         }
         mesh.uv2 = id_time;
 
