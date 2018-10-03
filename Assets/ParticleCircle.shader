@@ -108,9 +108,9 @@
             
             /**
             * Given an center point, calc quad vertex that corresponds to particle uv.
-            * Quad are orthogonal to the Main Camera and has _ParticleSize lenght.
+            * Billboard are orthogonal to the Main Camera and has _ParticleSize lenght.
             */
-            float3 getQuadVertex(float3 quad_center, float2 uv)
+            float3 getBillboardVertex(float3 quad_center, float2 uv)
             {                
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
                 float plane_d = -dot(plane_normal, quad_center);
@@ -145,7 +145,7 @@
                 // Get quad center new position (time has changed).
                 float3 center_pos = getNewPos(v.pos, v.id_time.x, v.id_time.y);
                 // With the center, get quad vertex position based on vertex uv.
-                float3 v_pos = getQuadVertex(center_pos, v.uv);
+                float3 v_pos = getBillboardVertex(center_pos, v.uv);
 
                 // View transformation.
                 fragmentInput o;
