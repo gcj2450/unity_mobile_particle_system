@@ -15,10 +15,8 @@ public class ParticleCircle : MonoBehaviour
     public float particleSpeedScale     = 10.0f;
     public int totalParticles           = 200;
     public int lifeTimeInSeconds        = 10;
-    public bool respawn                 = false;
 
     private GameObject particles;
-
     private float totalTime;
 
     public void Start()
@@ -37,7 +35,7 @@ public class ParticleCircle : MonoBehaviour
         Vector3[] vertices = new Vector3[4*totalParticles];
         int[]     tri      = new int[6*totalParticles];
         Vector2[] uv       = new Vector2[4*totalParticles];
-        Vector2[] id_time  = new Vector2[4*totalParticles];
+        Vector2[] id  = new Vector2[4*totalParticles];
 
         for (int i = 0; i < totalParticles; i++)
         {
@@ -62,19 +60,28 @@ public class ParticleCircle : MonoBehaviour
             uv[idx4 + 3] = new Vector2(1, 1);
             
             // Passing ID and Initial Time as UV2.
-            id_time[idx4 + 0] = new Vector2(i+1, 0);
-            id_time[idx4 + 1] = new Vector2(i+1, 0);
-            id_time[idx4 + 2] = new Vector2(i+1, 0);
-            id_time[idx4 + 3] = new Vector2(i+1, 0);
+            id[idx4 + 0] = new Vector2(i+1, 0);
+            id[idx4 + 1] = new Vector2(i+1, 0);
+            id[idx4 + 2] = new Vector2(i+1, 0);
+            id[idx4 + 3] = new Vector2(i+1, 0);
         }
 
         Mesh mesh = new Mesh();
         mesh.vertices   = vertices;
         mesh.triangles  = tri;
         mesh.uv         = uv;
-        mesh.uv2        = id_time;
+        mesh.uv2        = id;
         
         particles.GetComponent<MeshFilter>().mesh = mesh;
     }
 
+    public void Update()
+    {
+        totalTime += Time.deltaTime;
+       
+        if (totalTime >= lifeTimeInSeconds) {
+            Destroy(particles);
+            enabled = false;
+        }
+    }
 }

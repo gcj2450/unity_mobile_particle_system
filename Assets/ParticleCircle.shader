@@ -30,9 +30,9 @@
             };
             
             struct vertexInput {
-                float4 pos      : POSITION;
-                float2 id_time  : TEXCOORD2;
-                float2 uv       : TEXCOORD0;
+                float4 pos : POSITION;
+                float2 id  : TEXCOORD2;
+                float2 uv  : TEXCOORD0;
             };
             
             // Hash functions to generate entropy by David Hoskins
@@ -143,7 +143,7 @@
             fragmentInput vert (vertexInput v)
             {
                 // Get quad center new position (time has changed).
-                float3 center_pos = getNewPos(v.pos, v.id_time.x, _Time.y);
+                float3 center_pos = getNewPos(v.pos, v.id.x, _Time.y);
                 // With the center, get quad vertex position based on vertex uv.
                 float3 v_pos = getBillboardVertex(center_pos, v.uv);
 
