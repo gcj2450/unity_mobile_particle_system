@@ -2,15 +2,7 @@
 
 public class ParticleCircle : MonoBehaviour
 {
-    [System.Serializable]
-    public struct Position
-    {
-        public int x;
-        public int y;
-        public int z;
-    }
-    
-    public Position emitterPosition;
+    public Vector3 emitterPosition;
     public float particleSize           = 0.05f;
     public float particleSpeedScale     = 10.0f;
     public int totalParticles           = 200;
