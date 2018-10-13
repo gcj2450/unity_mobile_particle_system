@@ -27,7 +27,7 @@ public class ParticleCircle : MonoBehaviour
         Vector3[] vertices = new Vector3[4*totalParticles];
         int[]     tri      = new int[6*totalParticles];
         Vector2[] uv       = new Vector2[4*totalParticles];
-        Vector2[] id  = new Vector2[4*totalParticles];
+        Vector2[] id       = new Vector2[4*totalParticles];
 
         for (int i = 0; i < totalParticles; i++)
         {

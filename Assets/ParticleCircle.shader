@@ -92,7 +92,7 @@
                 if (v.z > .5f) v.z = -1 * (v.z - .5f);
                 v = 2 * v;
                
-                // (optional) particles will spread in a cube format without this.
+                // We don't want to nomalize 'v' vector, then:
                 v = mapCubeToSphere(v);
                
                 // Scale velocity

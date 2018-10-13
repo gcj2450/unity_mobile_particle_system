@@ -202,15 +202,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emitterPosition:
-    x: 0
-    y: 0
-    z: 0
+  emitterPosition: {x: 0, y: 0, z: 0}
   particleSize: 0.5
-  particleSpeedScale: 10
-  totalParticles: 1000000
-  lifeTimeInSeconds: 10
-  respawn: 1
+  particleSpeedScale: 2
+  totalParticles: 1000
+  lifeTimeInSeconds: 100
 --- !u!1 &1931540010
 GameObject:
   m_ObjectHideFlags: 0
