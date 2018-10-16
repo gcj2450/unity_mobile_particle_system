@@ -1,16 +1,17 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
 {
-    public Vector3 emitterPosition      = Vector3.zero;
-    public float particleSize           = 0.05f;
-    public float particleSpeedScale     = 10.0f;
-    public int totalParticles           = 200;
-    public int lifeTimeInSeconds        = 10;
-
-    private float totalTime             = 0;
+    public Vector3 emitterPosition    = Vector3.zero;
+    public float particleSize         = 0.05f;
+    public float particleSpeedScale   = 10.0f;
+    public int totalParticles         = 200;
+    public int lifeTimeInSeconds      = 10;
+    
+    private float totalTime           = 0;
     
     private void setMeshes()
     {
@@ -60,27 +61,38 @@ public class ParticleCircle : MonoBehaviour
     void Awake()
     {
         totalTime = 0f;
-        EditorApplication.update = Update;
-        Debug.Log("Editor causes this Awake");
+        EditorApplication.update = TriggerUpdate;
         
         Shader shader = Shader.Find("Unlit/ParticleCircle");
 
         Renderer renderer = GetComponent<Renderer>();
         renderer.sharedMaterial.shader = shader;
-        renderer.sharedMaterial.SetFloat("_ParticleSize", particleSize);
-        renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
 
         setMeshes();
     }
 
-    public void Update()
+    public void TriggerUpdate()
     {
         EditorUtility.SetDirty(this);
+    }
 
+    public void Update()
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        if (!Mathf.Approximately(renderer.sharedMaterial.GetFloat("_ParticleSize"), particleSize)){
+            renderer.sharedMaterial.SetFloat("_ParticleSize", particleSize);
+        }
+        if (renderer.sharedMaterial.GetInt("_ParticleLifeTime") != lifeTimeInSeconds){
+            renderer.sharedMaterial.SetFloat("_ParticleLifeTime", lifeTimeInSeconds);
+        }
+        if (!Mathf.Approximately(renderer.sharedMaterial.GetFloat("_ParticleSpeedScale"), particleSpeedScale)){
+            renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
+        }
+        
         totalTime += Time.deltaTime;
        
-        if (totalTime >= lifeTimeInSeconds) {
-            Awake();
+        if (totalTime >= lifeTimeInSeconds){
+            //@TODO KILL EMITTER
         }
     }
 }

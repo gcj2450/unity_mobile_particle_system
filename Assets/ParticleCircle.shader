@@ -1,6 +1,7 @@
 ﻿Shader "Unlit/ParticleCircle"
 {
     Properties {
+        _ParticleLifeTime ("Particle Size", Int) = 10
         _ParticleSize ("Particle Size", Float) = 0.05
         _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
     }
@@ -17,6 +18,7 @@
             #pragma fragment frag
             
             uniform float _ParticleSize = 0.05f;
+            uniform int   _ParticleLifeTime = 10;
             uniform float _ParticleSpeedScale = 10.f;
  
             static const float  HASHSCALE1 = 0.1031;
@@ -143,7 +145,7 @@
             fragmentInput vert (vertexInput v)
             {
                 // Get quad center new position (time has changed).
-                float3 center_pos = getNewPos(v.pos, v.id.x, _Time.y);
+                float3 center_pos = getNewPos(v.pos, v.id.x, _Time.y % _ParticleLifeTime);
                 // With the center, get quad vertex position based on vertex uv.
                 float3 v_pos = getBillboardVertex(center_pos, v.uv);
 
