@@ -1,6 +1,5 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
@@ -89,8 +88,12 @@ public class ParticleCircle : MonoBehaviour
             renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
         }
         
+        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+        if (totalParticles != mesh.vertexCount*4){
+            setMeshes();
+        }
+        
         totalTime += Time.deltaTime;
-       
         if (totalTime >= lifeTimeInSeconds){
             //@TODO KILL EMITTER
         }
