@@ -105,7 +105,7 @@
                
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.05*Acc*t2;
-                return initial_pos + v*time + 0.05f*acc*pow(time, 2); 
+                return initial_pos + v*time + 0.5f*acc*pow(time, 2); 
             }
             
             /**

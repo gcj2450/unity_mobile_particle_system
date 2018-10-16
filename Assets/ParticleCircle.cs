@@ -4,7 +4,6 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
 {
-    public Vector3 emitterPosition    = Vector3.zero;
     public float particleSize         = 0.05f;
     public float particleSpeedScale   = 10.0f;
     public int totalParticles         = 200;
@@ -24,10 +23,10 @@ public class ParticleCircle : MonoBehaviour
             int idx4 = i * 4;
             int index6 = i * 6;
 
-            vertices[idx4 + 0] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[idx4 + 1] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[idx4 + 2] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
-            vertices[idx4 + 3] = new Vector3(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            vertices[idx4 + 0] = Vector3.zero;
+            vertices[idx4 + 1] = Vector3.zero;
+            vertices[idx4 + 2] = Vector3.zero;
+            vertices[idx4 + 3] = Vector3.zero;
     
             tri[index6 + 0] = idx4 + 0;
             tri[index6 + 1] = idx4 + 2;
