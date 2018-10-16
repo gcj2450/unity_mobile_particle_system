@@ -59,6 +59,7 @@
     <Compile Include="Assets\ParticleCircle.cs" />
     <Compile Include="Assets\Point\EnablePointSize.cs" />
     <Compile Include="Assets\Point\PointCloud.cs" />
+    <Compile Include="Assets\SimpleQuad.cs" />
     <None Include="Assets\ParticleCircle.shader" />
     <None Include="Assets\Point\PointShader.shader" />
     <Reference Include="UnityEditor.StandardEvents">

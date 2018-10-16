@@ -1,31 +1,21 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
+[ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
 {
-    public Vector3 emitterPosition;
+    public Vector3 emitterPosition      = Vector3.zero;
     public float particleSize           = 0.05f;
     public float particleSpeedScale     = 10.0f;
     public int totalParticles           = 200;
     public int lifeTimeInSeconds        = 10;
 
-    private GameObject particles;
-    private float totalTime;
-
-    public void Start()
+    private float totalTime             = 0;
+    
+    private void setMeshes()
     {
-        totalTime = 0f;
-
-        Shader shader = Shader.Find("Unlit/ParticleCircle");
-
-        particles = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        
-        Renderer renderer = particles.GetComponent<Renderer>();
-        renderer.material.shader = shader;
-        renderer.material.SetFloat("_ParticleSize", particleSize);
-        renderer.material.SetFloat("_ParticleSpeedScale", particleSpeedScale);
-
         Vector3[] vertices = new Vector3[4*totalParticles];
-        int[]     tri      = new int[6*totalParticles];
+        int    [] tri      = new int    [6*totalParticles];
         Vector2[] uv       = new Vector2[4*totalParticles];
         Vector2[] id       = new Vector2[4*totalParticles];
 
@@ -51,29 +41,46 @@ public class ParticleCircle : MonoBehaviour
             uv[idx4 + 2] = new Vector2(0, 1);
             uv[idx4 + 3] = new Vector2(1, 1);
             
-            // Passing ID and Initial Time as UV2.
+            // Passing ID as UV2.
             id[idx4 + 0] = new Vector2(i+1, 0);
             id[idx4 + 1] = new Vector2(i+1, 0);
             id[idx4 + 2] = new Vector2(i+1, 0);
             id[idx4 + 3] = new Vector2(i+1, 0);
         }
 
-        Mesh mesh = new Mesh();
+        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+        mesh.Clear();
+        
         mesh.vertices   = vertices;
         mesh.triangles  = tri;
         mesh.uv         = uv;
-        mesh.uv2        = id;
+        mesh.uv2        = id;   
+    }
+    
+    void Awake()
+    {
+        totalTime = 0f;
+        EditorApplication.update = Update;
+        Debug.Log("Editor causes this Awake");
         
-        particles.GetComponent<MeshFilter>().mesh = mesh;
+        Shader shader = Shader.Find("Unlit/ParticleCircle");
+
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.sharedMaterial.shader = shader;
+        renderer.sharedMaterial.SetFloat("_ParticleSize", particleSize);
+        renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
+
+        setMeshes();
     }
 
     public void Update()
     {
+        EditorUtility.SetDirty(this);
+
         totalTime += Time.deltaTime;
        
         if (totalTime >= lifeTimeInSeconds) {
-            Destroy(particles);
-            enabled = false;
+            Awake();
         }
     }
 }

@@ -19,9 +19,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4892239683747740}
-  - component: {fileID: 114731939314682372}
-  - component: {fileID: 33355985043858288}
-  - component: {fileID: 23341656250364434}
+  - component: {fileID: 33183294498903268}
+  - component: {fileID: 114455679583106756}
+  - component: {fileID: 23812476719101688}
   m_Layer: 0
   m_Name: ParticleEmitter
   m_TagString: Untagged
@@ -42,17 +42,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23341656250364434
+--- !u!23 &23812476719101688
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1411189979438542}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 0
-  m_MotionVectors: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
@@ -77,14 +77,14 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33355985043858288
+--- !u!33 &33183294498903268
 MeshFilter:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1411189979438542}
-  m_Mesh: {fileID: 0}
---- !u!114 &114731939314682372
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114455679583106756
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,14 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emitterPosition:
-    x: 0
-    y: 0
-    z: 0
+  emitterPosition: {x: 0, y: 0, z: 0}
   particleSize: 0.05
   particleSpeedScale: 10
   totalParticles: 200
   lifeTimeInSeconds: 10
-  respawn: 0
-  mat: {fileID: 0}
-  sh: {fileID: 0}

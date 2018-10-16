@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: ParticleMaterial
   m_Shader: {fileID: 4800000, guid: 62dc0c59b4c01480994986056c4dfc57, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -80,7 +80,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ParticleSize: 0.05
+    - _ParticleSize: 1
     - _ParticleSpeedScale: 10
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
