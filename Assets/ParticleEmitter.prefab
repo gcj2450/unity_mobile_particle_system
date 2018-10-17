@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4575936931346944}
-  - component: {fileID: 114591961672978016}
+  - component: {fileID: 114364153008608248}
   - component: {fileID: 33490276918774276}
   - component: {fileID: 23803221232038044}
   m_Layer: 0
@@ -84,7 +84,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1985980185983840}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114591961672978016
+--- !u!114 &114364153008608248
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,7 +95,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleSize: 10
-  particleSpeedScale: 100
+  particleSize: 1
+  particleSpeedScale: 10
   totalParticles: 200
-  lifeTimeInSeconds: 5
+  lifeTimeInSeconds: 10
+  shape: 0
+  cone:
+    angle: 0
+    radius: 0
+  sphere:
+    angle: 0

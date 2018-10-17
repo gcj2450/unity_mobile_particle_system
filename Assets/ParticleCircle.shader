@@ -4,6 +4,7 @@
         _ParticleLifeTime ("Particle Size", Int) = 10
         _ParticleSize ("Particle Size", Float) = 0.05
         _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
+        _ParticleShape("Particle Shape", int) = 0
     }
     
     SubShader {
@@ -78,7 +79,7 @@
             /**
             * Calc new point position given its id and the current time.
             */
-            float3 getNewPos(float3 initial_pos, float id, float time)
+            float3 parabolaMovement(float3 initial_pos, float id, float time)
             {
                 // Calc initial velocity/direction to a particle given its id.
                 // >>> This number will be the same for each particle, in all frames. <<<
@@ -149,7 +150,7 @@
                 float time = _Time.y % _ParticleLifeTime - v.id.x;
                 if (time >= 0) {
                     // Get quad center new position (time has changed).
-                    float3 center_pos = getNewPos(v.pos, v.id.x, time);
+                    float3 center_pos = parabolaMovement(v.pos, v.id.x, time);
                     // With the center, get quad vertex position based on vertex uv.
                     v_pos = getBillboardVertex(center_pos, v.uv);
                 }
