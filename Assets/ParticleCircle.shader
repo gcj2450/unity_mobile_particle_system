@@ -76,13 +76,10 @@
                 return s;
             }
             
-            /**
-            * Calc new point position given its id and the current time.
-            */
-            float3 parabolaMovement(float3 initial_pos, float id, float time)
+            // Calc initial velocity/direction to a particle given its id.
+            // >>> This number will be the same for each particle, in all frames. <<<
+            float3 getVelocity(float id)
             {
-                // Calc initial velocity/direction to a particle given its id.
-                // >>> This number will be the same for each particle, in all frames. <<<
                 float3 v = float3(0.f, 0.f, 0.f);
                 for (int t = 0; t < ITERATIONS; t++) {
                     v += hash31(id);
@@ -100,7 +97,17 @@
                
                 // Scale velocity
                 v = _ParticleSpeedScale * v;
-               
+            
+                return v;
+            }
+            
+            /**
+            * Calc new point position given its id and the current time.
+            */
+            float3 parabolaMovement(float3 initial_pos, float id, float time)
+            {
+                float3 v = getVelocity(id);
+
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
                 float3 acc = float3(0.f, -9.81f, 0.f); 
                
