@@ -4,13 +4,21 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
 {
-    public float particleSize         = 0.05f;
+    public float particleDuration     = 5.0f;
+    public float particleSize         = 1.0f;
     public float particleSpeedScale   = 10.0f;
-    public int totalParticles         = 200;
-    public int lifeTimeInSeconds      = 10;
+    public int maxParticles           = 200;
     
     private float totalTime           = 0;
 
+    [System.Serializable]
+    public struct Emission
+    {
+        public float rateOverTime;
+    }
+
+    public Emission emission;
+    
     public enum ShapeType{ Cone, Sphere }
 
     public ShapeType shape;
@@ -32,12 +40,12 @@ public class ParticleCircle : MonoBehaviour
     
     private void setMeshes()
     {
-        Vector3[] vertices = new Vector3[4*totalParticles];
-        int    [] tri      = new int    [6*totalParticles];
-        Vector2[] uv       = new Vector2[4*totalParticles];
-        Vector2[] id       = new Vector2[4*totalParticles];
+        Vector3[] vertices = new Vector3[4*maxParticles];
+        int    [] tri      = new int    [6*maxParticles];
+        Vector2[] uv       = new Vector2[4*maxParticles];
+        Vector2[] id       = new Vector2[4*maxParticles];
 
-        for (int i = 0; i < totalParticles; i++)
+        for (int i = 0; i < maxParticles; i++)
         {
             int idx4 = i * 4;
             int index6 = i * 6;
@@ -76,7 +84,7 @@ public class ParticleCircle : MonoBehaviour
     }
     
     void Awake()
-    {
+    {        
         totalTime = 0f;
         EditorApplication.update = TriggerUpdate;
         
@@ -96,27 +104,33 @@ public class ParticleCircle : MonoBehaviour
     public void Update()
     {
         Renderer renderer = GetComponent<Renderer>();
-        if (!Mathf.Approximately(renderer.sharedMaterial.GetFloat("_ParticleSize"), particleSize)){
+        if (renderer.sharedMaterial.GetFloat("_ParticleSize") != particleSize){
             renderer.sharedMaterial.SetFloat("_ParticleSize", particleSize);
         }
-        if (renderer.sharedMaterial.GetInt("_ParticleLifeTime") != lifeTimeInSeconds){
-            renderer.sharedMaterial.SetFloat("_ParticleLifeTime", lifeTimeInSeconds);
+        if (renderer.sharedMaterial.GetFloat("_ParticleRateOverTime") != emission.rateOverTime){
+            renderer.sharedMaterial.SetFloat("_ParticleRateOverTime", emission.rateOverTime);
         }
-        if (!Mathf.Approximately(renderer.sharedMaterial.GetFloat("_ParticleSpeedScale"), particleSpeedScale)){
+        if (renderer.sharedMaterial.GetFloat("_ParticleSpeedScale") != particleSpeedScale){
             renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
         }
         if (renderer.sharedMaterial.GetInt("_ParticleShape") != (int)shape){
             renderer.sharedMaterial.SetFloat("_ParticleShape", (int)shape);
         }
+        if (renderer.sharedMaterial.GetInt("_MaxParticles") != maxParticles){
+            renderer.sharedMaterial.SetInt("_MaxParticles", maxParticles);
+        }
+        if (renderer.sharedMaterial.GetFloat("_ParticleDuration") != particleDuration){
+            renderer.sharedMaterial.SetFloat("_ParticleDuration", particleDuration);
+        }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-        if (totalParticles != mesh.vertexCount*4){
+        if (maxParticles != mesh.vertexCount*4){
             setMeshes();
         }
         
         totalTime += Time.deltaTime;
-        if (totalTime >= lifeTimeInSeconds){
-            //@TODO KILL EMITTER
-        }
+        //if (totalTime >= lifeTimeInSeconds){
+        //    //@TODO KILL EMITTER
+        //}
     }
 }

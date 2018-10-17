@@ -6,10 +6,12 @@ using System;
 [CanEditMultipleObjects]
 public class ParticleCircleEditor : Editor
 {
+	SerializedProperty particleDuration;
 	SerializedProperty particleSize;
 	SerializedProperty particleSpeedScale;
-	SerializedProperty totalParticles;
-	SerializedProperty lifeTimeInSeconds;
+	SerializedProperty maxParticles;
+
+	SerializedProperty emission;
 
 	SerializedProperty shape;
 	SerializedProperty cone;
@@ -17,14 +19,16 @@ public class ParticleCircleEditor : Editor
 	
 	void OnEnable()
 	{
+		particleDuration 	= serializedObject.FindProperty("particleDuration");
 		particleSize 		= serializedObject.FindProperty("particleSize");
 		particleSpeedScale 	= serializedObject.FindProperty("particleSpeedScale");
-		totalParticles 		= serializedObject.FindProperty("totalParticles");
-		lifeTimeInSeconds 	= serializedObject.FindProperty("lifeTimeInSeconds");
+		maxParticles 		= serializedObject.FindProperty("maxParticles");
 		
-		shape 		 = serializedObject.FindProperty("shape");
-		cone 		 = serializedObject.FindProperty("cone");
-		sphere 		 = serializedObject.FindProperty("sphere");
+		emission = serializedObject.FindProperty("emission");
+		
+		shape 	= serializedObject.FindProperty("shape");
+		cone 	= serializedObject.FindProperty("cone");
+		sphere 	= serializedObject.FindProperty("sphere");
 	}
 	
 	public override void OnInspectorGUI()
@@ -32,11 +36,13 @@ public class ParticleCircleEditor : Editor
 		ParticleCircle pc = (ParticleCircle)target;
 		
 		serializedObject.Update();
+		EditorGUILayout.PropertyField(particleDuration);
 		EditorGUILayout.PropertyField(particleSize);
 		EditorGUILayout.PropertyField(particleSpeedScale);
-		EditorGUILayout.PropertyField(totalParticles);
-		EditorGUILayout.PropertyField(lifeTimeInSeconds);
-		
+		EditorGUILayout.PropertyField(maxParticles);
+
+		EditorGUILayout.PropertyField(emission, true);
+
 		EditorGUILayout.PropertyField(shape);
 		if (pc != null){
 			if (pc.shape == ParticleCircle.ShapeType.Cone) {

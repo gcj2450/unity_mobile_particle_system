@@ -1,10 +1,12 @@
 ﻿Shader "Unlit/ParticleCircle"
 {
     Properties {
-        _ParticleLifeTime ("Particle Size", Int) = 10
+        _ParticleRateOverTime ("Particle Size", Float) = 10
         _ParticleSize ("Particle Size", Float) = 0.05
         _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
         _ParticleShape("Particle Shape", int) = 0
+        _MaxParticles("Max Particles", int) = 200
+        _ParticleDuration("Particle Duration", Float) = 5.0
     }
     
     SubShader {
@@ -19,9 +21,11 @@
             #pragma fragment frag
             
             uniform float _ParticleSize = 0.05f;
-            uniform int   _ParticleLifeTime = 10;
+            uniform int   _ParticleRateOverTime = 10;
             uniform float _ParticleSpeedScale = 10.f;
             uniform int   _ParticleShape = 0;
+            uniform int   _MaxParticles = 200;
+            uniform float _ParticleDuration = 5.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -126,11 +130,13 @@
                 v.x = max_distance * v.x;
                 v.y = max_distance * v.y;
                 
+                v = normalize(v);
+                
                 // Scale velocity
                 v = _ParticleSpeedScale * v;
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
-                float3 acc = float3(0.f, 0, 0.f); 
+                float3 acc = float3(0.f, 0.f, 0.f); 
                
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.05*Acc*t2;
@@ -176,8 +182,13 @@
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
             
-                //float time = _Time.y % _ParticleLifeTime - id;
-                float time = _Time.y % _ParticleLifeTime;
+                float time = -1.f;
+                
+                float particle_rate = _Time.y * _ParticleRateOverTime;
+                if (id <= particle_rate) {
+                    time = (particle_rate - id) % (_ParticleDuration * _ParticleRateOverTime);
+                }
+                
                 if (time >= 0) {
                     
                     float3 center_pos = float3(0.f,0.f,0.f);

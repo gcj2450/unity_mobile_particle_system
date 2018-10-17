@@ -95,11 +95,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleSize: 0.8
+  particleDuration: 5
+  particleSize: 10
   particleSpeedScale: 10
-  totalParticles: 200
-  lifeTimeInSeconds: 10
-  shape: 0
+  maxParticles: 200
+  emission:
+    rateOverTime: 1
+  shape: 1
   cone:
     angle: 0
     radius: 0
