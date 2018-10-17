@@ -12,14 +12,23 @@ public class ParticleCircle : MonoBehaviour
     private float totalTime           = 0;
 
     public enum ShapeType{ Cone, Sphere }
+
+    public ShapeType shape;
+
+    [System.Serializable]
+    public struct Cone
+    {
+        public float     angle;
+        public float     radius;   
+    }
+    public Cone cone;
     
     [System.Serializable]
-    public struct Shape
+    public struct Sphere
     {
-        public ShapeType shape;
+        public float     angle;
     }
-    
-    public Shape shape;
+    public Sphere sphere;
     
     private void setMeshes()
     {
