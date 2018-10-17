@@ -78,16 +78,16 @@
             }
             
             // Calc initial velocity/direction to a particle given its id.
+            // Return an Float3 vec. Elements range: (0 <= p <= 1)
             // >>> This number will be the same for each particle, in all frames. <<<
-            float3 getVelocity(float id)
+            float3 getRandomVelocity(float id)
             {
                 float3 v = float3(0.f, 0.f, 0.f);
                 for (int t = 0; t < ITERATIONS; t++) {
                     v += hash31(id);
                 }
                 v = v / ITERATIONS; // Normalize
-               
-                // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
+                          // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
                 if (v.x > .5f) v.x = -1 * (v.x - .5f);
                 if (v.y > .5f) v.y = -1 * (v.y - .5f);
                 if (v.z > .5f) v.z = -1 * (v.z - .5f);
@@ -95,10 +95,7 @@
                
                 // We don't want to nomalize 'v' vector, then:
                 v = mapCubeToSphere(v);
-               
-                // Scale velocity
-                v = _ParticleSpeedScale * v;
-            
+                
                 return v;
             }
             
@@ -107,7 +104,11 @@
             */
             float3 sphereMovement(float3 initial_pos, float id, float time)
             {
-                float3 v = getVelocity(id);
+                float3 v = getRandomVelocity(id);
+               
+                // Scale velocity
+                v = _ParticleSpeedScale * v;
+                
                 return initial_pos + v*time;
             }
             
@@ -116,10 +117,20 @@
             */
             float3 coneMovement(float3 initial_pos, float id, float time)
             {
-                float3 v = getVelocity(id);
+                float3 v = getRandomVelocity(id);
+
+                if (v.z < 0.f) v.z = -1 * v.z;
+                
+                float max_distance = v.z * tan(radians(45));
+
+                v.x = max_distance * v.x;
+                v.y = max_distance * v.y;
+                
+                // Scale velocity
+                v = _ParticleSpeedScale * v;
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
-                float3 acc = float3(0.f, -9.81f, 0.f); 
+                float3 acc = float3(0.f, 0, 0.f); 
                
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.05*Acc*t2;
@@ -165,7 +176,8 @@
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
             
-                float time = _Time.y % _ParticleLifeTime - id;
+                //float time = _Time.y % _ParticleLifeTime - id;
+                float time = _Time.y % _ParticleLifeTime;
                 if (time >= 0) {
                     
                     float3 center_pos = float3(0.f,0.f,0.f);
