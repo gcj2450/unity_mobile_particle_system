@@ -18,15 +18,15 @@ public class ParticleCircle : MonoBehaviour
     [System.Serializable]
     public struct Cone
     {
-        public float     angle;
-        public float     radius;   
+        public float angle;
+        public float radius;   
     }
     public Cone cone;
     
     [System.Serializable]
     public struct Sphere
     {
-        public float     angle;
+        public float angle;
     }
     public Sphere sphere;
     
@@ -104,6 +104,9 @@ public class ParticleCircle : MonoBehaviour
         }
         if (!Mathf.Approximately(renderer.sharedMaterial.GetFloat("_ParticleSpeedScale"), particleSpeedScale)){
             renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
+        }
+        if (renderer.sharedMaterial.GetInt("_ParticleShape") != (int)shape){
+            renderer.sharedMaterial.SetFloat("_ParticleShape", (int)shape);
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;

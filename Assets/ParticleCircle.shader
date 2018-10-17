@@ -21,6 +21,7 @@
             uniform float _ParticleSize = 0.05f;
             uniform int   _ParticleLifeTime = 10;
             uniform float _ParticleSpeedScale = 10.f;
+            uniform int   _ParticleShape = 0;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -113,7 +114,7 @@
             /**
             * Calc new point position given its id and the current time.
             */
-            float3 parabolaMovement(float3 initial_pos, float id, float time)
+            float3 coneMovement(float3 initial_pos, float id, float time)
             {
                 float3 v = getVelocity(id);
 
@@ -166,8 +167,16 @@
             
                 float time = _Time.y % _ParticleLifeTime - id;
                 if (time >= 0) {
+                    
+                    float3 center_pos = float3(0.f,0.f,0.f);
+                    
+                    if(_ParticleShape == 0){ 
+                        center_pos = coneMovement(v.pos, id, time);
+                    } else {
+                        center_pos = sphereMovement(v.pos, id, time);
+                    }
+                    
                     // Get quad center new position (time has changed).
-                    float3 center_pos = sphereMovement(v.pos, id, time);
                     // With the center, get quad vertex position based on vertex uv.
                     v_pos = getBillboardVertex(center_pos, v.uv);
                 }
