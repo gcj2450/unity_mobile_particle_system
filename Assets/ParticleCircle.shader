@@ -104,6 +104,15 @@
             /**
             * Calc new point position given its id and the current time.
             */
+            float3 sphereMovement(float3 initial_pos, float id, float time)
+            {
+                float3 v = getVelocity(id);
+                return initial_pos + v*time;
+            }
+            
+            /**
+            * Calc new point position given its id and the current time.
+            */
             float3 parabolaMovement(float3 initial_pos, float id, float time)
             {
                 float3 v = getVelocity(id);
@@ -153,11 +162,12 @@
             fragmentInput vert (vertexInput v)
             {
                 float3 v_pos = v.pos.xyz;
+                float id = v.id.x;
             
-                float time = _Time.y % _ParticleLifeTime - v.id.x;
+                float time = _Time.y % _ParticleLifeTime - id;
                 if (time >= 0) {
                     // Get quad center new position (time has changed).
-                    float3 center_pos = parabolaMovement(v.pos, v.id.x, time);
+                    float3 center_pos = sphereMovement(v.pos, id, time);
                     // With the center, get quad vertex position based on vertex uv.
                     v_pos = getBillboardVertex(center_pos, v.uv);
                 }
