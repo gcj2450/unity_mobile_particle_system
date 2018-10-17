@@ -91,7 +91,8 @@
                     v += hash31(id);
                 }
                 v = v / ITERATIONS; // Normalize
-                          // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
+
+                // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
                 if (v.x > .5f) v.x = -1 * (v.x - .5f);
                 if (v.y > .5f) v.y = -1 * (v.y - .5f);
                 if (v.z > .5f) v.z = -1 * (v.z - .5f);
@@ -186,17 +187,17 @@
                 
                 float particle_rate = _Time.y * _ParticleRateOverTime;
                 if (id <= particle_rate) {
-                    time = (particle_rate - id) % (_ParticleDuration * _ParticleRateOverTime);
+                    time = (particle_rate - id) % (_ParticleDuration );
                 }
-                
+
                 if (time >= 0) {
                     
                     float3 center_pos = float3(0.f,0.f,0.f);
                     
-                    if(_ParticleShape == 0){ 
-                        center_pos = coneMovement(v.pos, id, time);
+                    if (_ParticleShape == 0){ 
+                        center_pos = coneMovement(v_pos, id, time);
                     } else {
-                        center_pos = sphereMovement(v.pos, id, time);
+                        center_pos = sphereMovement(v_pos, id, time);
                     }
                     
                     // Get quad center new position (time has changed).

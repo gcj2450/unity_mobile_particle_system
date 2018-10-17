@@ -95,15 +95,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleDuration: 5
-  particleSize: 10
-  particleSpeedScale: 10
-  maxParticles: 200
+  particleDuration: 10
+  particleSize: 1
+  particleSpeedScale: 1
+  maxParticles: 30
   emission:
-    rateOverTime: 1
-  shape: 1
+    rateOverTime: 2
+  shape: 0
   cone:
-    angle: 0
+    angle: 45
     radius: 0
   sphere:
     angle: 0
