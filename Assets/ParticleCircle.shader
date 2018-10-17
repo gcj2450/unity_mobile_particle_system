@@ -144,11 +144,15 @@
 
             fragmentInput vert (vertexInput v)
             {
-                // Get quad center new position (time has changed).
-                float3 center_pos = getNewPos(v.pos, v.id.x, _Time.y % _ParticleLifeTime);
-                // With the center, get quad vertex position based on vertex uv.
-                float3 v_pos = getBillboardVertex(center_pos, v.uv);
-
+                float3 v_pos = v.pos.xyz;
+            
+                float time = _Time.y % _ParticleLifeTime - v.id.x;
+                if (time >= 0) {
+                    // Get quad center new position (time has changed).
+                    float3 center_pos = getNewPos(v.pos, v.id.x, time);
+                    // With the center, get quad vertex position based on vertex uv.
+                    v_pos = getBillboardVertex(center_pos, v.uv);
+                }
                 // View transformation.
                 fragmentInput o;
                 o.pos = UnityObjectToClipPos(v_pos);

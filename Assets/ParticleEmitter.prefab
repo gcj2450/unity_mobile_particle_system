@@ -96,6 +96,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particleSize: 10
-  particleSpeedScale: 1000
+  particleSpeedScale: 100
   totalParticles: 200
   lifeTimeInSeconds: 5

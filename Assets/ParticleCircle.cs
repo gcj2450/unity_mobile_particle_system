@@ -10,6 +10,16 @@ public class ParticleCircle : MonoBehaviour
     public int lifeTimeInSeconds      = 10;
     
     private float totalTime           = 0;
+
+    public enum ShapeType{ Cone, Sphere }
+    
+    [System.Serializable]
+    public struct Shape
+    {
+        public ShapeType shape;
+    }
+    
+    public Shape shape;
     
     private void setMeshes()
     {
