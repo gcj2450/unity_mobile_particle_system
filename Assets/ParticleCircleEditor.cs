@@ -6,7 +6,7 @@ using System;
 [CanEditMultipleObjects]
 public class ParticleCircleEditor : Editor
 {
-	SerializedProperty particleDuration;
+	SerializedProperty startLifetime;
 	SerializedProperty particleSize;
 	SerializedProperty particleSpeedScale;
 	SerializedProperty maxParticles;
@@ -19,7 +19,7 @@ public class ParticleCircleEditor : Editor
 	
 	void OnEnable()
 	{
-		particleDuration 	= serializedObject.FindProperty("particleDuration");
+		startLifetime 		= serializedObject.FindProperty("startLifetime");
 		particleSize 		= serializedObject.FindProperty("particleSize");
 		particleSpeedScale 	= serializedObject.FindProperty("particleSpeedScale");
 		maxParticles 		= serializedObject.FindProperty("maxParticles");
@@ -36,7 +36,7 @@ public class ParticleCircleEditor : Editor
 		ParticleCircle pc = (ParticleCircle)target;
 		
 		serializedObject.Update();
-		EditorGUILayout.PropertyField(particleDuration);
+		EditorGUILayout.PropertyField(startLifetime);
 		EditorGUILayout.PropertyField(particleSize);
 		EditorGUILayout.PropertyField(particleSpeedScale);
 		EditorGUILayout.PropertyField(maxParticles);

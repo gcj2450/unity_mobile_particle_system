@@ -6,7 +6,7 @@
         _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
         _ParticleShape("Particle Shape", int) = 0
         _MaxParticles("Max Particles", int) = 200
-        _ParticleDuration("Particle Duration", Float) = 5.0
+        _ParticleLifeTime("Particle Life Time", Float) = 5.0
     }
     
     SubShader {
@@ -25,7 +25,7 @@
             uniform float _ParticleSpeedScale = 10.f;
             uniform int   _ParticleShape = 0;
             uniform int   _MaxParticles = 200;
-            uniform float _ParticleDuration = 5.f;
+            uniform float _ParticleLifeTime = 5.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -185,13 +185,17 @@
             
                 float time = -1.f;
                 
-                float particle_rate = _Time.y * _ParticleRateOverTime;
-                if (id <= particle_rate) {
-                    time = (particle_rate - id) % (_ParticleDuration );
-                }
-
-                if (time >= 0) {
-                    
+                float window = _ParticleLifeTime*_ParticleRateOverTime;
+                float rate_time = _Time.y * _ParticleRateOverTime;
+                float lower_bound = rate_time - window;
+                
+                if(id < rate_time && id > lower_bound){
+                    time = _Time.y;
+                    if(id >= _ParticleRateOverTime) {
+                        time = time - (id/_ParticleRateOverTime);
+                    }
+                    time = time % window;
+                
                     float3 center_pos = float3(0.f,0.f,0.f);
                     
                     if (_ParticleShape == 0){ 
