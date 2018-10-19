@@ -1,5 +1,8 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
@@ -45,15 +48,17 @@ public class ParticleCircle : MonoBehaviour
         Vector2[] uv       = new Vector2[4*maxParticles];
         Vector2[] id       = new Vector2[4*maxParticles];
 
+        Vector3 emitter_pos = gameObject.transform.position;
+
         for (int i = 0; i < maxParticles; i++)
         {
             int idx4 = i * 4;
             int index6 = i * 6;
 
-            vertices[idx4 + 0] = Vector3.zero;
-            vertices[idx4 + 1] = Vector3.zero;
-            vertices[idx4 + 2] = Vector3.zero;
-            vertices[idx4 + 3] = Vector3.zero;
+            vertices[idx4 + 0] = emitter_pos;
+            vertices[idx4 + 1] = emitter_pos;
+            vertices[idx4 + 2] = emitter_pos;
+            vertices[idx4 + 3] = emitter_pos;
     
             tri[index6 + 0] = idx4 + 0;
             tri[index6 + 1] = idx4 + 2;
@@ -80,7 +85,10 @@ public class ParticleCircle : MonoBehaviour
         mesh.vertices   = vertices;
         mesh.triangles  = tri;
         mesh.uv         = uv;
-        mesh.uv2        = id;   
+        mesh.uv2        = id;
+        
+        //@TODO Interface to set bounds -> particle render out clipping space.
+        //mesh.bounds     = new Bounds(emitter_pos, new Vector3(100, 100, 100));
     }
     
     void Awake()
@@ -103,6 +111,8 @@ public class ParticleCircle : MonoBehaviour
 
     public void Update()
     {
+
+#if UNITY_EDITOR
         Renderer renderer = GetComponent<Renderer>();
         if (renderer.sharedMaterial.GetFloat("_StartSize") != startSize){
             renderer.sharedMaterial.SetFloat("_StartSize", startSize);
@@ -133,6 +143,7 @@ public class ParticleCircle : MonoBehaviour
         if (maxParticles != mesh.vertexCount*4){
             setMeshes();
         }
+#endif
         
         totalTime += Time.deltaTime;
         //if (totalTime >= lifeTimeInSeconds){

@@ -227,7 +227,7 @@
                 if (distance > 0.5f)
                    discard;
 
-                return fixed4(0, 1, 0, 1);
+                return fixed4(1, 0, 0, 1);
             }
             
             ENDCG
