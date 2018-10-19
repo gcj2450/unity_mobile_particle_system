@@ -8,7 +8,7 @@ public class ParticleCircle : MonoBehaviour
     public float startDelay           = 0.0f;
     public float particleSize         = 1.0f;
     public float particleSpeedScale   = 10.0f;
-    public int maxParticles           = 200;
+    public int   maxParticles         = 200;
     
     private float totalTime           = 0;
 
@@ -105,26 +105,26 @@ public class ParticleCircle : MonoBehaviour
     public void Update()
     {
         Renderer renderer = GetComponent<Renderer>();
-        if (renderer.sharedMaterial.GetFloat("_ParticleSize") != particleSize){
-            renderer.sharedMaterial.SetFloat("_ParticleSize", particleSize);
+        if (renderer.sharedMaterial.GetFloat("_Size") != particleSize){
+            renderer.sharedMaterial.SetFloat("_Size", particleSize);
         }
-        if (renderer.sharedMaterial.GetFloat("_ParticleRateOverTime") != emission.rateOverTime){
-            renderer.sharedMaterial.SetFloat("_ParticleRateOverTime", emission.rateOverTime);
+        if (renderer.sharedMaterial.GetFloat("_RateOverTime") != emission.rateOverTime){
+            renderer.sharedMaterial.SetFloat("_RateOverTime", emission.rateOverTime);
         }
-        if (renderer.sharedMaterial.GetFloat("_ParticleSpeedScale") != particleSpeedScale){
-            renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
+        if (renderer.sharedMaterial.GetFloat("_SpeedScale") != particleSpeedScale){
+            renderer.sharedMaterial.SetFloat("_SpeedScale", particleSpeedScale);
         }
-        if (renderer.sharedMaterial.GetInt("_ParticleShape") != (int)shape){
-            renderer.sharedMaterial.SetInt("_ParticleShape", (int)shape);
+        if (renderer.sharedMaterial.GetInt("_Shape") != (int)shape){
+            renderer.sharedMaterial.SetInt("_Shape", (int)shape);
         }
         if (renderer.sharedMaterial.GetInt("_MaxParticles") != maxParticles){
             renderer.sharedMaterial.SetInt("_MaxParticles", maxParticles);
         }
-        if (renderer.sharedMaterial.GetFloat("_ParticleLifeTime") != startLifetime){
-            renderer.sharedMaterial.SetFloat("_ParticleLifeTime", startLifetime);
+        if (renderer.sharedMaterial.GetFloat("_LifeTime") != startLifetime){
+            renderer.sharedMaterial.SetFloat("_LifeTime", startLifetime);
         }
-        if (renderer.sharedMaterial.GetFloat("_ParticleDelay") != startDelay){
-            renderer.sharedMaterial.SetFloat("_ParticleDelay", startDelay);
+        if (renderer.sharedMaterial.GetFloat("_Delay") != startDelay){
+            renderer.sharedMaterial.SetFloat("_Delay", startDelay);
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;

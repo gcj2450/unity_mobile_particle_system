@@ -1,13 +1,13 @@
 ﻿Shader "Unlit/ParticleCircle"
 {
     Properties {
-        _ParticleRateOverTime ("Particle Size", Float) = 10
-        _ParticleSize ("Particle Size", Float) = 0.05
-        _ParticleSpeedScale ("Particle Speed Scale", Float) = 10.0
-        _ParticleShape("Particle Shape", int) = 0
+        _RateOverTime ("Rate Over Time", Float) = 10
+        _Size ("Size", Float) = 0.05
+        _SpeedScale ("Speed Scale", Float) = 10.0
+        _Shape("Shape", int) = 0
         _MaxParticles("Max Particles", int) = 200
-        _ParticleLifeTime("Particle Life Time", Float) = 5.0
-        _ParticleDelay("Particle Delay", Float) = 0.0
+        _LifeTime("Life Time", Float) = 5.0
+        _Delay("Delay", Float) = 0.0
     }
     
     SubShader {
@@ -21,13 +21,13 @@
             #pragma vertex vert
             #pragma fragment frag
             
-            uniform float _ParticleSize = 0.05f;
-            uniform int   _ParticleRateOverTime = 10;
-            uniform float _ParticleSpeedScale = 10.f;
-            uniform int   _ParticleShape = 0;
+            uniform float _Size = 0.05f;
+            uniform int   _RateOverTime = 10;
+            uniform float _SpeedScale = 10.f;
+            uniform int   _Shape = 0;
             uniform int   _MaxParticles = 200;
-            uniform float _ParticleLifeTime = 5.f;
-            uniform float _ParticleDelay = 0.f;
+            uniform float _LifeTime = 5.f;
+            uniform float _Delay = 0.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -114,7 +114,7 @@
                 float3 v = getRandomVelocity(id);
                
                 // Scale velocity
-                v = _ParticleSpeedScale * v;
+                v = _SpeedScale * v;
                 
                 return initial_pos + v*time;
             }
@@ -136,7 +136,7 @@
                 v = normalize(v);
                 
                 // Scale velocity
-                v = _ParticleSpeedScale * v;
+                v = _SpeedScale * v;
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
                 float3 acc = float3(0.f, 0.f, 0.f); 
@@ -148,13 +148,13 @@
             
             /**
             * Given an center point, calc quad vertex that corresponds to particle uv.
-            * Billboard are orthogonal to the Main Camera and has _ParticleSize lenght.
+            * Billboard are orthogonal to the Main Camera and has _Size lenght.
             */
             float3 getBillboardVertex(float3 quad_center, float2 uv)
             {                
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
                 float plane_d = -dot(plane_normal, quad_center);
-                float circumradius = sqrt(pow(_ParticleSize, 2) / 2.f);
+                float circumradius = sqrt(pow(_Size, 2) / 2.f);
                 
                 // Orthonormal basis vectors of the circle plane.
                 float3 basis_vec1 = normalize(float3(0.f, 0.f, -(plane_d/plane_normal.z)) - quad_center);
@@ -184,21 +184,21 @@
             {
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
-                float time = _Time.y + 1 - _ParticleDelay;
+                float time = _Time.y + 1 - _Delay;
 
                 // Define a window that select particles that will be rendered.
                 // If a particle doesn't fit, all vertices will be equal than not rasterized.
-                float window_size = _ParticleLifeTime * _ParticleRateOverTime;
-                float upper_bound = time * _ParticleRateOverTime;
+                float window_size = _LifeTime * _RateOverTime;
+                float upper_bound = time * _RateOverTime;
                 float lower_bound = upper_bound - window_size;
                 
                 if(id <= upper_bound && id >= lower_bound) {
                     
                     // Relative time: particles must spawn from time equal zero.
-                    time = time - (id / _ParticleRateOverTime);
+                    time = time - (id / _RateOverTime);
                 
                     float3 center_pos = float3(0.f, 0.f, 0.f);
-                    if (_ParticleShape == 0){ 
+                    if (_Shape == 0){ 
                         center_pos = coneMovement(v_pos, id, time);
                     } else {
                         center_pos = sphereMovement(v_pos, id, time);
