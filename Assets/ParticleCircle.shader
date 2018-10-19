@@ -24,7 +24,7 @@
             #pragma fragment frag
             
             uniform float _StartSize = 0.05f;
-            uniform int   _RateOverTime = 10;
+            uniform float _RateOverTime = 10.f;
             uniform float _StartSpeed = 10.f;
             uniform int   _MaxParticles = 200;
             uniform float _StartLifeTime = 5.f;
@@ -190,16 +190,13 @@
                 float id = v.id.x;
                 float time = _Time.y + 1 - _StartDelay;
 
-                // Define a window that select particles that will be rendered.
-                // If a particle doesn't fit, all vertices will be equal than not rasterized.
-                float window_size = _StartLifeTime * _RateOverTime;
+                // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.
                 float upper_bound = time * _RateOverTime;
-                float lower_bound = upper_bound - window_size;
                 
-                if(id <= upper_bound && id >= lower_bound) {
+                if(id <= upper_bound) {
                     
                     // Relative time: particles must spawn from time equal zero.
-                    time = time - (id / _RateOverTime);
+                    time = (time - (id / _RateOverTime)) % _StartLifeTime;
                 
                     float3 center_pos = float3(0.f, 0.f, 0.f);
                     if (_Shape == 0){ 

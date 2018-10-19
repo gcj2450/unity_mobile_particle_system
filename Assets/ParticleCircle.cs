@@ -43,14 +43,19 @@ public class ParticleCircle : MonoBehaviour
     
     private void setMeshes()
     {
-        Vector3[] vertices = new Vector3[4*maxParticles];
-        int    [] tri      = new int    [6*maxParticles];
-        Vector2[] uv       = new Vector2[4*maxParticles];
-        Vector2[] id       = new Vector2[4*maxParticles];
+        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
+        if (max_p > maxParticles){
+            max_p = maxParticles;
+        }
+        
+        Vector3[] vertices = new Vector3[4*max_p];
+        int    [] tri      = new int    [6*max_p];
+        Vector2[] uv       = new Vector2[4*max_p];
+        Vector2[] id       = new Vector2[4*max_p];
 
         Vector3 emitter_pos = gameObject.transform.position;
 
-        for (int i = 0; i < maxParticles; i++)
+        for (int i = 0; i < max_p; i++)
         {
             int idx4 = i * 4;
             int index6 = i * 6;
