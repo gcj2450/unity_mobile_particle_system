@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
+﻿using UnityEditor;
      
 [CustomEditor(typeof(ParticleCircle))]
 [CanEditMultipleObjects]
@@ -8,8 +6,8 @@ public class ParticleCircleEditor : Editor
 {
 	SerializedProperty startLifetime;
 	SerializedProperty startDelay;
-	SerializedProperty particleSize;
-	SerializedProperty particleSpeedScale;
+	SerializedProperty startSize;
+	SerializedProperty startSpeed;
 	SerializedProperty maxParticles;
 
 	SerializedProperty emission;
@@ -20,11 +18,11 @@ public class ParticleCircleEditor : Editor
 	
 	void OnEnable()
 	{
-		startLifetime 		= serializedObject.FindProperty("startLifetime");
-		startDelay 			= serializedObject.FindProperty("startDelay");
-		particleSize 		= serializedObject.FindProperty("particleSize");
-		particleSpeedScale 	= serializedObject.FindProperty("particleSpeedScale");
-		maxParticles 		= serializedObject.FindProperty("maxParticles");
+		startLifetime 	= serializedObject.FindProperty("startLifetime");
+		startDelay 		= serializedObject.FindProperty("startDelay");
+		startSize 		= serializedObject.FindProperty("startSize");
+		startSpeed 		= serializedObject.FindProperty("startSpeed");
+		maxParticles 	= serializedObject.FindProperty("maxParticles");
 		
 		emission = serializedObject.FindProperty("emission");
 		
@@ -38,10 +36,10 @@ public class ParticleCircleEditor : Editor
 		ParticleCircle pc = (ParticleCircle)target;
 		
 		serializedObject.Update();
-		EditorGUILayout.PropertyField(startLifetime);
 		EditorGUILayout.PropertyField(startDelay);
-		EditorGUILayout.PropertyField(particleSize);
-		EditorGUILayout.PropertyField(particleSpeedScale);
+		EditorGUILayout.PropertyField(startLifetime);
+		EditorGUILayout.PropertyField(startSpeed);
+		EditorGUILayout.PropertyField(startSize);
 		EditorGUILayout.PropertyField(maxParticles);
 
 		EditorGUILayout.PropertyField(emission, true);
