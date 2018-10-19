@@ -4,7 +4,6 @@
         _RateOverTime ("Rate Over Time", Float) = 10
         _StartSize ("Size", Float) = 0.05
         _StartSpeed ("Start Speed", Float) = 10.0
-        _MaxParticles("Max Particles", int) = 200
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
 
@@ -26,7 +25,6 @@
             uniform float _StartSize = 0.05f;
             uniform float _RateOverTime = 10.f;
             uniform float _StartSpeed = 10.f;
-            uniform int   _MaxParticles = 200;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
             
@@ -187,7 +185,7 @@
             fragmentInput vert (vertexInput v)
             {
                 float3 v_pos = v.pos.xyz;
-                float id = v.id.x;
+                int id = v.id.x;
                 float time = _Time.y + 1 - _StartDelay;
 
                 // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.
@@ -196,13 +194,19 @@
                 if(id <= upper_bound) {
                     
                     // Relative time: particles must spawn from time equal zero.
-                    time = (time - (id / _RateOverTime)) % _StartLifeTime;
+                    int relative_time = (time - (id / _RateOverTime));
+                    
+                    // Relative id to time window to increase randomness.
+                    int r_id = id * (int)(relative_time/_StartLifeTime);
+                    
+                    // Normalize relative time.
+                    relative_time = relative_time % _StartLifeTime;                    
                 
                     float3 center_pos = float3(0.f, 0.f, 0.f);
-                    if (_Shape == 0){ 
-                        center_pos = coneMovement(v_pos, id, time);
+                    if (_Shape == 0){
+                        center_pos = coneMovement(v_pos, r_id, time);
                     } else {
-                        center_pos = sphereMovement(v_pos, id, time);
+                        center_pos = sphereMovement(v_pos, r_id, time);
                     }
                     
                     // Get quad center new position (time has changed).

@@ -128,9 +128,6 @@ public class ParticleCircle : MonoBehaviour
         if (renderer.sharedMaterial.GetFloat("_StartSpeed") != startSpeed){
             renderer.sharedMaterial.SetFloat("_StartSpeed", startSpeed);
         }
-        if (renderer.sharedMaterial.GetInt("_MaxParticles") != maxParticles){
-            renderer.sharedMaterial.SetInt("_MaxParticles", maxParticles);
-        }
         if (renderer.sharedMaterial.GetFloat("_StartLifeTime") != startLifetime){
             renderer.sharedMaterial.SetFloat("_StartLifeTime", startLifetime);
         }
@@ -145,7 +142,7 @@ public class ParticleCircle : MonoBehaviour
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-        if (maxParticles != mesh.vertexCount*4){
+        if (maxParticles != (mesh.vertexCount*4)){
             setMeshes();
         }
 #endif
