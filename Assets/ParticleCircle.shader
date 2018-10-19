@@ -4,10 +4,12 @@
         _RateOverTime ("Rate Over Time", Float) = 10
         _StartSize ("Size", Float) = 0.05
         _StartSpeed ("Start Speed", Float) = 10.0
-        _Shape("Shape", int) = 0
         _MaxParticles("Max Particles", int) = 200
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
+
+        _Shape("Shape", int) = 0
+        _ConeAngle("Cone Angle", Float) = 45.0
     }
     
     SubShader {
@@ -24,10 +26,12 @@
             uniform float _StartSize = 0.05f;
             uniform int   _RateOverTime = 10;
             uniform float _StartSpeed = 10.f;
-            uniform int   _Shape = 0;
             uniform int   _MaxParticles = 200;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
+            
+            uniform int   _Shape = 0;
+            uniform float _ConeAngle = 0.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -128,7 +132,7 @@
 
                 if (v.z < 0.f) v.z = -1 * v.z;
                 
-                float max_distance = v.z * tan(radians(45));
+                float max_distance = v.z * tan(radians(_ConeAngle));
 
                 v.x = max_distance * v.x;
                 v.y = max_distance * v.y;

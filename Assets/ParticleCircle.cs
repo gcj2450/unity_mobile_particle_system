@@ -28,14 +28,13 @@ public class ParticleCircle : MonoBehaviour
     public struct Cone
     {
         public float angle;
-        public float radius;   
     }
     public Cone cone;
     
     [System.Serializable]
     public struct Sphere
     {
-        public float angle;
+        public float radius;
     }
     public Sphere sphere;
     
@@ -125,6 +124,9 @@ public class ParticleCircle : MonoBehaviour
         }
         if (renderer.sharedMaterial.GetInt("_Shape") != (int)shape){
             renderer.sharedMaterial.SetInt("_Shape", (int)shape);
+        }
+        if (renderer.sharedMaterial.GetFloat("_ConeAngle") != cone.angle){
+            renderer.sharedMaterial.SetFloat("_ConeAngle", cone.angle);
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
