@@ -182,22 +182,20 @@
             {
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
-            
-                float time = -1.f;
+                float time = _Time.y + 1;
+
+                // Define a window that select particles that will be rendered.
+                // If a particle doesn't fit, all vertices will be equal than not rasterized.
+                float window_size = _ParticleLifeTime * _ParticleRateOverTime;
+                float upper_bound = time * _ParticleRateOverTime;
+                float lower_bound = upper_bound - window_size;
                 
-                float window = _ParticleLifeTime*_ParticleRateOverTime;
-                float rate_time = _Time.y * _ParticleRateOverTime;
-                float lower_bound = rate_time - window;
-                
-                if(id < rate_time && id > lower_bound){
-                    time = _Time.y;
-                    if(id >= _ParticleRateOverTime) {
-                        time = time - (id/_ParticleRateOverTime);
-                    }
-                    time = time % window;
-                
-                    float3 center_pos = float3(0.f,0.f,0.f);
+                if(id <= upper_bound && id >= lower_bound) {
                     
+                    // Relative time: particles must spawn from time equal zero.
+                    time = time - (id / _ParticleRateOverTime);
+                
+                    float3 center_pos = float3(0.f, 0.f, 0.f);
                     if (_ParticleShape == 0){ 
                         center_pos = coneMovement(v_pos, id, time);
                     } else {
