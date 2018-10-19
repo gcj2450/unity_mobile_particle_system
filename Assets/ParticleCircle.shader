@@ -7,6 +7,7 @@
         _ParticleShape("Particle Shape", int) = 0
         _MaxParticles("Max Particles", int) = 200
         _ParticleLifeTime("Particle Life Time", Float) = 5.0
+        _ParticleDelay("Particle Delay", Float) = 0.0
     }
     
     SubShader {
@@ -26,6 +27,7 @@
             uniform int   _ParticleShape = 0;
             uniform int   _MaxParticles = 200;
             uniform float _ParticleLifeTime = 5.f;
+            uniform float _ParticleDelay = 0.f;
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -182,7 +184,7 @@
             {
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
-                float time = _Time.y + 1;
+                float time = _Time.y + 1 - _ParticleDelay;
 
                 // Define a window that select particles that will be rendered.
                 // If a particle doesn't fit, all vertices will be equal than not rasterized.

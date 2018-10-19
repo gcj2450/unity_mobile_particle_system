@@ -5,6 +5,7 @@ using UnityEngine;
 public class ParticleCircle : MonoBehaviour
 {
     public float startLifetime        = 5.0f;
+    public float startDelay           = 0.0f;
     public float particleSize         = 1.0f;
     public float particleSpeedScale   = 10.0f;
     public int maxParticles           = 200;
@@ -114,13 +115,16 @@ public class ParticleCircle : MonoBehaviour
             renderer.sharedMaterial.SetFloat("_ParticleSpeedScale", particleSpeedScale);
         }
         if (renderer.sharedMaterial.GetInt("_ParticleShape") != (int)shape){
-            renderer.sharedMaterial.SetFloat("_ParticleShape", (int)shape);
+            renderer.sharedMaterial.SetInt("_ParticleShape", (int)shape);
         }
         if (renderer.sharedMaterial.GetInt("_MaxParticles") != maxParticles){
             renderer.sharedMaterial.SetInt("_MaxParticles", maxParticles);
         }
         if (renderer.sharedMaterial.GetFloat("_ParticleLifeTime") != startLifetime){
             renderer.sharedMaterial.SetFloat("_ParticleLifeTime", startLifetime);
+        }
+        if (renderer.sharedMaterial.GetFloat("_ParticleDelay") != startDelay){
+            renderer.sharedMaterial.SetFloat("_ParticleDelay", startDelay);
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
