@@ -105,6 +105,6 @@ MonoBehaviour:
     rateOverTime: 10
   shape: 0
   cone:
-    angle: 45
+    angle: 25
   sphere:
     radius: 0

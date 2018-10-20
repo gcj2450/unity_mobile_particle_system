@@ -166,7 +166,7 @@
             {                
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
                 float plane_d = -dot(plane_normal, quad_center);
-                float circumradius = sqrt(pow(_StartSize, 2) / 6.f);
+                float circumradius = sqrt(pow(_StartSize, 2) / 4.f);
                 
                 // Orthonormal basis vectors of the circle plane.
                 float3 basis_vec1 = normalize(float3(0.f, 0.f, -(plane_d/plane_normal.z)) - quad_center);
