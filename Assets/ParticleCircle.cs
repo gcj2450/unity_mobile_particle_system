@@ -12,6 +12,8 @@ public class ParticleCircle : MonoBehaviour
     public float startSpeed     = 10.0f;
     public float startSize      = 1.0f;
     public int   maxParticles   = 200;
+
+    public Color startColor     = Color.white;
     
     private float totalTime     = 0;
 
