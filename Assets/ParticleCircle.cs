@@ -99,7 +99,7 @@ public class ParticleCircle : MonoBehaviour
     }
     
     void Awake()
-    {        
+    {   
         totalTime = 0f;
         EditorApplication.update = TriggerUpdate;
         
@@ -141,6 +141,9 @@ public class ParticleCircle : MonoBehaviour
         }
         if (renderer.sharedMaterial.GetFloat("_ConeAngle") != cone.angle){
             renderer.sharedMaterial.SetFloat("_ConeAngle", cone.angle);
+        }
+        if (renderer.sharedMaterial.GetVector("_StartColor") != (Vector4)startColor){
+            renderer.sharedMaterial.SetVector("_StartColor", startColor);
         }
         
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;

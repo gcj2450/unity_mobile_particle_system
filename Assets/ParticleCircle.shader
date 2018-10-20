@@ -6,12 +6,20 @@
         _StartSpeed ("Start Speed", Float) = 10.0
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
+        
+        _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
 
         _Shape("Shape", int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
     }
     
     SubShader {
+       
+        Tags {"Queue"="Transparent" "RenderType"="Transparent" }
+        LOD 100
+
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
        
         Pass {
             Cull Back
@@ -27,6 +35,8 @@
             uniform float _StartSpeed = 10.f;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
+            
+            uniform float4 _StartColor = (0.f, 0.f, 0.f, 1.f);
             
             uniform int   _Shape = 0;
             uniform float _ConeAngle = 0.f;
@@ -228,7 +238,7 @@
                 if (distance > 0.5f)
                    discard;
 
-                return fixed4(1, 0, 0, 1);
+                return _StartColor;
             }
             
             ENDCG

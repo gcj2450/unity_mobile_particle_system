@@ -100,6 +100,7 @@ MonoBehaviour:
   startSpeed: 5
   startSize: 1
   maxParticles: 1000
+  startColor: {r: 1, g: 1, b: 1, a: 1}
   emission:
     rateOverTime: 10
   shape: 0
