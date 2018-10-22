@@ -76,7 +76,6 @@
                 return frac((p3.xxy + p3.yzz)*p3.zyx); 
             }
             
-            // Generate entropy with Sin fn. For benchmark with hash functions
             float randomSin(float2 _st)
             {
                 return frac(sin(dot(_st.xy, float2(12.9898f,78.233f)))*43758.5453123f);
@@ -112,9 +111,8 @@
                 if (v.z > .5f) v.z = -1 * (v.z - .5f);
                 v = 2 * v;
                
-                // We don't want to nomalize 'v' vector, then:
-                v = mapCubeToSphere(v);
-                
+                v = normalize(v);
+
                 return v;
             }
             
@@ -124,7 +122,7 @@
             float3 sphereMovement(float3 initial_pos, float id, float time)
             {
                 float3 v = getRandomVelocity(id);
-               
+
                 // Scale velocity
                 v = _StartSpeed * v;
                 
@@ -207,10 +205,10 @@
                     float relative_time = time - (id / _RateOverTime);
                     
                     // Relative id to time window to increase randomness.
-                    float r_id = id * (int)(relative_time / _StartLifeTime);
+                    float r_id = id * randomSin(float2(id, id)) * (int)(relative_time / _StartLifeTime);
                     
                     // Normalize relative time.
-                    relative_time = relative_time % _StartLifeTime;                    
+                    relative_time = relative_time % _StartLifeTime;
                 
                     float3 center_pos = float3(0.f, 0.f, 0.f);
                     if (_Shape == 0){
