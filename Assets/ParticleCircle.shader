@@ -2,8 +2,8 @@
 {
     Properties {
         _RateOverTime ("Rate Over Time", Float) = 10
-        _StartSize ("Size", Float) = 0.05
-        _StartSpeed ("Start Speed", Float) = 10.0
+        _StartSize ("Size", Float) = 1.0
+        _StartSpeed ("Start Speed", Float) = 5.0
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
         _GravityModifier("Gravity Modifier", Float) = 0.0
@@ -31,9 +31,9 @@
             #pragma vertex vert
             #pragma fragment frag
             
-            uniform float _StartSize = 0.05f;
+            uniform float _StartSize = 1.0f;
             uniform float _RateOverTime = 10.f;
-            uniform float _StartSpeed = 10.f;
+            uniform float _StartSpeed = 5.f;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
             uniform float _GravityModifier = 0.0f;
@@ -196,6 +196,8 @@
             {
                 float3 v_pos = v.pos.xyz;
                 float id = v.id.x;
+                
+                // _Time.y+1: id starts equal 1 and _Time.y equal 0. We want both starting together.
                 float time = _Time.y + 1 - _StartDelay;
 
                 // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.

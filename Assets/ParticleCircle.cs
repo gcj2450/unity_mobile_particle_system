@@ -9,14 +9,12 @@ public class ParticleCircle : MonoBehaviour
 {
     public float startDelay         = 0.0f;
     public float startLifetime      = 5.0f;
-    public float startSpeed         = 10.0f;
+    public float startSpeed         = 5.0f;
     public float startSize          = 1.0f;
-    public int   maxParticles       = 200;
+    public int   maxParticles       = 1000;
 
     public Color startColor         = Color.white;
-    public float gravityModifier    = 0.0f;
-    
-    private float totalTime         = 0.0f;
+    public float gravityModifier    = 0.0f;    
 
     [System.Serializable]
     public struct Emission
@@ -95,14 +93,13 @@ public class ParticleCircle : MonoBehaviour
     }
     
     void Awake()
-    {   
-        totalTime = 0f;
+    {
+        emission.rateOverTime = 10.0f;
+
         EditorApplication.update = TriggerUpdate;
         
-        Shader shader = Shader.Find("Unlit/ParticleCircle");
-
         Renderer renderer = GetComponent<Renderer>();
-        renderer.sharedMaterial.shader = shader;
+        renderer.sharedMaterial.shader = Shader.Find("Unlit/ParticleCircle");
 
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
         if (max_p > maxParticles){
@@ -159,8 +156,6 @@ public class ParticleCircle : MonoBehaviour
             allocateParticles(max_p);
         }
 #endif
-        
-        totalTime += Time.deltaTime;
         //@TODO: KILL EMITTER
     }
 }
