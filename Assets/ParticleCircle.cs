@@ -94,8 +94,6 @@ public class ParticleCircle : MonoBehaviour
     
     void Awake()
     {
-        emission.rateOverTime = 10.0f;
-
         EditorApplication.update = TriggerUpdate;
         
         Renderer renderer = GetComponent<Renderer>();

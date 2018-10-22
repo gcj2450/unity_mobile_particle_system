@@ -108,10 +108,10 @@
                 v = v / ITERATIONS; // Normalize
 
                 // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
-                if (v.x > .5f) v.x = -1 * (v.x - .5f);
-                if (v.y > .5f) v.y = -1 * (v.y - .5f);
-                if (v.z > .5f) v.z = -1 * (v.z - .5f);
-                v = 2 * v;
+                if (v.x >= .5f) v.x = -1 * (v.x - .5f);
+                if (v.y >= .5f) v.y = -1 * (v.y - .5f);
+                if (v.z >= .5f) v.z = -1 * (v.z - .5f);
+                v = 2.f * v;
                
                 v = normalize(v);
 
@@ -140,10 +140,10 @@
 
                 if (v.z < 0.f) v.z = -1 * v.z;
                 
-                float max_distance = v.z * tan(radians(_ConeAngle));
+                float max_distance_fac = v.z * tan(radians(_ConeAngle));
 
-                v.x = max_distance * v.x;
-                v.y = max_distance * v.y;
+                v.x = max_distance_fac * v.x;
+                v.y = max_distance_fac * v.y;
                 
                 v = normalize(v);
                 
@@ -195,7 +195,7 @@
             fragmentInput vert (vertexInput v)
             {
                 float3 v_pos = v.pos.xyz;
-                float id = v.id.x;
+                int id = v.id.x;
                 
                 // _Time.y+1: id starts equal 1 and _Time.y equal 0. We want both starting together.
                 float time = _Time.y + 1 - _StartDelay;
@@ -203,22 +203,22 @@
                 // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.
                 float upper_bound = time * _RateOverTime;
                 
-                if(id <= upper_bound) {
+                if (id <= upper_bound){
                     
                     // Relative time: particles must spawn from time equal zero.
                     float relative_time = time - (id / _RateOverTime);
                     
                     // Relative id to time window to increase randomness.
-                    float r_id = id * randomSin(float2(id, id)) * (int)(relative_time / _StartLifeTime);
+                    id = id * randomSin(float2(id, id)) * (int)ceil(relative_time / _StartLifeTime);
                     
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;
                 
                     float3 center_pos = float3(0.f, 0.f, 0.f);
                     if (_Shape == 0){
-                        center_pos = coneMovement(v_pos, r_id, relative_time);
+                        center_pos = coneMovement(v_pos, id, relative_time);
                     } else {
-                        center_pos = sphereMovement(v_pos, r_id, relative_time);
+                        center_pos = sphereMovement(v_pos, id, relative_time);
                     }
                     
                     // Get quad center new position (time has changed).
