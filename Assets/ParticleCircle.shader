@@ -207,7 +207,7 @@
                     float relative_time = time - (id / _RateOverTime);
                     
                     // Relative id to time window to increase randomness.
-                    float r_id = id * ((int)(relative_time / _StartLifeTime) + id);
+                    float r_id = id * (int)(relative_time / _StartLifeTime);
                     
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;                    

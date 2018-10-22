@@ -43,21 +43,16 @@ public class ParticleCircle : MonoBehaviour
     }
     public Sphere sphere;
     
-    private void setMeshes()
-    {
-        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
-        if (max_p > maxParticles){
-            max_p = maxParticles;
-        }
-        
-        Vector3[] vertices = new Vector3[4*max_p];
-        int    [] tri      = new int    [6*max_p];
-        Vector2[] uv       = new Vector2[4*max_p];
-        Vector2[] id       = new Vector2[4*max_p];
+    private void allocateParticles(int size)
+    { 
+        Vector3[] vertices = new Vector3[4*size];
+        int    [] tri      = new int    [6*size];
+        Vector2[] uv       = new Vector2[4*size];
+        Vector2[] id       = new Vector2[4*size];
 
         Vector3 emitter_pos = gameObject.transform.position;
 
-        for (int i = 0; i < max_p; i++)
+        for (int i = 0; i < size; i++)
         {
             int idx4 = i * 4;
             int index6 = i * 6;
@@ -94,8 +89,8 @@ public class ParticleCircle : MonoBehaviour
         mesh.uv         = uv;
         mesh.uv2        = id;
         
-        //@TODO Interface to set bounds -> particle render out clipping space.
-        //mesh.bounds     = new Bounds(emitter_pos, new Vector3(100, 100, 100));
+        //@TODO Calc bounds -> particle render out clipping space.
+        //mesh.bounds = new Bounds(emitter_pos, new Vector3(100, 100, 100));
     }
     
     void Awake()
@@ -108,7 +103,11 @@ public class ParticleCircle : MonoBehaviour
         Renderer renderer = GetComponent<Renderer>();
         renderer.sharedMaterial.shader = shader;
 
-        setMeshes();
+        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
+        if (max_p > maxParticles){
+            max_p = maxParticles;
+        }
+        allocateParticles(max_p);
     }
 
     public void TriggerUpdate()
@@ -146,15 +145,18 @@ public class ParticleCircle : MonoBehaviour
             renderer.sharedMaterial.SetVector("_StartColor", startColor);
         }
         
+        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
+        if (max_p > maxParticles){
+            max_p = maxParticles;
+        }
+
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-        if (maxParticles != (mesh.vertexCount*4)){
-            setMeshes();
+        if (max_p != (mesh.vertexCount*4)){
+            allocateParticles(max_p);
         }
 #endif
         
         totalTime += Time.deltaTime;
-        //if (totalTime >= lifeTimeInSeconds){
-        //    //@TODO KILL EMITTER
-        //}
+        //@TODO: KILL EMITTER
     }
 }
