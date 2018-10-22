@@ -7,15 +7,16 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class ParticleCircle : MonoBehaviour
 {
-    public float startDelay     = 0.0f;
-    public float startLifetime  = 5.0f;
-    public float startSpeed     = 10.0f;
-    public float startSize      = 1.0f;
-    public int   maxParticles   = 200;
+    public float startDelay         = 0.0f;
+    public float startLifetime      = 5.0f;
+    public float startSpeed         = 10.0f;
+    public float startSize          = 1.0f;
+    public int   maxParticles       = 200;
 
-    public Color startColor     = Color.white;
+    public Color startColor         = Color.white;
+    public float gravityModifier    = 0.0f;
     
-    private float totalTime     = 0;
+    private float totalTime         = 0.0f;
 
     [System.Serializable]
     public struct Emission
@@ -143,6 +144,9 @@ public class ParticleCircle : MonoBehaviour
         }
         if (renderer.sharedMaterial.GetVector("_StartColor") != (Vector4)startColor){
             renderer.sharedMaterial.SetVector("_StartColor", startColor);
+        }
+        if (renderer.sharedMaterial.GetFloat("_GravityModifier") != gravityModifier){
+            renderer.sharedMaterial.SetFloat("_GravityModifier", gravityModifier);
         }
         
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);

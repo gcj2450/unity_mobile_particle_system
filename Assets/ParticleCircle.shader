@@ -6,6 +6,7 @@
         _StartSpeed ("Start Speed", Float) = 10.0
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
+        _GravityModifier("Gravity Modifier", Float) = 0.0
         
         _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
 
@@ -35,6 +36,7 @@
             uniform float _StartSpeed = 10.f;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
+            uniform float _GravityModifier = 0.0f;
             
             uniform float4 _StartColor = (0.f, 0.f, 0.f, 1.f);
             
@@ -149,11 +151,11 @@
                 v = _StartSpeed * v;
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
-                float3 acc = float3(0.f, 0.f, 0.f); 
+                float3 acc = float3(0.f, -_GravityModifier, 0.f);
                
                 // Apply Parabola equation: 
-                // P(t) = P0 + V0*t + 0.05*Acc*t2;
-                return initial_pos + v*time + 0.5f*acc*pow(time, 2); 
+                // P(t) = P0 + V0*t + 0.5*Acc*t2;
+                return initial_pos + v*time + 4.f*acc*pow(time, 2); 
             }
             
             /**
