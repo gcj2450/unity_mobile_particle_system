@@ -150,8 +150,13 @@
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
                 float3 acc = float3(0.f, -_GravityModifier, 0.f);
-                // Apply Model transformation to Gravity.
-                acc = mul(unity_WorldToObject, float4(acc, 1.f)).xyz;
+                // Apply Model rotation to Gravity.
+                float4x4 i_model_rotation = unity_WorldToObject;
+                i_model_rotation[0][3] = 0.f; // We don't want any translation here, than
+                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec eq 0.
+                i_model_rotation[2][3] = 0.f;
+                i_model_rotation[3][3] = 1.f;
+                acc = mul(i_model_rotation, float4(acc, 1.f)).xyz;
                
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t2;
@@ -223,7 +228,7 @@
                     }
                     
                     // Apply Model transformation before calc Billboard.
-                    center_pos = mul(UNITY_MATRIX_M, float4(center_pos, 1.f)).xyz;
+                    center_pos = mul(unity_ObjectToWorld, float4(center_pos, 1.f)).xyz;
                     
                     // Get quad center new position (time has changed).
                     // With the center, get quad vertex position based on vertex uv.
