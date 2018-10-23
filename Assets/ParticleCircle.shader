@@ -230,7 +230,7 @@
                 }
 
                 fragmentInput o;
-                // View-Projection transformation (Model transformation already done early).
+                // View-Projection transformation (Model transformation already been done previously).
                 o.pos = mul(UNITY_MATRIX_VP, float4(v_pos, 1.f));
                 o.uv  = v.uv.xy - fixed2(0.5, 0.5);
 
