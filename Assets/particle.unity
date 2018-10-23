@@ -298,6 +298,56 @@ Prefab:
     - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
         type: 2}
       propertyPath: emission.rateOverTime
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: gravityModifier
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: shape
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: maxParticles
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startLifetime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: sphere.radius
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
+        type: 2}
+      propertyPath: startColor.b
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
