@@ -162,7 +162,7 @@
             * Given an center point, calc quad vertex that corresponds to particle uv.
             * Billboard are orthogonal to the Main Camera and has _StartSize lenght.
             */
-            float3 getBillboardVertex(const float3 quad_center, float2 uv)
+            float3 getBillboardVertex(float3 quad_center, float2 uv)
             {
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
                 float plane_d = -dot(plane_normal, quad_center);
@@ -221,8 +221,8 @@
                         center_pos = sphereMovement(v_pos, id, relative_time);
                     }
                     
-                    // Apply model transformations before build Billboard.                    
-                    v_pos = mul(UNITY_MATRIX_M, float4(quad_center, 1.f)).xyz;
+                    // Apply Model transformation before calc Billboard.
+                    center_pos = mul(UNITY_MATRIX_M, float4(center_pos, 1.f)).xyz;
                     
                     // Get quad center new position (time has changed).
                     // With the center, get quad vertex position based on vertex uv.
