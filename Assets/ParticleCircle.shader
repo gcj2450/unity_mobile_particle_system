@@ -195,6 +195,7 @@
             fragmentInput vert (vertexInput v)
             {
                 float3 v_pos = v.pos.xyz;
+                float4 p_pos = float4(v_pos, 1.f);
                 int id = v.id.x;
                 
                 // _Time.y+1: id starts equal 1 and _Time.y equal 0. We want both starting together.
@@ -227,11 +228,13 @@
                     // Get quad center new position (time has changed).
                     // With the center, get quad vertex position based on vertex uv.
                     v_pos = getBillboardVertex(center_pos, v.uv);
+                    
+                    // View-Projection transformation (Model transformation already been done previously).
+                    p_pos = mul(UNITY_MATRIX_VP, float4(v_pos, 1.f));
                 }
 
                 fragmentInput o;
-                // View-Projection transformation (Model transformation already been done previously).
-                o.pos = mul(UNITY_MATRIX_VP, float4(v_pos, 1.f));
+                o.pos = p_pos;
                 o.uv  = v.uv.xy - fixed2(0.5, 0.5);
 
                 return o;
