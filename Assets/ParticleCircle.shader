@@ -149,9 +149,9 @@
                 v = _StartSpeed * v;
 
                 // Gravity acceleration @TODO pass as paramenter from Unity UI.
-                float3 acc = float3(0.f, _GravityModifier, 0.f);
+                float3 acc = float3(0.f, -_GravityModifier, 0.f);
                 // Apply Model transformation to Gravity.
-                acc = mul(UNITY_MATRIX_M, float4(acc, 1.f)).xyz;
+                acc = mul(unity_WorldToObject, float4(acc, 1.f)).xyz;
                
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t2;
