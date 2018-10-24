@@ -70,6 +70,7 @@
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
             static const float  ITERATIONS = 4.f;
+            static const float  PARABOLA_COEFFICIENT = 4.f;
  
             struct fragmentInput {
                 float4 pos    : SV_POSITION;
@@ -86,6 +87,13 @@
             struct basis {
                 float3 b0;
                 float3 b1;
+            };
+            
+            struct parabola {
+                float3 v0;
+                float3 v;
+                float  t;
+                float  acc;
             };
             
             // Hash functions to generate entropy by David Hoskins
@@ -144,6 +152,35 @@
                
                 return normalize(v);
             }
+
+            // Bhaskara method
+            float2 solveQuadraticEquation(float3 coefficients)
+            {
+                float delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
+    
+                if (delta < 0){
+                    return float2(-1, -1);
+                }
+
+                float2 sol;
+                sol[0] = (-coefficients[1] + sqrt(delta)) / (2*coefficients[0]);
+                sol[1] = (-coefficients[1] - sqrt(delta)) / (2*coefficients[0]);
+
+                return sol;
+            }
+            
+            float getCollisionTime(float4 plane_equation, parabola p)
+            {
+                float a = PARABOLA_COEFFICIENT * p.acc * (plane_equation.x + plane_equation.y + plane_equation.z);
+                float b = dot(plane_equation.xyz, p.v);
+                float c = plane_equation.w + dot(plane_equation.xyz, p.v0);
+                
+                float2 time = solveQuadraticEquation(float3(a, b, c));
+                if (time[0] > 0){
+                    return time[0];
+                }
+                return time[1];
+            }
             
             /**
             * Calc new point position given its id and the current time.
@@ -189,9 +226,7 @@
                 
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t^2.
-                float3 pos = initial_pos + v*time + 4.f*acc*pow(time, 2);
-                
-                return pos;
+                return initial_pos + v*time + PARABOLA_COEFFICIENT*acc*pow(time, 2);
             }
             
             /**
