@@ -83,6 +83,11 @@
                 float2 uv  : TEXCOORD0;
             };
             
+            struct basis {
+                float3 b0;
+                float3 b1;
+            };
+            
             // Hash functions to generate entropy by David Hoskins
             // https://www.shadertoy.com/view/4djSRW
             float hash11(float p)
@@ -184,7 +189,24 @@
                 
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t^2.
-                return initial_pos + v*time + 4.f*acc*pow(time, 2); 
+                float3 pos = initial_pos + v*time + 4.f*acc*pow(time, 2);
+                
+                return pos;
+            }
+            
+            /**
+            * Given the normal and the center of a plane, 
+            * return an Orthonormal Basis.
+            */
+            basis getPlaneOrthonormalBasis(float3 center, float3 normal)
+            {
+                float plane_d = -dot(normal, center);
+                
+                basis b;
+                b.b0 = normalize(float3(0.f, 0.f, -(plane_d/normal.z)) - center);
+                b.b1 = normalize(cross(b.b0, normal));
+                
+                return b;
             }
             
             /**
@@ -194,27 +216,25 @@
             float3 getBillboardVertex(float3 quad_center, float2 uv)
             {
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
-                float plane_d = -dot(plane_normal, quad_center);
                 float circumradius = sqrt(pow(_StartSize, 2) / 4.f);
                 
                 // Orthonormal basis vectors of the circle plane.
-                float3 basis_vec1 = normalize(float3(0.f, 0.f, -(plane_d/plane_normal.z)) - quad_center);
-                float3 basis_vec2 = normalize(cross(basis_vec1, plane_normal));
+                basis b = getPlaneOrthonormalBasis(quad_center, plane_normal);
 
                 // Based on uv, use clockwise rule and the basis to draw a square from center_pos.
                 float3 v_pos = {0.f,0.f, 0.f};
                 
                 if(uv.x == 0) {
                     if(uv.y == 0) {
-                        v_pos = quad_center - circumradius*basis_vec2;
+                        v_pos = quad_center - circumradius*b.b1;
                     } else if(uv.y == 1){
-                        v_pos = quad_center - circumradius*basis_vec1;
+                        v_pos = quad_center - circumradius*b.b0;
                     }
                 } else if(uv.x == 1) {
                     if(uv.y == 0) {
-                        v_pos = quad_center + circumradius*basis_vec1;
+                        v_pos = quad_center + circumradius*b.b0;
                     } else if(uv.y == 1){
-                        v_pos = quad_center + circumradius*basis_vec2;
+                        v_pos = quad_center + circumradius*b.b1;
                     }
                 }
                 

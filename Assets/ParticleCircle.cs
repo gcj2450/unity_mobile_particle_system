@@ -186,7 +186,7 @@ public class ParticleCircle : MonoBehaviour
     {
         EditorApplication.update = TriggerUpdate;
 
-        if (collision.planes.Length > MAX_COLLISION_PLANES) {
+        if (collision.planes != null && collision.planes.Length > MAX_COLLISION_PLANES) {
             Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
             System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
         }
