@@ -1,5 +1,4 @@
 ﻿using UnityEditor;
-using UnityEngine;
 
 [CustomEditor(typeof(ParticleCircle))]
 [CanEditMultipleObjects]
@@ -32,10 +31,10 @@ public class ParticleCircleEditor : Editor
 		gravityModifier = serializedObject.FindProperty("gravityModifier");
 		emission 		= serializedObject.FindProperty("emission");
 		
-		shape  		= serializedObject.FindProperty("shape");
-		cone   		= serializedObject.FindProperty("cone");
-		sphere 		= serializedObject.FindProperty("sphere");
-		collision 	= serializedObject.FindProperty("collision");
+		shape  	  = serializedObject.FindProperty("shape");
+		cone   	  = serializedObject.FindProperty("cone");
+		sphere 	  = serializedObject.FindProperty("sphere");
+		collision = serializedObject.FindProperty("collision");
 	}
 	
 	public override void OnInspectorGUI()
@@ -56,10 +55,11 @@ public class ParticleCircleEditor : Editor
 
 		EditorGUILayout.PropertyField(shape);
 		if (pc != null){
-			if (pc.shape == ParticleCircle.ShapeType.Cone) {
-				EditorGUILayout.PropertyField(cone, true);
-			} else {
+			if (pc.shape == ParticleCircle.ShapeType.Sphere) {
 				EditorGUILayout.PropertyField(sphere, true);
+			} else {
+				// Default Shape Cone
+				EditorGUILayout.PropertyField(cone, true);
 			}	
 		}
 

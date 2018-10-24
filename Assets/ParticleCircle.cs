@@ -37,9 +37,7 @@ public class ParticleCircle : MonoBehaviour
     
     [System.Serializable]
     public struct Sphere
-    {
-        public float radius;
-    }
+    {}
     public Sphere sphere;
     
     [System.Serializable]
@@ -93,17 +91,17 @@ public class ParticleCircle : MonoBehaviour
         Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
         mesh.Clear();
         
-        mesh.vertices   = vertices;
-        mesh.triangles  = tri;
-        mesh.uv         = uv;
-        mesh.uv2        = id;
+        mesh.vertices  = vertices;
+        mesh.triangles = tri;
+        mesh.uv        = uv;
+        mesh.uv2       = id;
         
         //@TODO Calc bounds -> particle render out clipping space.
         //mesh.bounds = new Bounds(emitter_pos, new Vector3(100, 100, 100));
     }
     
     void Awake()
-    {        
+    {
         Renderer renderer = GetComponent<Renderer>();
         renderer.sharedMaterial.shader = Shader.Find("Unlit/ParticleCircle");
 

@@ -7,53 +7,65 @@
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
         _GravityModifier("Gravity Modifier", Float) = 0.0
-        
+       
         _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
 
         _Shape("Shape", int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
-        
+
         _CollisionPlaneCenter0("Collision Plane Center 0", Vector) = (0.0, 0.0, 0.0, 0.0)
         _CollisionPlaneNormal0("Collision Plane Normal 0", Vector) = (0.0, 0.0, 0.0, 0.0)
         
         _CollisionPlaneCenter1("Collision Plane Center 1", Vector) = (0.0, 0.0, 0.0, 0.0)
         _CollisionPlaneNormal1("Collision Plane Normal 1", Vector) = (0.0, 0.0, 0.0, 0.0)
-        
+
         _CollisionPlaneCenter2("Collision Plane Center 2", Vector) = (0.0, 0.0, 0.0, 0.0)
         _CollisionPlaneNormal2("Collision Plane Normal 2", Vector) = (0.0, 0.0, 0.0, 0.0)
-        
+
         _CollisionPlaneCenter3("Collision Plane Center 3", Vector) = (0.0, 0.0, 0.0, 0.0)
         _CollisionPlaneNormal3("Collision Plane Normal 3", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
-    
+
     SubShader {
-       
+
         Tags {"Queue"="Transparent" "RenderType"="Transparent" }
         LOD 100
 
         ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha
-       
+
         Pass {
             Cull Back
 
             CGPROGRAM
- 
+
             #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
-            
+
             uniform float _StartSize = 1.0f;
             uniform float _RateOverTime = 10.f;
             uniform float _StartSpeed = 5.f;
             uniform float _StartLifeTime = 5.f;
             uniform float _StartDelay = 0.f;
             uniform float _GravityModifier = 0.0f;
-            
+
             uniform float4 _StartColor = float4(0.f, 0.f, 0.f, 1.f);
-            
+
             uniform int   _Shape = 0;
             uniform float _ConeAngle = 0.f;
+
+            uniform float4 _CollisionPlaneCenter0 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform float4 _CollisionPlaneNormal0 = float4(0.f, 0.f, 0.f, 1.f);
+
+            uniform float4 _CollisionPlaneCenter1 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform float4 _CollisionPlaneNormal1 = float4(0.f, 0.f, 0.f, 1.f);
+
+            uniform float4 _CollisionPlaneCenter2 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform float4 _CollisionPlaneNormal2 = float4(0.f, 0.f, 0.f, 1.f);
+
+            uniform float4 _CollisionPlaneCenter3 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform float4 _CollisionPlaneNormal3 = float4(0.f, 0.f, 0.f, 1.f);
  
             static const float  HASHSCALE1 = 0.1031;
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
@@ -160,18 +172,18 @@
                 // Scale velocity
                 v = _StartSpeed * v;
 
-                // Gravity acceleration @TODO pass as paramenter from Unity UI.
+                // Gravity acceleration modifier.
                 float3 acc = float3(0.f, -_GravityModifier, 0.f);
-                // Apply Model rotation to Gravity.
                 float4x4 i_model_rotation = unity_WorldToObject;
-                i_model_rotation[0][3] = 0.f; // We don't want any translation here, than
-                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec eq 0.
+                i_model_rotation[0][3] = 0.f; // We don't want any translation here:
+                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
                 i_model_rotation[2][3] = 0.f;
                 i_model_rotation[3][3] = 1.f;
+                // Apply Model rotation to Gravity.
                 acc = mul(i_model_rotation, float4(acc, 1.f)).xyz;
-               
+                
                 // Apply Parabola equation: 
-                // P(t) = P0 + V0*t + 0.5*Acc*t2;
+                // P(t) = P0 + V0*t + 0.5*Acc*t^2.
                 return initial_pos + v*time + 4.f*acc*pow(time, 2); 
             }
             
@@ -231,12 +243,13 @@
                     
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;
-                
+                    
                     float3 center_pos = float3(0.f, 0.f, 0.f);
-                    if (_Shape == 0){
-                        center_pos = coneMovement(v_pos, id, relative_time);
-                    } else {
+                    if (_Shape == 1){
                         center_pos = sphereMovement(v_pos, id, relative_time);
+                    } else {
+                        // Default shape (Cone)
+                        center_pos = coneMovement(v_pos, id, relative_time);
                     }
                     
                     // Apply Model transformation before calc Billboard.
@@ -256,8 +269,8 @@
 
                 return o;
             }
- 
-            fixed4 frag(fragmentInput i) : SV_Target 
+
+            fixed4 frag(fragmentInput i) : SV_Target
             {
                 // Discard pixels far from quad center: draw circle.
                 float distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
@@ -268,7 +281,7 @@
                 
                 return fixed4(_StartColor.xyz, alpha);
             }
-            
+
             ENDCG
         }
     }
