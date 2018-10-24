@@ -42,6 +42,16 @@ public class ParticleCircle : MonoBehaviour
     }
     public Sphere sphere;
     
+    [System.Serializable]
+    public struct Collision
+    {
+        public MeshFilter[] planes; // Unity cannot serialize "Plane"
+    }
+
+    public Collision collision;
+    
+    static private int MAX_COLLISION_PLANES = 4;
+    
     private void allocateParticles(int size)
     { 
         Vector3[] vertices = new Vector3[4*size];
@@ -93,9 +103,7 @@ public class ParticleCircle : MonoBehaviour
     }
     
     void Awake()
-    {
-        EditorApplication.update = TriggerUpdate;
-        
+    {        
         Renderer renderer = GetComponent<Renderer>();
         renderer.sharedMaterial.shader = Shader.Find("Unlit/ParticleCircle");
 
@@ -144,6 +152,25 @@ public class ParticleCircle : MonoBehaviour
             renderer.sharedMaterial.SetFloat("_GravityModifier", gravityModifier);
         }
         
+        for (int i = 0; i < collision.planes.Length; i++)
+        {
+            if (i >= MAX_COLLISION_PLANES) break;
+            if (collision.planes[i] == null) continue;
+            
+            Vector3 plane_center = collision.planes[i].transform.position;
+            Vector3 plane_rotate = collision.planes[i].transform.up;
+            
+            Vector4 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 0.0f);
+            Vector4 plane_normal4 = new Vector4(plane_rotate.x, plane_rotate.y, plane_rotate.z, 0.0f);
+            
+            if (renderer.sharedMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
+                renderer.sharedMaterial.SetVector("_CollisionPlaneCenter"+i, plane_center4);
+            }
+            if (renderer.sharedMaterial.GetVector("_CollisionPlaneNormal"+i) != plane_normal4){
+                renderer.sharedMaterial.SetVector("_CollisionPlaneNormal"+i, plane_normal4);
+            }
+        }
+
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
         if (max_p > maxParticles){
             max_p = maxParticles;
@@ -155,5 +182,15 @@ public class ParticleCircle : MonoBehaviour
         }
 #endif
         //@TODO: KILL EMITTER
+    }
+    
+    void OnValidate()
+    {
+        EditorApplication.update = TriggerUpdate;
+
+        if (collision.planes.Length > MAX_COLLISION_PLANES) {
+            Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
+            System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
+        }
     }
 }

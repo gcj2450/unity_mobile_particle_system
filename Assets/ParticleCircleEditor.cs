@@ -18,6 +18,7 @@ public class ParticleCircleEditor : Editor
 	SerializedProperty shape;
 	SerializedProperty cone;
 	SerializedProperty sphere;
+	SerializedProperty collision;
 	
 	void OnEnable()
 	{
@@ -31,9 +32,10 @@ public class ParticleCircleEditor : Editor
 		gravityModifier = serializedObject.FindProperty("gravityModifier");
 		emission 		= serializedObject.FindProperty("emission");
 		
-		shape  = serializedObject.FindProperty("shape");
-		cone   = serializedObject.FindProperty("cone");
-		sphere = serializedObject.FindProperty("sphere");
+		shape  		= serializedObject.FindProperty("shape");
+		cone   		= serializedObject.FindProperty("cone");
+		sphere 		= serializedObject.FindProperty("sphere");
+		collision 	= serializedObject.FindProperty("collision");
 	}
 	
 	public override void OnInspectorGUI()
@@ -60,7 +62,9 @@ public class ParticleCircleEditor : Editor
 				EditorGUILayout.PropertyField(sphere, true);
 			}	
 		}
-		
+
+		EditorGUILayout.PropertyField(collision, true);
+
 		serializedObject.ApplyModifiedProperties();
 	}
 	

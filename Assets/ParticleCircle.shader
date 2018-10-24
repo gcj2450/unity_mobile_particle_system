@@ -12,6 +12,18 @@
 
         _Shape("Shape", int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
+        
+        _CollisionPlaneCenter0("Collision Plane Center 0", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneNormal0("Collision Plane Normal 0", Vector) = (0.0, 0.0, 0.0, 0.0)
+        
+        _CollisionPlaneCenter1("Collision Plane Center 1", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneNormal1("Collision Plane Normal 1", Vector) = (0.0, 0.0, 0.0, 0.0)
+        
+        _CollisionPlaneCenter2("Collision Plane Center 2", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneNormal2("Collision Plane Normal 2", Vector) = (0.0, 0.0, 0.0, 0.0)
+        
+        _CollisionPlaneCenter3("Collision Plane Center 3", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneNormal3("Collision Plane Normal 3", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
     
     SubShader {
