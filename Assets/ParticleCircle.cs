@@ -150,21 +150,25 @@ public class ParticleCircle : MonoBehaviour
             renderer.sharedMaterial.SetFloat("_GravityModifier", gravityModifier);
         }
         
-        for (int i = 0; i < collision.planes.Length; i++)
+        for (int i = 0; i < MAX_COLLISION_PLANES; i++)
         {
-            if (i >= MAX_COLLISION_PLANES) break;
-            if (collision.planes[i] == null) continue;
+            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
             
-            Vector3 plane_center = collision.planes[i].transform.position;
-            Vector3 plane_rotate = collision.planes[i].transform.up;
+            if (collision.planes.Length > i && collision.planes[i] != null){
+                Vector3 plane_center = collision.planes[i].transform.position;
+                Vector3 plane_up = collision.planes[i].transform.up;
             
-            Vector4 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 0.0f);
-            Vector4 plane_normal4 = new Vector4(plane_rotate.x, plane_rotate.y, plane_rotate.z, 0.0f);
+                plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
+                plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
+            }
             
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
+                Debug.Log("center:" + plane_center4.ToString());
                 renderer.sharedMaterial.SetVector("_CollisionPlaneCenter"+i, plane_center4);
             }
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneNormal"+i) != plane_normal4){
+                Debug.Log("normal:" + plane_normal4.ToString());
                 renderer.sharedMaterial.SetVector("_CollisionPlaneNormal"+i, plane_normal4);
             }
         }

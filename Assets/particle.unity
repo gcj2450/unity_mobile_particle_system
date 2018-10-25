@@ -273,11 +273,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1.54
       objectReference: {fileID: 0}
     - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
       propertyPath: m_LocalRotation.y
@@ -289,7 +289,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
       propertyPath: m_RootOrder
@@ -298,7 +298,7 @@ Prefab:
     - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
         type: 2}
       propertyPath: emission.rateOverTime
-      value: 10000
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
         type: 2}
@@ -313,7 +313,7 @@ Prefab:
     - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
         type: 2}
       propertyPath: gravityModifier
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 114364153008608248, guid: 09605f1cc07914b20998c281fe73b19a,
         type: 2}
@@ -349,6 +349,10 @@ Prefab:
         type: 2}
       propertyPath: startColor.b
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4575936931346944, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09605f1cc07914b20998c281fe73b19a, type: 2}

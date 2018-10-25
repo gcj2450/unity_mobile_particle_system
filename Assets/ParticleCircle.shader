@@ -93,7 +93,7 @@
                 float3 v0;
                 float3 v;
                 float  t;
-                float  acc;
+                float3 acc;
             };
             
             // Hash functions to generate entropy by David Hoskins
@@ -169,17 +169,27 @@
                 return sol;
             }
             
+            /**
+            * Returns the time at which the intersection between plane and parabola occurs.
+            * If return is < 0 there is no intersection.
+            */
             float getCollisionTime(float4 plane_equation, parabola p)
             {
-                float a = PARABOLA_COEFFICIENT * p.acc * (plane_equation.x + plane_equation.y + plane_equation.z);
+                float a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
                 float b = dot(plane_equation.xyz, p.v);
-                float c = plane_equation.w + dot(plane_equation.xyz, p.v0);
+                float c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
                 
-                float2 time = solveQuadraticEquation(float3(a, b, c));
-                if (time[0] > 0){
-                    return time[0];
+                if (a != 0){
+                    // Has acceleration => quadratic
+                    float2 time = solveQuadraticEquation(float3(a, b, c));
+                    if (time[0] > 0){
+                        return time[0];
+                    }
+                    return time[1];
+                } else {
+                    // No acceleration => linear
+                    return -c/b;
                 }
-                return time[1];
             }
             
             /**
@@ -193,6 +203,17 @@
                 v = _StartSpeed * v;
                 
                 return initial_pos + v*time;
+            }
+            
+            /**
+            * Return float4(a, b, c, d) where 'ax + by + cy + d = 0'. 
+            */
+            float4 getPlaneEquation(float3 plane_center, float3 plane_normal)
+            {
+                float3 plane0_n = normalize(plane_normal);
+                float  plane0_d = -dot(plane0_n, plane_center);
+
+                return float4(plane0_n, plane0_d);
             }
             
             /**
@@ -223,6 +244,31 @@
                 i_model_rotation[3][3] = 1.f;
                 // Apply Model rotation to Gravity.
                 acc = mul(i_model_rotation, float4(acc, 1.f)).xyz;
+                
+                if (_CollisionPlaneNormal0.x != _CollisionPlaneCenter0.x || 
+                    _CollisionPlaneNormal0.y != _CollisionPlaneCenter0.y ||
+                    _CollisionPlaneNormal0.z != _CollisionPlaneCenter0.z)
+                {
+                    parabola p;
+                    p.v0  = initial_pos;
+                    p.v   = v;
+                    p.acc = acc;
+                    p.t   = 0;
+                
+                    float3 plane0_n = normalize(_CollisionPlaneNormal0.xyz);
+                    float4 plane0_equation = getPlaneEquation(_CollisionPlaneCenter0.xyz, plane0_n);
+                    
+                    float plane0_collision_time = getCollisionTime(plane0_equation, p);
+                    
+                    if (plane0_collision_time > 0 && time > plane0_collision_time){
+                        // Update initial_pos pos to collision point.
+                        initial_pos = initial_pos + v*plane0_collision_time + PARABOLA_COEFFICIENT*acc*pow(plane0_collision_time, 2);
+                        // Reflect direction vector.
+                        v = reflect(v, plane0_n);
+                        // New parabola starts from collision time.
+                        time = time - plane0_collision_time;
+                    }
+                }
                 
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t^2.
