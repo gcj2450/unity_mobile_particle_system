@@ -219,19 +219,18 @@
             /**
             * Return updated float4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
             */
-            float4 getNearPlaneTime(float3 n, float3 c, float lower_time, parabola p)
+            float4 getNearPlaneTime(float3 n, float3 c, float4 lower_plane_normal_time, parabola p)
             {
                 if (n.x != c.x || n.y != c.y || n.z != c.z){
                     float3 plane_n = normalize(n.xyz);
                     float4 plane_equation = getPlaneEquation(plane_n, c);
                     float  plane_collision_time = getCollisionTime(plane_equation, p);
-                    if (plane_collision_time > 0 && p.t > plane_collision_time && plane_collision_time < lower_time){
-                        lower_time = plane_collision_time;
-                        n = plane_n;
+                    if (plane_collision_time > 0 && p.t > plane_collision_time && plane_collision_time < lower_plane_normal_time.w){
+                        return float4(plane_n, plane_collision_time);
                     }
                 }
                 
-                return float4(n, lower_time);
+                return lower_plane_normal_time;
             }
             
             /**
@@ -242,9 +241,9 @@
                 float4 plane_normal_time = float4(0.f, 0.f, 0.f, _StartLifeTime);
                 
                 // Check collision Plane 0 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal0.xyz, _CollisionPlaneCenter0.xyz, plane_normal_time.w, p);
+                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal0.xyz, _CollisionPlaneCenter0.xyz, plane_normal_time, p);
                 // Check collision Plane 1 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal1.xyz, _CollisionPlaneCenter1.xyz, plane_normal_time.w, p);
+                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal1.xyz, _CollisionPlaneCenter1.xyz, plane_normal_time, p);
                 
                 float3 normal = plane_normal_time.xyz;
                 float time = plane_normal_time.w;
