@@ -208,12 +208,60 @@
             /**
             * Return float4(a, b, c, d) where 'ax + by + cy + d = 0'. 
             */
-            float4 getPlaneEquation(float3 plane_center, float3 plane_normal)
+            float4 getPlaneEquation(float3 plane_normal, float3 plane_center)
             {
-                float3 plane0_n = normalize(plane_normal);
-                float  plane0_d = -dot(plane0_n, plane_center);
+                float3 plane_n = normalize(plane_normal);
+                float  plane_d = -dot(plane_n, plane_center);
 
-                return float4(plane0_n, plane0_d);
+                return float4(plane_n, plane_d);
+            }
+            
+            /**
+            * Return updated float4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
+            */
+            float4 getNearPlaneTime(float3 n, float3 c, float lower_time, parabola p)
+            {
+                if (n.x != c.x || n.y != c.y || n.z != c.z){
+                    float3 plane_n = normalize(n.xyz);
+                    float4 plane_equation = getPlaneEquation(plane_n, c);
+                    float  plane_collision_time = getCollisionTime(plane_equation, p);
+                    if (plane_collision_time > 0 && p.t > plane_collision_time && plane_collision_time < lower_time){
+                        lower_time = plane_collision_time;
+                        n = plane_n;
+                    }
+                }
+                
+                return float4(n, lower_time);
+            }
+            
+            /**
+            * Given an initial parabola return new parabola after plane collisions.
+            */
+            parabola getParabolaAfterCollision(parabola p)
+            {
+                float4 plane_normal_time = float4(0.f, 0.f, 0.f, _StartLifeTime);
+                
+                // Check collision Plane 0 and if its near emitter than the others.
+                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal0.xyz, _CollisionPlaneCenter0.xyz, plane_normal_time.w, p);
+                // Check collision Plane 1 and if its near emitter than the others.
+                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal1.xyz, _CollisionPlaneCenter1.xyz, plane_normal_time.w, p);
+                
+                float3 normal = plane_normal_time.xyz;
+                float time = plane_normal_time.w;
+                
+                // There is no collision. Return unmodified parabola.
+                if (time == _StartLifeTime){
+                    return p;
+                }
+                
+                // Update initial_pos to collision point.
+                p.v0 = p.v0 + p.v*time + PARABOLA_COEFFICIENT*p.acc*pow(time, 2);
+                // Reflect direction vector.
+                p.v = reflect(p.v, normal);
+                // New parabola starts from collision time.
+                p.t = p.t - time;
+            
+                return p;
             }
             
             /**
@@ -245,34 +293,17 @@
                 // Apply Model rotation to Gravity.
                 acc = mul(i_model_rotation, float4(acc, 1.f)).xyz;
                 
-                if (_CollisionPlaneNormal0.x != _CollisionPlaneCenter0.x || 
-                    _CollisionPlaneNormal0.y != _CollisionPlaneCenter0.y ||
-                    _CollisionPlaneNormal0.z != _CollisionPlaneCenter0.z)
-                {
-                    parabola p;
-                    p.v0  = initial_pos;
-                    p.v   = v;
-                    p.acc = acc;
-                    p.t   = 0;
+                parabola p;
+                p.v0  = initial_pos;
+                p.v   = v;
+                p.acc = acc;
+                p.t   = time;
                 
-                    float3 plane0_n = normalize(_CollisionPlaneNormal0.xyz);
-                    float4 plane0_equation = getPlaneEquation(_CollisionPlaneCenter0.xyz, plane0_n);
-                    
-                    float plane0_collision_time = getCollisionTime(plane0_equation, p);
-                    
-                    if (plane0_collision_time > 0 && time > plane0_collision_time){
-                        // Update initial_pos pos to collision point.
-                        initial_pos = initial_pos + v*plane0_collision_time + PARABOLA_COEFFICIENT*acc*pow(plane0_collision_time, 2);
-                        // Reflect direction vector.
-                        v = reflect(v, plane0_n);
-                        // New parabola starts from collision time.
-                        time = time - plane0_collision_time;
-                    }
-                }
+                p = getParabolaAfterCollision(p);
                 
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t^2.
-                return initial_pos + v*time + PARABOLA_COEFFICIENT*acc*pow(time, 2);
+                return p.v0 + p.v*p.t + PARABOLA_COEFFICIENT*p.acc*pow(p.t, 2);
             }
             
             /**
