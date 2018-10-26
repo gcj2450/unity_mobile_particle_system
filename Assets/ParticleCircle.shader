@@ -71,6 +71,11 @@
             static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
             static const float  ITERATIONS = 4.f;
             static const float  PARABOLA_COEFFICIENT = 4.f;
+            
+            static float4 plane0_eq = float4(0.f, 0.f, 0.f, 0.f);
+            static float4 plane1_eq = float4(0.f, 0.f, 0.f, 0.f);
+            static float4 plane2_eq = float4(0.f, 0.f, 0.f, 0.f);
+            static float4 plane3_eq = float4(0.f, 0.f, 0.f, 0.f);
  
             struct fragmentInput {
                 float4 pos    : SV_POSITION;
@@ -219,21 +224,28 @@
             /**
             * Return updated float4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
             */
-            float4 getNearPlaneTime(float3 n, float3 c, float4 lower_plane_normal_time, const parabola p)
+            float4 updateNearPlaneTime(float4 plane_equation, float4 lower_plane_normal_time, const parabola p)
             {
-                if (n.x != c.x || n.y != c.y || n.z != c.z){
-                    
-                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
-                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                if (plane_equation.x == 0.f && plane_equation.y == 0.f && plane_equation.z == 0.f){
+                    // plane equation not set.
+                    return lower_plane_normal_time;
+                }
                 
-                    float3 plane_n = normalize(n.xyz);
-                    float4 plane_equation = getPlaneEquation(plane_n, c);
-                    
-                    float plane_collision_time = getCollisionTime(plane_equation, p);
-                    
-                    if (plane_collision_time > 0.01f && p.t > plane_collision_time && plane_collision_time < lower_plane_normal_time.w){
-                        plane_collision_time = plane_collision_time - 0.01f;
-                        return float4(plane_n, plane_collision_time);
+                const float time_threshold = 0.01f;
+
+                float plane_collision_time = getCollisionTime(plane_equation, p);
+                
+                // time_threshold prevents the particle go through the plane.
+                if (plane_collision_time > time_threshold){
+                    // actual time must be greater than collision time.
+                    if (p.t > plane_collision_time){
+                        // check if collision time found this plane is lower than that found with other planes.
+                        if (plane_collision_time < lower_plane_normal_time.w){
+                            // particle collision time outside plane.
+                            plane_collision_time = plane_collision_time - time_threshold;
+                            // set lower_plane_normal_time with lower time and plane normal.
+                            lower_plane_normal_time = float4(plane_equation.xyz, plane_collision_time);
+                        }
                     }
                 }
                 
@@ -252,13 +264,13 @@
                 float4 plane_normal_time = float4(0.f, 0.f, 0.f, _StartLifeTime);
                 
                 // Check collision Plane 0 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal0.xyz, _CollisionPlaneCenter0.xyz, plane_normal_time, p);
+                plane_normal_time = updateNearPlaneTime(plane0_eq, plane_normal_time, p);
                 // Check collision Plane 1 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal1.xyz, _CollisionPlaneCenter1.xyz, plane_normal_time, p);
-                // Check collision Plane 2 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal2.xyz, _CollisionPlaneCenter2.xyz, plane_normal_time, p);
-                // Check collision Plane 3 and if its near emitter than the others.
-                plane_normal_time = getNearPlaneTime(_CollisionPlaneNormal3.xyz, _CollisionPlaneCenter3.xyz, plane_normal_time, p);
+                plane_normal_time = updateNearPlaneTime(plane1_eq, plane_normal_time, p);
+                //// Check collision Plane 2 and if its near emitter than the others.
+                plane_normal_time = updateNearPlaneTime(plane2_eq, plane_normal_time, p);
+                //// Check collision Plane 3 and if its near emitter than the others.
+                plane_normal_time = updateNearPlaneTime(plane3_eq, plane_normal_time, p);
                 
                 float3 normal = plane_normal_time.xyz;
                 float time = plane_normal_time.w;
@@ -373,6 +385,51 @@
                 
                 return v_pos;
             }
+            
+            /**
+            * Precalc plane equations to save compute time.
+            */
+            void setPlaneEquations()
+            {
+                float3 n; // Normal
+                float3 c; // Center
+                
+                n = _CollisionPlaneNormal0.xyz;
+                c = _CollisionPlaneCenter0.xyz;
+                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
+                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
+                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                    
+                    plane0_eq = getPlaneEquation(normalize(n.xyz), c);
+                }
+                
+                n = _CollisionPlaneNormal1.xyz;
+                c = _CollisionPlaneCenter1.xyz;
+                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
+                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
+                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                    
+                    plane1_eq = getPlaneEquation(normalize(n.xyz), c);
+                }
+                
+                n = _CollisionPlaneNormal2.xyz;
+                c = _CollisionPlaneCenter2.xyz;
+                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
+                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
+                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                    
+                    plane2_eq = getPlaneEquation(normalize(n.xyz), c);
+                }
+                
+                n = _CollisionPlaneNormal3.xyz;
+                c = _CollisionPlaneCenter3.xyz;
+                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
+                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
+                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                    
+                    plane3_eq = getPlaneEquation(normalize(n.xyz), c);
+                }
+            }
 
             fragmentInput vert (vertexInput v)
             {
@@ -396,6 +453,8 @@
                     
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;
+                    
+                    setPlaneEquations();
                     
                     float3 center_pos = float3(0.f, 0.f, 0.f);
                     if (_Shape == 1){

@@ -162,10 +162,10 @@ public class ParticleCircle : MonoBehaviour
                 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
                 plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
 
+                // Fix Unity normal precision
                 if (plane_normal4.x < 0.00001f && plane_normal4.x > -0.00001f) plane_normal4.x = 0;
                 if (plane_normal4.y < 0.00001f && plane_normal4.y > -0.00001f) plane_normal4.y = 0;
                 if (plane_normal4.z < 0.00001f && plane_normal4.z > -0.00001f) plane_normal4.z = 0;
-
             }
             
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
