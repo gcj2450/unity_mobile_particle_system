@@ -222,6 +222,10 @@
             float4 getNearPlaneTime(float3 n, float3 c, float4 lower_plane_normal_time, const parabola p)
             {
                 if (n.x != c.x || n.y != c.y || n.z != c.z){
+                    
+                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
+                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
+                
                     float3 plane_n = normalize(n.xyz);
                     float4 plane_equation = getPlaneEquation(plane_n, c);
                     
