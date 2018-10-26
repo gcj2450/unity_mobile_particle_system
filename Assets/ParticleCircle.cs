@@ -161,6 +161,11 @@ public class ParticleCircle : MonoBehaviour
             
                 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
                 plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
+
+                if (plane_normal4.x < 0.000001f) plane_normal4.x = 0;
+                if (plane_normal4.y < 0.000001f) plane_normal4.y = 0;
+                if (plane_normal4.z < 0.000001f) plane_normal4.z = 0;
+
             }
             
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
@@ -168,7 +173,7 @@ public class ParticleCircle : MonoBehaviour
                 renderer.sharedMaterial.SetVector("_CollisionPlaneCenter"+i, plane_center4);
             }
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneNormal"+i) != plane_normal4){
-                Debug.Log("normal:" + plane_normal4.ToString());
+                Debug.Log("normal:" + plane_normal4.x + " " + plane_normal4.y + " " + plane_normal4.z);
                 renderer.sharedMaterial.SetVector("_CollisionPlaneNormal"+i, plane_normal4);
             }
         }
