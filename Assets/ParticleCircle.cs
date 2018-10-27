@@ -59,8 +59,9 @@ public class ParticleCircle : MonoBehaviour
         Vector2[] uv       = new Vector2[4*size];
         Vector2[] id       = new Vector2[4*size];
 
-        Vector3 emitter_pos = gameObject.transform.position;
+        Vector3 emitter_pos = new Vector3(0,0,0);
 
+        Debug.Log(emitter_pos.ToString());
         for (int i = 0; i < size; i++)
         {
             int idx4 = i * 4;
@@ -84,10 +85,11 @@ public class ParticleCircle : MonoBehaviour
             uv[idx4 + 3] = new Vector2(1, 1);
             
             // Passing ID as UV2.
-            id[idx4 + 0] = new Vector2(i+1, 0);
-            id[idx4 + 1] = new Vector2(i+1, 0);
-            id[idx4 + 2] = new Vector2(i+1, 0);
-            id[idx4 + 3] = new Vector2(i+1, 0);
+            Vector2 id_val = new Vector2(i + 1, 0);
+            id[idx4 + 0] = id_val;
+            id[idx4 + 1] = id_val;
+            id[idx4 + 2] = id_val;
+            id[idx4 + 3] = id_val;
         }
 
         mesh.Clear();
