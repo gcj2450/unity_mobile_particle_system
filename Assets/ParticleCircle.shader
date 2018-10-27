@@ -300,24 +300,21 @@
                 if (v.z < 0.f) v.z = -1 * v.z;
                 
                 float max_distance_fac = v.z * tan(radians(_ConeAngle));
-
                 v.x = max_distance_fac * v.x;
                 v.y = max_distance_fac * v.y;
-                
-                v = normalize(v);
-                
                 // Scale velocity
-                v = _StartSpeed * v;
+                v = _StartSpeed * normalize(v);
 
                 // Gravity acceleration modifier.
-                float3 acc = float3(0.f, -_GravityModifier, 0.f);
-                float4x4 i_model_rotation = unity_WorldToObject;
+                float4x4 i_model_rotation = unity_ObjectToWorld;
                 i_model_rotation[0][3] = 0.f; // We don't want any translation here:
                 i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
                 i_model_rotation[2][3] = 0.f;
                 i_model_rotation[3][3] = 1.f;
                 // Apply Model rotation to Gravity.
-                acc = mul(i_model_rotation, float4(acc, 1.f)).xyz;
+                v = mul(i_model_rotation, float4(v, 1.f)).xyz;
+
+                float3 acc = float3(0.f, -_GravityModifier, 0.f);
                 
                 parabola p;
                 p.v0  = initial_pos;
@@ -326,10 +323,11 @@
                 p.t   = time;
                 
                 //@TODO improve this
-                while (1){
+                int i = 100;
+                while (i--){
                     float time_a = p.t;
                     p = getParabolaAfterCollision(p);
-                    if(time_a == p.t){
+                    if (time_a == p.t){
                         break;
                     }
                 }
@@ -394,39 +392,27 @@
                 float3 n; // Normal
                 float3 c; // Center
                 
-                n = _CollisionPlaneNormal0.xyz;
+                n = normalize(_CollisionPlaneNormal0.xyz);
                 c = _CollisionPlaneCenter0.xyz;
                 if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
-                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
-                    
                     plane0_eq = getPlaneEquation(normalize(n.xyz), c);
                 }
                 
-                n = _CollisionPlaneNormal1.xyz;
+                n = normalize(_CollisionPlaneNormal1.xyz);
                 c = _CollisionPlaneCenter1.xyz;
                 if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
-                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
-                    
                     plane1_eq = getPlaneEquation(normalize(n.xyz), c);
                 }
                 
-                n = _CollisionPlaneNormal2.xyz;
+                n = normalize(_CollisionPlaneNormal2.xyz);
                 c = _CollisionPlaneCenter2.xyz;
                 if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
-                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
-                    
                     plane2_eq = getPlaneEquation(normalize(n.xyz), c);
                 }
                 
-                n = _CollisionPlaneNormal3.xyz;
+                n = normalize(_CollisionPlaneNormal3.xyz);
                 c = _CollisionPlaneCenter3.xyz;
                 if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    n = mul(unity_WorldToObject, float4(n, 1.f)).xyz;
-                    c = mul(unity_WorldToObject, float4(c, 1.f)).xyz;
-                    
                     plane3_eq = getPlaneEquation(normalize(n.xyz), c);
                 }
             }
@@ -454,6 +440,9 @@
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;
                     
+                    // Object position coordinates to World coordinates.
+                    v_pos = mul(unity_ObjectToWorld, float4(v_pos, 1.f)).xyz;
+                    
                     setPlaneEquations();
                     
                     float3 center_pos = float3(0.f, 0.f, 0.f);
@@ -463,9 +452,6 @@
                         // Default shape (Cone)
                         center_pos = coneMovement(v_pos, id, relative_time);
                     }
-                    
-                    // Apply Model transformation before calc Billboard.
-                    center_pos = mul(unity_ObjectToWorld, float4(center_pos, 1.f)).xyz;
                     
                     // Get quad center new position (time has changed).
                     // With the center, get quad vertex position based on vertex uv.
