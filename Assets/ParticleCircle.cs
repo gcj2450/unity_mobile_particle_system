@@ -169,11 +169,9 @@ public class ParticleCircle : MonoBehaviour
             }
             
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
-                Debug.Log("center:" + plane_center4.ToString());
                 renderer.sharedMaterial.SetVector("_CollisionPlaneCenter"+i, plane_center4);
             }
             if (renderer.sharedMaterial.GetVector("_CollisionPlaneNormal"+i) != plane_normal4){
-                Debug.Log("normal:" + plane_normal4.x + " " + plane_normal4.y + " " + plane_normal4.z);
                 renderer.sharedMaterial.SetVector("_CollisionPlaneNormal"+i, plane_normal4);
             }
         }

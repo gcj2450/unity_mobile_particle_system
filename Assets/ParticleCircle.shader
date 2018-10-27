@@ -234,6 +234,7 @@
                 const float time_threshold = 0.01f;
 
                 float plane_collision_time = getCollisionTime(plane_equation, p);
+                plane_collision_time = plane_collision_time - (_StartSize/100);
                 
                 // time_threshold prevents the particle go through the plane.
                 if (plane_collision_time > time_threshold){
@@ -322,8 +323,8 @@
                 p.acc = acc;
                 p.t   = time;
                 
-                //@TODO improve this
-                int i = 100;
+                //@TODO remove this loop.
+                int i = 1000;
                 while (i--){
                     float time_a = p.t;
                     p = getParabolaAfterCollision(p);
