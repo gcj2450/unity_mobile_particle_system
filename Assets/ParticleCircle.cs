@@ -61,7 +61,6 @@ public class ParticleCircle : MonoBehaviour
 
         Vector3 emitter_pos = new Vector3(0,0,0);
 
-        Debug.Log(emitter_pos.ToString());
         for (int i = 0; i < size; i++)
         {
             int idx4 = i * 4;
@@ -99,7 +98,8 @@ public class ParticleCircle : MonoBehaviour
         mesh.uv2       = id;
         
         //@TODO Calc bounds -> particle render out clipping space.
-        //mesh.bounds = new Bounds(emitter_pos, new Vector3(100, 100, 100));
+        float bound_val = startLifetime * startSpeed;
+        mesh.bounds = new Bounds(emitter_pos, new Vector3(bound_val, bound_val, bound_val));
     }
     
     void Awake()

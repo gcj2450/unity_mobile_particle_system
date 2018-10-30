@@ -234,7 +234,7 @@
                 const float time_threshold = 0.01f;
 
                 float plane_collision_time = getCollisionTime(plane_equation, p);
-                plane_collision_time = plane_collision_time - (_StartSize/100);
+                plane_collision_time = plane_collision_time - (_StartSize/10);
                 
                 // time_threshold prevents the particle go through the plane.
                 if (plane_collision_time > time_threshold){
@@ -323,12 +323,14 @@
                 p.acc = acc;
                 p.t   = time;
                 
-                //@TODO remove this loop.
-                int i = 1000;
-                while (i--){
-                    float time_a = p.t;
+                // Set an upper bound to while() loop to prevent while(true).
+                int max_collisions = _StartSpeed * _StartLifeTime * _RateOverTime * _GravityModifier;
+                while (max_collisions--){
+                    // Update parabola for each collision by time.
+                    float actual_time = p.t;
                     p = getParabolaAfterCollision(p);
-                    if (time_a == p.t){
+                    if (actual_time == p.t){
+                        // No more collision was found.
                         break;
                     }
                 }
@@ -360,7 +362,7 @@
             float3 getBillboardVertex(float3 quad_center, float2 uv)
             {
                 float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
-                float circumradius = sqrt(pow(_StartSize, 2) / 4.f);
+                float circumradius = _StartSize / 2.f;
                 
                 // Orthonormal basis vectors of the circle plane.
                 basis b = getPlaneOrthonormalBasis(quad_center, plane_normal);
@@ -473,10 +475,10 @@
             {
                 // Discard pixels far from quad center: draw circle.
                 float distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
-                if (distance > 0.5f)
+                if (distance > 0.4f)
                    discard;
                 
-                float alpha = 1.f - (2*distance);
+                float alpha = 1.f - 2.5*distance;
                 
                 return fixed4(_StartColor.xyz, alpha);
             }
