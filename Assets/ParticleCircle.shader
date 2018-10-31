@@ -256,8 +256,9 @@
             /**
             * Given an initial parabola return new parabola after plane collisions.
             */
-            parabola getParabolaAfterCollision(parabola p)
+            parabola getNextParabolaAfterCollision(parabola p)
             {
+                // Avoid useless calculations.
                 if (p.t <= 0.f){
                     return p;
                 }
@@ -268,11 +269,12 @@
                 plane_normal_time = updateNearPlaneTime(plane0_eq, plane_normal_time, p);
                 // Check collision Plane 1 and if its near emitter than the others.
                 plane_normal_time = updateNearPlaneTime(plane1_eq, plane_normal_time, p);
-                //// Check collision Plane 2 and if its near emitter than the others.
+                // Check collision Plane 2 and if its near emitter than the others.
                 plane_normal_time = updateNearPlaneTime(plane2_eq, plane_normal_time, p);
-                //// Check collision Plane 3 and if its near emitter than the others.
+                // Check collision Plane 3 and if its near emitter than the others.
                 plane_normal_time = updateNearPlaneTime(plane3_eq, plane_normal_time, p);
                 
+                // Get normal and collision time of the nearest plane.
                 float3 normal = plane_normal_time.xyz;
                 float time = plane_normal_time.w;
                 
@@ -289,6 +291,29 @@
                 p.t = p.t - time;
             
                 return p;
+            }
+            
+            /**
+            * Given a parabola return particle position after calc collisions.
+            */
+            float3 getParticlePosition(parabola p)
+            {
+                // Set an upper bound to while() loop to prevent while(true).
+                int max_collisions = _StartSpeed * _StartLifeTime * _RateOverTime;
+                // Iterate updating parabola until there's no more collisions.
+                while (max_collisions--){
+                    float actual_time = p.t;
+                    // Update parabola for each collision by time.
+                    p = getNextParabolaAfterCollision(p);
+                    if (actual_time == p.t){
+                        // Parabola unmodified. No collision was found.
+                        break;
+                    }
+                }
+                
+                // Apply Parabola equation: 
+                // P(t) = P0 + V0*t + 0.5*Acc*t^2.
+                return p.v0 + p.v*p.t + PARABOLA_COEFFICIENT*p.acc*pow(p.t, 2);
             }
             
             /**
@@ -323,21 +348,7 @@
                 p.acc = acc;
                 p.t   = time;
                 
-                // Set an upper bound to while() loop to prevent while(true).
-                int max_collisions = _StartSpeed * _StartLifeTime * _RateOverTime * _GravityModifier;
-                while (max_collisions--){
-                    // Update parabola for each collision by time.
-                    float actual_time = p.t;
-                    p = getParabolaAfterCollision(p);
-                    if (actual_time == p.t){
-                        // No more collision was found.
-                        break;
-                    }
-                }
-                
-                // Apply Parabola equation: 
-                // P(t) = P0 + V0*t + 0.5*Acc*t^2.
-                return p.v0 + p.v*p.t + PARABOLA_COEFFICIENT*p.acc*pow(p.t, 2);
+                return getParticlePosition(p);
             }
             
             /**
@@ -476,7 +487,7 @@
                 // Discard pixels far from quad center: draw circle.
                 float distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
                 if (distance > 0.4f)
-                   discard;
+                    discard;
                 
                 float alpha = 1.f - 2.5*distance;
                 
