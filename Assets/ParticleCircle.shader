@@ -198,19 +198,6 @@
             }
             
             /**
-            * Calc new point position given its id and the current time.
-            */
-            float3 sphereMovement(float3 initial_pos, float id, float time)
-            {
-                float3 v = getRandomVelocity(id);
-
-                // Scale velocity
-                v = _StartSpeed * v;
-                
-                return initial_pos + v*time;
-            }
-            
-            /**
             * Return float4(a, b, c, d) where 'ax + by + cy + d = 0'. 
             */
             float4 getPlaneEquation(float3 plane_normal, float3 plane_center)
@@ -317,29 +304,62 @@
             }
             
             /**
+            * Apply unity_ObjectToWorld transf matrix with no translations.
+            */
+            float3 objctToWorldNoTranslation(float3 v)
+            {
+                float4x4 i_model_rotation = unity_ObjectToWorld;
+                i_model_rotation[0][3] = 0.f; // Prevent translation:
+                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
+                i_model_rotation[2][3] = 0.f;
+                i_model_rotation[3][3] = 1.f;
+                
+                return mul(i_model_rotation, float4(v, 1.f)).xyz;
+            }
+            
+            /**
+            * Calc new point position given its id and the current time.
+            */
+            float3 sphereMovement(float3 initial_pos, float id, float time)
+            {
+                float3 v = getRandomVelocity(id);
+
+                // Scale velocity
+                v = _StartSpeed * v;
+                
+                v = objctToWorldNoTranslation(v);
+                
+                // Gravity acceleration modifier.
+                float3 acc = float3(0.f, -_GravityModifier, 0.f);
+                
+                parabola p;
+                p.v0  = initial_pos;
+                p.v   = v;
+                p.acc = acc;
+                p.t   = time;
+                
+                return getParticlePosition(p);
+            }
+            
+            /**
             * Calc new point position given its id and the current time.
             */
             float3 coneMovement(float3 initial_pos, float id, float time)
             {
                 float3 v = getRandomVelocity(id);
 
+                // Cone coordinates transformations.
                 if (v.z < 0.f) v.z = -1 * v.z;
-                
                 float max_distance_fac = v.z * tan(radians(_ConeAngle));
                 v.x = max_distance_fac * v.x;
                 v.y = max_distance_fac * v.y;
+                
                 // Scale velocity
                 v = _StartSpeed * normalize(v);
 
-                // Gravity acceleration modifier.
-                float4x4 i_model_rotation = unity_ObjectToWorld;
-                i_model_rotation[0][3] = 0.f; // We don't want any translation here:
-                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
-                i_model_rotation[2][3] = 0.f;
-                i_model_rotation[3][3] = 1.f;
-                // Apply Model rotation to Gravity.
-                v = mul(i_model_rotation, float4(v, 1.f)).xyz;
+                v = objctToWorldNoTranslation(v);
 
+                // Gravity acceleration modifier.
                 float3 acc = float3(0.f, -_GravityModifier, 0.f);
                 
                 parabola p;
