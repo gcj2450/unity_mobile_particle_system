@@ -43,93 +43,93 @@
             #pragma vertex vert
             #pragma fragment frag
 
-            uniform float _StartSize = 1.0f;
-            uniform float _RateOverTime = 10.f;
-            uniform float _StartSpeed = 5.f;
-            uniform float _StartLifeTime = 5.f;
-            uniform float _StartDelay = 0.f;
-            uniform float _GravityModifier = 0.0f;
+            uniform fixed _StartSize = 1.0f;
+            uniform fixed _RateOverTime = 10.f;
+            uniform fixed _StartSpeed = 5.f;
+            uniform fixed _StartLifeTime = 5.f;
+            uniform fixed _StartDelay = 0.f;
+            uniform fixed _GravityModifier = 0.0f;
 
-            uniform float4 _StartColor = float4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _StartColor = fixed4(0.f, 0.f, 0.f, 1.f);
 
             uniform int   _Shape = 0;
-            uniform float _ConeAngle = 0.f;
+            uniform fixed _ConeAngle = 0.f;
 
-            uniform float4 _CollisionPlaneCenter0 = float4(0.f, 0.f, 0.f, 1.f);
-            uniform float4 _CollisionPlaneNormal0 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneCenter0 = fixed4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneNormal0 = fixed4(0.f, 0.f, 0.f, 1.f);
 
-            uniform float4 _CollisionPlaneCenter1 = float4(0.f, 0.f, 0.f, 1.f);
-            uniform float4 _CollisionPlaneNormal1 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneCenter1 = fixed4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneNormal1 = fixed4(0.f, 0.f, 0.f, 1.f);
 
-            uniform float4 _CollisionPlaneCenter2 = float4(0.f, 0.f, 0.f, 1.f);
-            uniform float4 _CollisionPlaneNormal2 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneCenter2 = fixed4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneNormal2 = fixed4(0.f, 0.f, 0.f, 1.f);
 
-            uniform float4 _CollisionPlaneCenter3 = float4(0.f, 0.f, 0.f, 1.f);
-            uniform float4 _CollisionPlaneNormal3 = float4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneCenter3 = fixed4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneNormal3 = fixed4(0.f, 0.f, 0.f, 1.f);
  
-            static const float  HASHSCALE1 = 0.1031;
-            static const float3 HASHSCALE3 = float3(.1031, .1030, .0973);
-            static const float  ITERATIONS = 4.f;
-            static const float  PARABOLA_COEFFICIENT = 4.f;
+            static const fixed  HASHSCALE1 = 0.1031;
+            static const fixed3 HASHSCALE3 = fixed3(.1031, .1030, .0973);
+            static const fixed  ITERATIONS = 4.f;
+            static const fixed  PARABOLA_COEFFICIENT = 4.f;
             
-            static float4 plane0_eq = float4(0.f, 0.f, 0.f, 0.f);
-            static float4 plane1_eq = float4(0.f, 0.f, 0.f, 0.f);
-            static float4 plane2_eq = float4(0.f, 0.f, 0.f, 0.f);
-            static float4 plane3_eq = float4(0.f, 0.f, 0.f, 0.f);
+            static fixed4 plane0_eq = fixed4(0.f, 0.f, 0.f, 0.f);
+            static fixed4 plane1_eq = fixed4(0.f, 0.f, 0.f, 0.f);
+            static fixed4 plane2_eq = fixed4(0.f, 0.f, 0.f, 0.f);
+            static fixed4 plane3_eq = fixed4(0.f, 0.f, 0.f, 0.f);
  
             struct fragmentInput {
-                float4 pos    : SV_POSITION;
-                float2 uv     : TEXCOORD0;
-                float3 normal : NORMAL;
+                fixed4 pos    : SV_POSITION;
+                fixed2 uv     : TEXCOORD0;
+                fixed3 normal : NORMAL;
             };
             
             struct vertexInput {
-                float4 pos : POSITION;
-                float2 id  : TEXCOORD2;
-                float2 uv  : TEXCOORD0;
+                fixed4 pos : POSITION;
+                fixed2 id  : TEXCOORD2;
+                fixed2 uv  : TEXCOORD0;
             };
             
             struct basis {
-                float3 b0;
-                float3 b1;
+                fixed3 b0;
+                fixed3 b1;
             };
             
             struct parabola {
-                float3 v0;
-                float3 v;
-                float  t;
-                float3 acc;
+                fixed3 v0;
+                fixed3 v;
+                fixed  t;
+                fixed3 acc;
             };
             
             // Hash functions to generate entropy by David Hoskins
             // https://www.shadertoy.com/view/4djSRW
-            float hash11(float p)
+            fixed hash11(fixed p)
             {
-                float frac_p = frac(p);
-                float3 p3 = float3(frac_p, frac_p, frac_p) * HASHSCALE1;
+                fixed frac_p = frac(p);
+                fixed3 p3 = fixed3(frac_p, frac_p, frac_p) * HASHSCALE1;
                 p3 += dot(p3, p3.yzx + 19.19);
                
                 return frac((p3.x + p3.y) * p3.z);
             }
             
-            float3 hash31(float p) 
+            fixed3 hash31(fixed p) 
             {
-                float3 p3 = frac(float3(p, p, p) * HASHSCALE3);
+                fixed3 p3 = frac(fixed3(p, p, p) * HASHSCALE3);
                 p3 += dot(p3, p3.yzx+19.19);
                
                 return frac((p3.xxy + p3.yzz)*p3.zyx); 
             }
             
-            float randomSin(float2 _st)
+            fixed randomSin(fixed2 _st)
             {
-                return frac(sin(dot(_st.xy, float2(12.9898f,78.233f)))*43758.5453123f);
+                return frac(sin(dot(_st.xy, fixed2(12.9898f,78.233f)))*43758.5453123f);
             }
             
             // 'c' domain: (-1 <= c.xyz <= 1)
             // http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
-            float3 mapCubeToSphere(float3 c)
+            fixed3 mapCubeToSphere(fixed3 c)
             {
-                float3 s = float3(0.f, 0.f, 0.f);
+                fixed3 s = fixed3(0.f, 0.f, 0.f);
                
                 s.x = c.x * sqrt(1 - pow(c.y, 2)/2 - pow(c.z, 2)/2 + (pow(c.y, 2)*pow(c.z,2))/3);
                 s.y = c.y * sqrt(1 - pow(c.z, 2)/2 - pow(c.x, 2)/2 + (pow(c.x, 2)*pow(c.z,2))/3);
@@ -139,11 +139,11 @@
             }
             
             // Calc initial velocity/direction to a particle given its id.
-            // Return an Float3 vec. Elements range: (0 <= p <= 1)
+            // Return an fixed3 vec. Elements range: (0 <= p <= 1)
             // >>> This number will be the same for each particle, in all frames. <<<
-            float3 getRandomVelocity(float id)
+            fixed3 getRandomVelocity(fixed id)
             {
-                float3 v = float3(0.f, 0.f, 0.f);
+                fixed3 v = fixed3(0.f, 0.f, 0.f);
                 for (int t = 0; t < ITERATIONS; t++) {
                     v += hash31(id);
                 }
@@ -159,15 +159,15 @@
             }
 
             // Bhaskara method
-            float2 solveQuadraticEquation(float3 coefficients)
+            fixed2 solveQuadraticEquation(fixed3 coefficients)
             {
-                float delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
+                fixed delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
     
                 if (delta < 0){
-                    return float2(-1, -1);
+                    return fixed2(-1, -1);
                 }
 
-                float2 sol;
+                fixed2 sol;
                 sol[0] = (-coefficients[1] + sqrt(delta)) / (2*coefficients[0]);
                 sol[1] = (-coefficients[1] - sqrt(delta)) / (2*coefficients[0]);
 
@@ -178,15 +178,15 @@
             * Returns the time at which the intersection between plane and parabola occurs.
             * If return is < 0 there is no intersection.
             */
-            float getCollisionTime(float4 plane_equation, parabola p)
+            fixed getCollisionTime(fixed4 plane_equation, parabola p)
             {
-                float a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
-                float b = dot(plane_equation.xyz, p.v);
-                float c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
+                half a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
+                half b = dot(plane_equation.xyz, p.v);
+                half c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
                 
-                if (a != 0){
+                if (a != 0.f){
                     // Has acceleration => quadratic
-                    float2 time = solveQuadraticEquation(float3(a, b, c));
+                    fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
                     if (time[0] >= 0){
                         return time[0];
                     }
@@ -198,29 +198,29 @@
             }
             
             /**
-            * Return float4(a, b, c, d) where 'ax + by + cy + d = 0'. 
+            * Return fixed4(a, b, c, d) where 'ax + by + cy + d = 0'. 
             */
-            float4 getPlaneEquation(float3 plane_normal, float3 plane_center)
+            fixed4 getPlaneEquation(fixed3 plane_normal, fixed3 plane_center)
             {
-                float3 plane_n = normalize(plane_normal);
-                float  plane_d = -dot(plane_n, plane_center);
+                fixed3 plane_n = normalize(plane_normal);
+                fixed  plane_d = -dot(plane_n, plane_center);
 
-                return float4(plane_n, plane_d);
+                return fixed4(plane_n, plane_d);
             }
             
             /**
-            * Return updated float4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
+            * Return updated fixed4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
             */
-            float4 updateNearPlaneTime(float4 plane_equation, float4 lower_plane_normal_time, const parabola p)
+            fixed4 updateNearPlaneTime(fixed4 plane_equation, fixed4 lower_plane_normal_time, const parabola p)
             {
                 if (plane_equation.x == 0.f && plane_equation.y == 0.f && plane_equation.z == 0.f){
                     // plane equation not set.
                     return lower_plane_normal_time;
                 }
                 
-                const float time_threshold = 0.01f;
+                const fixed time_threshold = 0.01f;
 
-                float plane_collision_time = getCollisionTime(plane_equation, p);
+                fixed plane_collision_time = getCollisionTime(plane_equation, p);
                 plane_collision_time = plane_collision_time - (_StartSize/10);
                 
                 // time_threshold prevents the particle go through the plane.
@@ -232,7 +232,7 @@
                             // particle collision time outside plane.
                             plane_collision_time = plane_collision_time - time_threshold;
                             // set lower_plane_normal_time with lower time and plane normal.
-                            lower_plane_normal_time = float4(plane_equation.xyz, plane_collision_time);
+                            lower_plane_normal_time = fixed4(plane_equation.xyz, plane_collision_time);
                         }
                     }
                 }
@@ -250,7 +250,7 @@
                     return p;
                 }
             
-                float4 plane_normal_time = float4(0.f, 0.f, 0.f, _StartLifeTime);
+                fixed4 plane_normal_time = fixed4(0.f, 0.f, 0.f, _StartLifeTime);
                 
                 // Check collision Plane 0 and if its near emitter than the others.
                 plane_normal_time = updateNearPlaneTime(plane0_eq, plane_normal_time, p);
@@ -262,8 +262,8 @@
                 plane_normal_time = updateNearPlaneTime(plane3_eq, plane_normal_time, p);
                 
                 // Get normal and collision time of the nearest plane.
-                float3 normal = plane_normal_time.xyz;
-                float time = plane_normal_time.w;
+                fixed3 normal = plane_normal_time.xyz;
+                fixed time = plane_normal_time.w;
                 
                 // There is no collision. Return unmodified parabola.
                 if (time == _StartLifeTime){
@@ -283,13 +283,13 @@
             /**
             * Given a parabola return particle position after calc collisions.
             */
-            float3 getParticlePosition(parabola p)
+            fixed3 getParticlePosition(parabola p)
             {
                 // Set an upper bound to while() loop to prevent while(true).
                 int max_collisions = _StartSpeed * _StartLifeTime * _RateOverTime;
                 // Iterate updating parabola until there's no more collisions.
                 while (max_collisions--){
-                    float actual_time = p.t;
+                    fixed actual_time = p.t;
                     // Update parabola for each collision by time.
                     p = getNextParabolaAfterCollision(p);
                     if (actual_time == p.t){
@@ -306,23 +306,23 @@
             /**
             * Apply unity_ObjectToWorld transf matrix with no translations.
             */
-            float3 objctToWorldNoTranslation(float3 v)
+            fixed3 objctToWorldNoTranslation(fixed3 v)
             {
-                float4x4 i_model_rotation = unity_ObjectToWorld;
+                fixed4x4 i_model_rotation = unity_ObjectToWorld;
                 i_model_rotation[0][3] = 0.f; // Prevent translation:
                 i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
                 i_model_rotation[2][3] = 0.f;
                 i_model_rotation[3][3] = 1.f;
                 
-                return mul(i_model_rotation, float4(v, 1.f)).xyz;
+                return mul(i_model_rotation, fixed4(v, 1.f)).xyz;
             }
             
             /**
             * Calc new point position given its id and the current time.
             */
-            float3 sphereMovement(float3 initial_pos, float id, float time)
+            fixed3 sphereMovement(fixed3 initial_pos, fixed id, fixed time)
             {
-                float3 v = getRandomVelocity(id);
+                fixed3 v = getRandomVelocity(id);
 
                 // Scale velocity
                 v = _StartSpeed * v;
@@ -330,7 +330,7 @@
                 v = objctToWorldNoTranslation(v);
                 
                 // Gravity acceleration modifier.
-                float3 acc = float3(0.f, -_GravityModifier, 0.f);
+                fixed3 acc = fixed3(0.f, -_GravityModifier, 0.f);
                 
                 parabola p;
                 p.v0  = initial_pos;
@@ -344,13 +344,13 @@
             /**
             * Calc new point position given its id and the current time.
             */
-            float3 coneMovement(float3 initial_pos, float id, float time)
+            fixed3 coneMovement(fixed3 initial_pos, fixed id, fixed time)
             {
-                float3 v = getRandomVelocity(id);
+                fixed3 v = getRandomVelocity(id);
 
                 // Cone coordinates transformations.
                 if (v.z < 0.f) v.z = -1 * v.z;
-                float max_distance_fac = v.z * tan(radians(_ConeAngle));
+                fixed max_distance_fac = v.z * tan(radians(_ConeAngle));
                 v.x = max_distance_fac * v.x;
                 v.y = max_distance_fac * v.y;
                 
@@ -360,7 +360,7 @@
                 v = objctToWorldNoTranslation(v);
 
                 // Gravity acceleration modifier.
-                float3 acc = float3(0.f, -_GravityModifier, 0.f);
+                fixed3 acc = fixed3(0.f, -_GravityModifier, 0.f);
                 
                 parabola p;
                 p.v0  = initial_pos;
@@ -375,12 +375,12 @@
             * Given the normal and the center of a plane, 
             * return an Orthonormal Basis.
             */
-            basis getPlaneOrthonormalBasis(float3 center, float3 normal)
+            basis getPlaneOrthonormalBasis(fixed3 center, fixed3 normal)
             {
-                float plane_d = -dot(normal, center);
+                fixed plane_d = -dot(normal, center);
                 
                 basis b;
-                b.b0 = normalize(float3(0.f, 0.f, -(plane_d/normal.z)) - center);
+                b.b0 = normalize(fixed3(0.f, 0.f, -(plane_d/normal.z)) - center);
                 b.b1 = normalize(cross(b.b0, normal));
                 
                 return b;
@@ -390,16 +390,16 @@
             * Given an center point, calc quad vertex that corresponds to particle uv.
             * Billboard are orthogonal to the Main Camera and has _StartSize lenght.
             */
-            float3 getBillboardVertex(float3 quad_center, float2 uv)
+            fixed3 getBillboardVertex(fixed3 quad_center, fixed2 uv)
             {
-                float3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
-                float circumradius = _StartSize / 2.f;
+                fixed3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
+                fixed circumradius = _StartSize / 2.f;
                 
                 // Orthonormal basis vectors of the circle plane.
                 basis b = getPlaneOrthonormalBasis(quad_center, plane_normal);
 
                 // Based on uv, use clockwise rule and the basis to draw a square from center_pos.
-                float3 v_pos = {0.f,0.f, 0.f};
+                fixed3 v_pos = {0.f,0.f, 0.f};
                 
                 if(uv.x == 0) {
                     if(uv.y == 0) {
@@ -423,8 +423,8 @@
             */
             void setPlaneEquations()
             {
-                float3 n; // Normal
-                float3 c; // Center
+                fixed3 n; // Normal
+                fixed3 c; // Center
                 
                 n = normalize(_CollisionPlaneNormal0.xyz);
                 c = _CollisionPlaneCenter0.xyz;
@@ -453,33 +453,33 @@
 
             fragmentInput vert (vertexInput v)
             {
-                float3 v_pos = v.pos.xyz;
-                float4 p_pos = float4(v_pos, 1.f);
+                fixed3 v_pos = v.pos.xyz;
+                fixed4 p_pos = fixed4(v_pos, 1.f);
                 int id = v.id.x;
                 
                 // _Time.y+1: id starts equal 1 and _Time.y equal 0. We want both starting together.
-                float time = _Time.y + 1 - _StartDelay;
+                fixed time = _Time.y + 1 - _StartDelay;
 
                 // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.
-                float upper_bound = time * _RateOverTime;
+                fixed upper_bound = time * _RateOverTime;
                 
                 if (id <= upper_bound){
                     
                     // Relative time: particles must spawn from time equal zero.
-                    float relative_time = time - (id / _RateOverTime);
+                    fixed relative_time = time - (id / _RateOverTime);
                     
                     // Relative id to time window to increase randomness.
-                    id = id * randomSin(float2(id, id)) * (int)ceil(relative_time / _StartLifeTime);
+                    id = id * randomSin(fixed2(id, id)) * (int)ceil(relative_time / _StartLifeTime);
                     
                     // Normalize relative time.
                     relative_time = relative_time % _StartLifeTime;
                     
                     // Object position coordinates to World coordinates.
-                    v_pos = mul(unity_ObjectToWorld, float4(v_pos, 1.f)).xyz;
+                    v_pos = mul(unity_ObjectToWorld, fixed4(v_pos, 1.f)).xyz;
                     
                     setPlaneEquations();
                     
-                    float3 center_pos = float3(0.f, 0.f, 0.f);
+                    fixed3 center_pos = fixed3(0.f, 0.f, 0.f);
                     if (_Shape == 1){
                         center_pos = sphereMovement(v_pos, id, relative_time);
                     } else {
@@ -492,7 +492,7 @@
                     v_pos = getBillboardVertex(center_pos, v.uv);
                     
                     // View-Projection transformation (Model transformation already been done previously).
-                    p_pos = mul(UNITY_MATRIX_VP, float4(v_pos, 1.f));
+                    p_pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
                 }
 
                 fragmentInput o;
@@ -505,11 +505,11 @@
             fixed4 frag(fragmentInput i) : SV_Target
             {
                 // Discard pixels far from quad center: draw circle.
-                float distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
+                fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
                 if (distance > 0.4f)
                     discard;
                 
-                float alpha = 1.f - 2.5*distance;
+                fixed alpha = 1.f - 2.5*distance;
                 
                 return fixed4(_StartColor.xyz, alpha);
             }
