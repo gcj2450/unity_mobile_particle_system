@@ -180,12 +180,13 @@ public class ParticleCircle : MonoBehaviour
                 if (plane_normal4.y < 0.000001f && plane_normal4.y > -0.000001f) plane_normal4.y = 0;
                 if (plane_normal4.z < 0.000001f && plane_normal4.z > -0.000001f) plane_normal4.z = 0;
             }
+
+            Vector3 normal = Vector3.Normalize(plane_normal4);
+            float plane_d = -1 * Vector3.Dot(normal, plane_center4);
+            Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
             
-            if (tempMaterial.GetVector("_CollisionPlaneCenter"+i) != plane_center4){
-                tempMaterial.SetVector("_CollisionPlaneCenter"+i, plane_center4);
-            }
-            if (tempMaterial.GetVector("_CollisionPlaneNormal"+i) != plane_normal4){
-                tempMaterial.SetVector("_CollisionPlaneNormal"+i, plane_normal4);
+            if (tempMaterial.GetVector("_CollisionPlaneEquation"+i) != plane_eq){
+                tempMaterial.SetVector("_CollisionPlaneEquation"+i, plane_eq);
             }
         }
 

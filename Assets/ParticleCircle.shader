@@ -13,17 +13,10 @@
         _Shape("Shape", int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
 
-        _CollisionPlaneCenter0("Collision Plane Center 0", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _CollisionPlaneNormal0("Collision Plane Normal 0", Vector) = (0.0, 0.0, 0.0, 0.0)
-        
-        _CollisionPlaneCenter1("Collision Plane Center 1", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _CollisionPlaneNormal1("Collision Plane Normal 1", Vector) = (0.0, 0.0, 0.0, 0.0)
-
-        _CollisionPlaneCenter2("Collision Plane Center 2", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _CollisionPlaneNormal2("Collision Plane Normal 2", Vector) = (0.0, 0.0, 0.0, 0.0)
-
-        _CollisionPlaneCenter3("Collision Plane Center 3", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _CollisionPlaneNormal3("Collision Plane Normal 3", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneEquation0("Collision Plane Equation 0", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneEquation1("Collision Plane Equation 1", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneEquation2("Collision Plane Equation 2", Vector) = (0.0, 0.0, 0.0, 0.0)
+        _CollisionPlaneEquation3("Collision Plane Equation 3", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
 
     SubShader {
@@ -55,28 +48,16 @@
             uniform int   _Shape = 0;
             uniform fixed _ConeAngle = 0.f;
 
-            uniform fixed4 _CollisionPlaneCenter0 = fixed4(0.f, 0.f, 0.f, 1.f);
-            uniform fixed4 _CollisionPlaneNormal0 = fixed4(0.f, 0.f, 0.f, 1.f);
-
-            uniform fixed4 _CollisionPlaneCenter1 = fixed4(0.f, 0.f, 0.f, 1.f);
-            uniform fixed4 _CollisionPlaneNormal1 = fixed4(0.f, 0.f, 0.f, 1.f);
-
-            uniform fixed4 _CollisionPlaneCenter2 = fixed4(0.f, 0.f, 0.f, 1.f);
-            uniform fixed4 _CollisionPlaneNormal2 = fixed4(0.f, 0.f, 0.f, 1.f);
-
-            uniform fixed4 _CollisionPlaneCenter3 = fixed4(0.f, 0.f, 0.f, 1.f);
-            uniform fixed4 _CollisionPlaneNormal3 = fixed4(0.f, 0.f, 0.f, 1.f);
+            uniform fixed4 _CollisionPlaneEquation0 = fixed4(0.f, 0.f, 0.f, 0.f);
+            uniform fixed4 _CollisionPlaneEquation1 = fixed4(0.f, 0.f, 0.f, 0.f);
+            uniform fixed4 _CollisionPlaneEquation2 = fixed4(0.f, 0.f, 0.f, 0.f);
+            uniform fixed4 _CollisionPlaneEquation3 = fixed4(0.f, 0.f, 0.f, 0.f);
  
             static const fixed  HASHSCALE1 = 0.1031;
             static const fixed3 HASHSCALE3 = fixed3(.1031, .1030, .0973);
             static const fixed  ITERATIONS = 4.f;
             static const fixed  PARABOLA_COEFFICIENT = 4.f;
             
-            static fixed4 plane0_eq = fixed4(0.f, 0.f, 0.f, 0.f);
-            static fixed4 plane1_eq = fixed4(0.f, 0.f, 0.f, 0.f);
-            static fixed4 plane2_eq = fixed4(0.f, 0.f, 0.f, 0.f);
-            static fixed4 plane3_eq = fixed4(0.f, 0.f, 0.f, 0.f);
- 
             struct fragmentInput {
                 fixed4 pos    : SV_POSITION;
                 fixed2 uv     : TEXCOORD0;
@@ -125,19 +106,6 @@
                 return frac(sin(dot(_st.xy, fixed2(12.9898f,78.233f)))*43758.5453123f);
             }
             
-            // 'c' domain: (-1 <= c.xyz <= 1)
-            // http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
-            fixed3 mapCubeToSphere(fixed3 c)
-            {
-                fixed3 s = fixed3(0.f, 0.f, 0.f);
-               
-                s.x = c.x * sqrt(1 - pow(c.y, 2)/2 - pow(c.z, 2)/2 + (pow(c.y, 2)*pow(c.z,2))/3);
-                s.y = c.y * sqrt(1 - pow(c.z, 2)/2 - pow(c.x, 2)/2 + (pow(c.x, 2)*pow(c.z,2))/3);
-                s.z = c.z * sqrt(1 - pow(c.x, 2)/2 - pow(c.y, 2)/2 + (pow(c.x, 2)*pow(c.y,2))/3);
-               
-                return s;
-            }
-            
             // Calc initial velocity/direction to a particle given its id.
             // Return an fixed3 vec. Elements range: (0 <= p <= 1)
             // >>> This number will be the same for each particle, in all frames. <<<
@@ -180,14 +148,14 @@
             */
             fixed getCollisionTime(fixed4 plane_equation, parabola p)
             {
-                half a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
-                half b = dot(plane_equation.xyz, p.v);
-                half c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
+                fixed a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
+                fixed b = dot(plane_equation.xyz, p.v);
+                fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
                 
                 if (a != 0.f){
                     // Has acceleration => quadratic
                     fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
-                    if (time[0] >= 0){
+                    if (time[0] >= 0.f){
                         return time[0];
                     }
                     return time[1];
@@ -198,26 +166,10 @@
             }
             
             /**
-            * Return fixed4(a, b, c, d) where 'ax + by + cy + d = 0'. 
-            */
-            fixed4 getPlaneEquation(fixed3 plane_normal, fixed3 plane_center)
-            {
-                fixed3 plane_n = normalize(plane_normal);
-                fixed  plane_d = -dot(plane_n, plane_center);
-
-                return fixed4(plane_n, plane_d);
-            }
-            
-            /**
             * Return updated fixed4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
             */
             fixed4 updateNearPlaneTime(fixed4 plane_equation, fixed4 lower_plane_normal_time, const parabola p)
             {
-                if (plane_equation.x == 0.f && plane_equation.y == 0.f && plane_equation.z == 0.f){
-                    // plane equation not set.
-                    return lower_plane_normal_time;
-                }
-                
                 const fixed time_threshold = 0.01f;
 
                 fixed plane_collision_time = getCollisionTime(plane_equation, p);
@@ -245,21 +197,24 @@
             */
             parabola getNextParabolaAfterCollision(parabola p)
             {
-                // Avoid useless calculations.
-                if (p.t <= 0.f){
-                    return p;
-                }
-            
                 fixed4 plane_normal_time = fixed4(0.f, 0.f, 0.f, _StartLifeTime);
                 
                 // Check collision Plane 0 and if its near emitter than the others.
-                plane_normal_time = updateNearPlaneTime(plane0_eq, plane_normal_time, p);
+                if (_CollisionPlaneEquation0.x != 0.f || _CollisionPlaneEquation0.y != 0 || _CollisionPlaneEquation0.z != 0){
+                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation0, plane_normal_time, p);
+                }
                 // Check collision Plane 1 and if its near emitter than the others.
-                plane_normal_time = updateNearPlaneTime(plane1_eq, plane_normal_time, p);
+                if (_CollisionPlaneEquation1.x != 0.f || _CollisionPlaneEquation1.y != 0 || _CollisionPlaneEquation1.z != 0){
+                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation1, plane_normal_time, p);
+                }
                 // Check collision Plane 2 and if its near emitter than the others.
-                plane_normal_time = updateNearPlaneTime(plane2_eq, plane_normal_time, p);
+                if (_CollisionPlaneEquation2.x != 0.f || _CollisionPlaneEquation2.y != 0 || _CollisionPlaneEquation2.z != 0){
+                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation2, plane_normal_time, p);
+                }
                 // Check collision Plane 3 and if its near emitter than the others.
-                plane_normal_time = updateNearPlaneTime(plane3_eq, plane_normal_time, p);
+                if (_CollisionPlaneEquation3.x != 0.f || _CollisionPlaneEquation3.y != 0 || _CollisionPlaneEquation3.z != 0){
+                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation3, plane_normal_time, p);
+                }
                 
                 // Get normal and collision time of the nearest plane.
                 fixed3 normal = plane_normal_time.xyz;
@@ -312,7 +267,6 @@
                 i_model_rotation[0][3] = 0.f; // Prevent translation:
                 i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
                 i_model_rotation[2][3] = 0.f;
-                i_model_rotation[3][3] = 1.f;
                 
                 return mul(i_model_rotation, fixed4(v, 1.f)).xyz;
             }
@@ -417,39 +371,6 @@
                 
                 return v_pos;
             }
-            
-            /**
-            * Precalc plane equations to save compute time.
-            */
-            void setPlaneEquations()
-            {
-                fixed3 n; // Normal
-                fixed3 c; // Center
-                
-                n = normalize(_CollisionPlaneNormal0.xyz);
-                c = _CollisionPlaneCenter0.xyz;
-                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    plane0_eq = getPlaneEquation(normalize(n.xyz), c);
-                }
-                
-                n = normalize(_CollisionPlaneNormal1.xyz);
-                c = _CollisionPlaneCenter1.xyz;
-                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    plane1_eq = getPlaneEquation(normalize(n.xyz), c);
-                }
-                
-                n = normalize(_CollisionPlaneNormal2.xyz);
-                c = _CollisionPlaneCenter2.xyz;
-                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    plane2_eq = getPlaneEquation(normalize(n.xyz), c);
-                }
-                
-                n = normalize(_CollisionPlaneNormal3.xyz);
-                c = _CollisionPlaneCenter3.xyz;
-                if(n.x != 0.f || n.y != 0.f || n.z != 0.f) {
-                    plane3_eq = getPlaneEquation(normalize(n.xyz), c);
-                }
-            }
 
             fragmentInput vert (vertexInput v)
             {
@@ -476,9 +397,7 @@
                     
                     // Object position coordinates to World coordinates.
                     v_pos = mul(unity_ObjectToWorld, fixed4(v_pos, 1.f)).xyz;
-                    
-                    setPlaneEquations();
-                    
+                     
                     fixed3 center_pos = fixed3(0.f, 0.f, 0.f);
                     if (_Shape == 1){
                         center_pos = sphereMovement(v_pos, id, relative_time);
