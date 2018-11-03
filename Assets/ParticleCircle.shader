@@ -56,7 +56,8 @@
             static const fixed  HASHSCALE1 = 0.1031;
             static const fixed3 HASHSCALE3 = fixed3(.1031, .1030, .0973);
             static const fixed  ITERATIONS = 4.f;
-            static const fixed  PARABOLA_COEFFICIENT = 4.f;
+            static const fixed  GRAVITY_COEFF = 4.f;
+            static const fixed3 GRAVITY_VEC = fixed3(0.f, -_GravityModifier, 0.f);
             
             struct fragmentInput {
                 fixed4 pos    : SV_POSITION;
@@ -80,6 +81,7 @@
                 fixed3 v;
                 fixed  t;
                 fixed3 acc;
+                bool final;
             };
             
             // Hash functions to generate entropy by David Hoskins
@@ -148,7 +150,7 @@
             */
             fixed getCollisionTime(fixed4 plane_equation, parabola p)
             {
-                fixed a = dot(plane_equation.xyz, p.acc) * PARABOLA_COEFFICIENT;
+                fixed a = dot(plane_equation.xyz, GRAVITY_VEC) * GRAVITY_COEFF;
                 fixed b = dot(plane_equation.xyz, p.v);
                 fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
                 
@@ -173,7 +175,7 @@
                 const fixed time_threshold = 0.01f;
 
                 fixed plane_collision_time = getCollisionTime(plane_equation, p);
-                plane_collision_time = plane_collision_time - (_StartSize/10);
+                //plane_collision_time = plane_collision_time - (_StartSize/ 8);
                 
                 // time_threshold prevents the particle go through the plane.
                 if (plane_collision_time > time_threshold){
@@ -222,15 +224,31 @@
                 
                 // There is no collision. Return unmodified parabola.
                 if (time == _StartLifeTime){
+                    p.final = true;
                     return p;
                 }
                 
+                fixed3 g = (GRAVITY_COEFF*pow(time, 2)) * GRAVITY_VEC;
+
                 // Update initial_pos to collision point.
-                p.v0 = p.v0 + p.v*time + PARABOLA_COEFFICIENT*p.acc*pow(time, 2);
+                p.v0 = p.v0 + p.v*time + g;
                 // Reflect direction vector.
-                p.v = reflect(p.v + p.acc*time, normal);
+                p.v = reflect(p.v + GRAVITY_VEC*time, normal);
                 // New parabola starts from collision time.
                 p.t = p.t - time;
+                
+                if (time <= 0.1f){
+                    // Time doesn't changed that much => particle is rolling.
+                    // Update gravity.
+                    g = (GRAVITY_COEFF*pow(p.t, 2)) * GRAVITY_VEC;
+                    // Project vector g+v onto plane.
+                    fixed3 u = g + p.v;
+                    fixed3 proj_uN = normalize(normal) * (dot(u, normal) / length(normal));
+                    p.v = u - proj_uN;
+                    p.final = true;
+                    // Ignore gravity (already calc result force vec).
+                    p.acc = 0.f;
+                }
             
                 return p;
             }
@@ -247,15 +265,16 @@
                     fixed actual_time = p.t;
                     // Update parabola for each collision by time.
                     p = getNextParabolaAfterCollision(p);
-                    if (actual_time == p.t){
-                        // Parabola unmodified. No collision was found.
+                    if (p.final){
+                        // Parabola will not change. Stop iteration.
                         break;
                     }
                 }
                 
                 // Apply Parabola equation: 
                 // P(t) = P0 + V0*t + 0.5*Acc*t^2.
-                return p.v0 + p.v*p.t + PARABOLA_COEFFICIENT*p.acc*pow(p.t, 2);
+                fixed3 g = (GRAVITY_COEFF*pow(p.t, 2)) * p.acc;
+                return p.v0 + p.v*p.t + g;
             }
             
             /**
@@ -282,15 +301,13 @@
                 v = _StartSpeed * v;
                 
                 v = objctToWorldNoTranslation(v);
-                
-                // Gravity acceleration modifier.
-                fixed3 acc = fixed3(0.f, -_GravityModifier, 0.f);
-                
+                                
                 parabola p;
-                p.v0  = initial_pos;
-                p.v   = v;
-                p.acc = acc;
-                p.t   = time;
+                p.v0    = initial_pos;
+                p.v     = v;
+                p.t     = time;
+                p.acc   = GRAVITY_VEC;
+                p.final = false;
                 
                 return getParticlePosition(p);
             }
@@ -313,14 +330,12 @@
 
                 v = objctToWorldNoTranslation(v);
 
-                // Gravity acceleration modifier.
-                fixed3 acc = fixed3(0.f, -_GravityModifier, 0.f);
-                
                 parabola p;
-                p.v0  = initial_pos;
-                p.v   = v;
-                p.acc = acc;
-                p.t   = time;
+                p.v0    = initial_pos;
+                p.v     = v;
+                p.t     = time;
+                p.acc   = GRAVITY_VEC;
+                p.final = false;
                 
                 return getParticlePosition(p);
             }

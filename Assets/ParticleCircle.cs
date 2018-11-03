@@ -97,7 +97,6 @@ public class ParticleCircle : MonoBehaviour
         mesh.uv        = uv;
         mesh.uv2       = id;
         
-        //@TODO Calc bounds -> particle render out clipping space.
         float bound_val = startLifetime * startSpeed;
         mesh.bounds = new Bounds(emitter_pos, new Vector3(bound_val, bound_val, bound_val));
     }
