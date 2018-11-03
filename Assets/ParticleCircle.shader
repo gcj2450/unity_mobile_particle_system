@@ -152,7 +152,7 @@
             {
                 fixed a = dot(plane_equation.xyz, GRAVITY_VEC) * GRAVITY_COEFF;
                 fixed b = dot(plane_equation.xyz, p.v);
-                fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w;
+                fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w - _StartSize/5;
                 
                 if (a != 0.f){
                     // Has acceleration => quadratic
