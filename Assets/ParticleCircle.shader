@@ -175,7 +175,6 @@
                 const fixed time_threshold = 0.01f;
 
                 fixed plane_collision_time = getCollisionTime(plane_equation, p);
-                //plane_collision_time = plane_collision_time - (_StartSize/ 8);
                 
                 // time_threshold prevents the particle go through the plane.
                 if (plane_collision_time > time_threshold){
@@ -219,7 +218,7 @@
                 }
                 
                 // Get normal and collision time of the nearest plane.
-                fixed3 normal = plane_normal_time.xyz;
+                fixed3 normal = normalize(plane_normal_time.xyz);
                 fixed time = plane_normal_time.w;
                 
                 // There is no collision. Return unmodified parabola.
@@ -231,19 +230,20 @@
                 fixed3 g = (GRAVITY_COEFF*pow(time, 2)) * GRAVITY_VEC;
 
                 // Update initial_pos to collision point.
-                p.v0 = p.v0 + p.v*time + g;
+                p.v0 += p.v*time + g;
                 // Reflect direction vector.
                 p.v = reflect(p.v + GRAVITY_VEC*time, normal);
                 // New parabola starts from collision time.
-                p.t = p.t - time;
+                p.t -= time;
                 
-                if (time <= 0.1f){
+                if (time <= 0.01f){
                     // Time doesn't changed that much => particle is rolling.
+                    //p.v0 += normal * _StartSize/4;
                     // Update gravity.
                     g = (GRAVITY_COEFF*pow(p.t, 2)) * GRAVITY_VEC;
                     // Project vector g+v onto plane.
                     fixed3 u = g + p.v;
-                    fixed3 proj_uN = normalize(normal) * (dot(u, normal) / length(normal));
+                    fixed3 proj_uN = normal * dot(u, normal);
                     p.v = u - proj_uN;
                     p.final = true;
                     // Ignore gravity (already calc result force vec).
