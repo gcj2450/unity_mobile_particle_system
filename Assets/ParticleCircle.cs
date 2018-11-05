@@ -161,8 +161,7 @@ public class ParticleCircle : MonoBehaviour
     
     void Awake()
     {
-        Renderer renderer = GetComponent<Renderer>();
-        renderer.material = new Material(Shader.Find("Unlit/ParticleCircle"));
+        GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleCircle"));
 
 #if UNITY_EDITOR
         MeshFilter mf = GetComponent<MeshFilter>();
@@ -172,66 +171,49 @@ public class ParticleCircle : MonoBehaviour
 #else
         mesh = GetComponent<MeshFilter>().mesh;
 #endif
-
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
-        if (max_p > maxParticles){
-            max_p = maxParticles;
-        }
+        if (max_p > maxParticles) max_p = maxParticles;
+        
         setMesh(max_p);
+
+        OnValidate();
     }
 
     public void TriggerUpdate()
     {
         EditorUtility.SetDirty(this);
     }
-
-    public void Update()
+    
+    void OnValidate()
     {
+        EditorApplication.update = TriggerUpdate;
 
-#if UNITY_EDITOR
-        
+        if (collision.planes != null && collision.planes.Length > MAX_COLLISION_PLANES) {
+            Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
+            System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
+        }
+
         Renderer renderer = GetComponent<Renderer>();
+        Material tempMat = new Material(renderer.sharedMaterial);
 
-        Material tempMaterial = new Material(renderer.sharedMaterial);
-        
-        if (tempMaterial.GetFloat("_StartSize") != startSize){
-            Debug.Log("changed");
-            tempMaterial.SetFloat("_StartSize", startSize);
-        }
-        if (tempMaterial.GetFloat("_RateOverTime") != emission.rateOverTime){
-            tempMaterial.SetFloat("_RateOverTime", emission.rateOverTime);
-        }
-        if (tempMaterial.GetFloat("_StartSpeed") != startSpeed){
-            tempMaterial.SetFloat("_StartSpeed", startSpeed);
-        }
-        if (tempMaterial.GetFloat("_StartLifeTime") != startLifetime){
-            tempMaterial.SetFloat("_StartLifeTime", startLifetime);
-        }
-        if (tempMaterial.GetFloat("_StartDelay") != startDelay){
-            tempMaterial.SetFloat("_StartDelay", startDelay);
-        }
-        if (tempMaterial.GetInt("_Shape") != (int)shape){
-            tempMaterial.SetInt("_Shape", (int)shape);
-        }
-        if (tempMaterial.GetFloat("_ConeAngle") != cone.angle){
-            tempMaterial.SetFloat("_ConeAngle", cone.angle);
-        }
-        if (tempMaterial.GetVector("_StartColor") != (Vector4)startColor){
-            tempMaterial.SetVector("_StartColor", startColor);
-        }
-        if (tempMaterial.GetFloat("_GravityModifier") != gravityModifier){
-            tempMaterial.SetFloat("_GravityModifier", gravityModifier);
-        }
-        
-        for (int i = 0; i < MAX_COLLISION_PLANES; i++)
-        {
-            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-            
-            if (collision.planes.Length > i && collision.planes[i] != null){
+        tempMat.SetFloat("_StartSize", startSize);
+        tempMat.SetFloat("_RateOverTime", emission.rateOverTime);
+        tempMat.SetFloat("_StartSpeed", startSpeed);
+        tempMat.SetFloat("_StartLifeTime", startLifetime);
+        tempMat.SetFloat("_StartDelay", startDelay);
+        tempMat.SetInt("_Shape", (int)shape);
+        tempMat.SetFloat("_ConeAngle", cone.angle);
+        tempMat.SetVector("_StartColor", startColor);
+        tempMat.SetFloat("_GravityModifier", gravityModifier);
+
+        for (int i = 0; i < MAX_COLLISION_PLANES; i++){
+            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+
+            if (collision.planes.Length > i && collision.planes[i] != null) {
                 Vector3 plane_center = collision.planes[i].transform.position;
                 Vector3 plane_up = collision.planes[i].transform.up;
-            
+
                 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
                 plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
 
@@ -244,31 +226,18 @@ public class ParticleCircle : MonoBehaviour
             Vector3 normal = Vector3.Normalize(plane_normal4);
             float plane_d = -1 * Vector3.Dot(normal, plane_center4);
             Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
-            
-            if (tempMaterial.GetVector("_CollisionPlaneEquation"+i) != plane_eq){
-                tempMaterial.SetVector("_CollisionPlaneEquation"+i, plane_eq);
-            }
-        }
-        
-        renderer.sharedMaterial = tempMaterial;
 
-        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
-        if (max_p > maxParticles){
+            if (tempMat.GetVector("_CollisionPlaneEquation" + i) != plane_eq)
+                tempMat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
+        }
+
+        renderer.sharedMaterial = tempMat;
+
+        int max_p = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
+        if (max_p > maxParticles)
             max_p = maxParticles;
-        }
-        if (max_p != (mesh.vertexCount/4)){
-            setMesh(max_p);
-        }
-#endif
-    }
-    
-    void OnValidate()
-    {
-        EditorApplication.update = TriggerUpdate;
 
-        if (collision.planes != null && collision.planes.Length > MAX_COLLISION_PLANES) {
-            Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
-            System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
-        }
+        if (max_p != (mesh.vertexCount / 4))
+            setMesh(max_p);
     }
 }
