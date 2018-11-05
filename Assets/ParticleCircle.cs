@@ -42,7 +42,6 @@ public class ParticleCircle : MonoBehaviour
     public Collision collision;
 
     private Mesh mesh;
-    private List<ParticleMesh> meshes_in_use = new List<ParticleMesh>();
     private static int MAX_COLLISION_PLANES = 4;
     
     void Awake()
@@ -120,18 +119,11 @@ public class ParticleCircle : MonoBehaviour
         setMesh();
     }
 
-    private void clearMeshesInUse()
-    {
-        for (int i = 0; i < meshes_in_use.Count; i++)
-            meshes_in_use[i].in_use = false;
-        meshes_in_use.Clear();
-    }
-    
     private void setMesh()
     {
         int size = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
-        if (size > maxParticles)size = maxParticles;
-        
+        if (size > maxParticles) size = maxParticles;
+        if (size > ParticleMeshPool.MAX_PARTICLES) size = ParticleMeshPool.MAX_PARTICLES;
         if (size == (mesh.vertexCount / 4))
             return;
         
@@ -140,33 +132,13 @@ public class ParticleCircle : MonoBehaviour
         List<Vector2> uv  = new List<Vector2>();
         List<Vector2> id  = new List<Vector2>();
 
-        for (int i = 0; i < size; i++)
-        {
-            ParticleMesh p = ParticleMeshPool.getParticleMesh();
-            
-            int idx4 = i * 4;
-            p.tri[0] = idx4 + 0;
-            p.tri[1] = idx4 + 2;
-            p.tri[2] = idx4 + 1;
-            p.tri[3] = idx4 + 2;
-            p.tri[4] = idx4 + 3;
-            p.tri[5] = idx4 + 1;
-    
-            // Passing ID as UV2.
-            Vector2 id_val = new Vector2(i + 1, 0);
-            p.id[0] = id_val;
-            p.id[1] = id_val;
-            p.id[2] = id_val;
-            p.id[3] = id_val;
+        ParticleMesh[] p = ParticleMeshPool.GetParticleMeshes(size);
 
-            ver.AddRange(p.ver);
-            uv.AddRange(p.uv);
-            tri.AddRange(p.tri);
-            id.AddRange(p.id);
-            
-            meshes_in_use.Add(p);
-
-            p.in_use = true;
+        for (int i = 0; i < p.Length; i++){
+            ver.AddRange(p[i].ver);
+            uv.AddRange(p[i].uv);
+            tri.AddRange(p[i].tri);
+            id.AddRange(p[i].id);
         }
         
         mesh.Clear();
@@ -177,10 +149,5 @@ public class ParticleCircle : MonoBehaviour
         
         float bound_val = startLifetime * startSpeed;
         mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
-    }
-
-    private void OnDestroy()
-    {
-        clearMeshesInUse();
     }
 }

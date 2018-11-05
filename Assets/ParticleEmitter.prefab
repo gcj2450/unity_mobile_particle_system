@@ -27,7 +27,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 123
+  m_StaticEditorFlags: 122
   m_IsActive: 1
 --- !u!4 &4575936931346944
 Transform:
@@ -102,7 +102,7 @@ MonoBehaviour:
   startColor: {r: 1, g: 1, b: 1, a: 1}
   gravityModifier: 0
   emission:
-    rateOverTime: 100
+    rateOverTime: 1
   shape: 0
   cone:
     angle: 25
