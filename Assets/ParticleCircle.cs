@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Random = System.Random;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -52,71 +51,9 @@ public class ParticleCircle : MonoBehaviour
     private Mesh mesh;
     
     private static int MAX_COLLISION_PLANES = 4;
-
-    class ParticleMesh
-    {
-        public Vector3[] ver;
-        public int[]     tri;
-        public Vector2[] uv;
-        public Vector2[] id;
-        public bool      in_use;
-    }
-
-    private static List<ParticleMesh> p_mesh = new List<ParticleMesh>();
-
-    private ParticleMesh getParticleMesh()
-    {
-        for (int i = 0; i < p_mesh.Count; i++){
-            if (!p_mesh[i].in_use) {
-                Debug.Log("Returning p_mesh " + i);
-                return p_mesh[i];
-            }
-        }
-        
-        Random rnd = new Random();
-        int idx = rnd.Next(0, p_mesh.Count-1);
-
-        return p_mesh[idx];
-    }
-    
-    private void allocateParticles()
-    {
-        if (p_mesh.Count == 0) {
-            Debug.Log("Allocating...");
-
-            Vector3 emitter_pos = new Vector3(0,0,0);
-
-            Vector2[] uv = new Vector2[4];
-            uv[0] = new Vector2(0, 0);
-            uv[1] = new Vector2(1, 0);
-            uv[2] = new Vector2(0, 1);
-            uv[3] = new Vector2(1, 1);
-            
-            Vector3[] ver = new Vector3[4];
-            ver[0] = emitter_pos;
-            ver[1] = emitter_pos;
-            ver[2] = emitter_pos;
-            ver[3] = emitter_pos;
-            
-            for (int i = 0; i < 10000; i++){
-                
-                ParticleMesh p = new ParticleMesh();
-                
-                p.tri    = new int[6];
-                p.id     = new Vector2[4];
-                p.ver    = ver;
-                p.uv     = uv;
-                p.in_use = false;
-                
-                p_mesh.Add(p);
-            }
-        }
-    }
     
     private void setMesh(int size)
     {
-        allocateParticles();
-        
         List<Vector3> ver = new List<Vector3>();
         List<int>     tri = new List<int>();
         List<Vector2> uv  = new List<Vector2>();
@@ -124,7 +61,7 @@ public class ParticleCircle : MonoBehaviour
 
         for (int i = 0; i < size; i++)
         {
-            ParticleMesh p = getParticleMesh();
+            ParticleMesh p = ParticleMeshPool.getParticleMesh();
             
             int idx4 = i * 4;
             p.tri[0] = idx4 + 0;
