@@ -49,52 +49,8 @@ public class ParticleCircle : MonoBehaviour
     public Collision collision;
 
     private Mesh mesh;
-    
+    private List<ParticleMesh> meshes = new List<ParticleMesh>();
     private static int MAX_COLLISION_PLANES = 4;
-    
-    private void setMesh(int size)
-    {
-        List<Vector3> ver = new List<Vector3>();
-        List<int>     tri = new List<int>();
-        List<Vector2> uv  = new List<Vector2>();
-        List<Vector2> id  = new List<Vector2>();
-
-        for (int i = 0; i < size; i++)
-        {
-            ParticleMesh p = ParticleMeshPool.getParticleMesh();
-            
-            int idx4 = i * 4;
-            p.tri[0] = idx4 + 0;
-            p.tri[1] = idx4 + 2;
-            p.tri[2] = idx4 + 1;
-            p.tri[3] = idx4 + 2;
-            p.tri[4] = idx4 + 3;
-            p.tri[5] = idx4 + 1;
-    
-            // Passing ID as UV2.
-            Vector2 id_val = new Vector2(i + 1, 0);
-            p.id[0] = id_val;
-            p.id[1] = id_val;
-            p.id[2] = id_val;
-            p.id[3] = id_val;
-
-            ver.AddRange(p.ver);
-            uv.AddRange(p.uv);
-            tri.AddRange(p.tri);
-            id.AddRange(p.id);
-
-            p.in_use = true;
-        }
-        
-        mesh.Clear();
-        mesh.vertices  = ver.ToArray();
-        mesh.triangles = tri.ToArray();
-        mesh.uv        = uv.ToArray();
-        mesh.uv2       = id.ToArray();
-        
-        float bound_val = startLifetime * startSpeed;
-        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
-    }
     
     void Awake()
     {
@@ -179,5 +135,55 @@ public class ParticleCircle : MonoBehaviour
 
         if (max_p != (mesh.vertexCount / 4))
             setMesh(max_p);
+    }
+    
+    private void setMesh(int size)
+    {
+        List<Vector3> ver = new List<Vector3>();
+        List<int>     tri = new List<int>();
+        List<Vector2> uv  = new List<Vector2>();
+        List<Vector2> id  = new List<Vector2>();
+
+        for (int i = 0; i < meshes.Count; i++)
+            meshes[i].in_use = false;
+        meshes.Clear();
+
+        for (int i = 0; i < size; i++)
+        {
+            ParticleMesh p = ParticleMeshPool.getParticleMesh();
+            
+            int idx4 = i * 4;
+            p.tri[0] = idx4 + 0;
+            p.tri[1] = idx4 + 2;
+            p.tri[2] = idx4 + 1;
+            p.tri[3] = idx4 + 2;
+            p.tri[4] = idx4 + 3;
+            p.tri[5] = idx4 + 1;
+    
+            // Passing ID as UV2.
+            Vector2 id_val = new Vector2(i + 1, 0);
+            p.id[0] = id_val;
+            p.id[1] = id_val;
+            p.id[2] = id_val;
+            p.id[3] = id_val;
+
+            ver.AddRange(p.ver);
+            uv.AddRange(p.uv);
+            tri.AddRange(p.tri);
+            id.AddRange(p.id);
+            
+            meshes.Add(p);
+
+            p.in_use = true;
+        }
+        
+        mesh.Clear();
+        mesh.vertices  = ver.ToArray();
+        mesh.triangles = tri.ToArray();
+        mesh.uv        = uv.ToArray();
+        mesh.uv2       = id.ToArray();
+        
+        float bound_val = startLifetime * startSpeed;
+        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
     }
 }

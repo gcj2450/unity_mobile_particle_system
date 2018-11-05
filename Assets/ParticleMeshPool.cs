@@ -16,9 +16,9 @@ public class ParticleMeshPool
             }
         }
         
+        // @TODO What to do when there is particles available on pool? Random?
         Random rnd = new Random();
         int idx = rnd.Next(0, pool.Count-1);
-
         return pool[idx];
     }
     
