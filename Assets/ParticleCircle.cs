@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Random = System.Random;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -50,55 +51,112 @@ public class ParticleCircle : MonoBehaviour
 
     private Mesh mesh;
     
-    static private int MAX_COLLISION_PLANES = 4;
-    
-    private void allocateParticles(int size)
-    { 
-        Vector3[] vertices = new Vector3[4*size];
-        int    [] tri      = new int    [6*size];
-        Vector2[] uv       = new Vector2[4*size];
-        Vector2[] id       = new Vector2[4*size];
+    private static int MAX_COLLISION_PLANES = 4;
 
-        Vector3 emitter_pos = new Vector3(0,0,0);
+    class ParticleMesh
+    {
+        public Vector3[] ver;
+        public int[]     tri;
+        public Vector2[] uv;
+        public Vector2[] id;
+        public bool      in_use;
+    }
+
+    private static List<ParticleMesh> p_mesh = new List<ParticleMesh>();
+
+    private ParticleMesh getParticleMesh()
+    {
+        for (int i = 0; i < p_mesh.Count; i++){
+            if (!p_mesh[i].in_use) {
+                Debug.Log("Returning p_mesh " + i);
+                return p_mesh[i];
+            }
+        }
+        
+        Random rnd = new Random();
+        int idx = rnd.Next(0, p_mesh.Count-1);
+
+        return p_mesh[idx];
+    }
+    
+    private void allocateParticles()
+    {
+        if (p_mesh.Count == 0) {
+            Debug.Log("Allocating...");
+
+            Vector3 emitter_pos = transform.position;
+
+            Vector2[] uv = new Vector2[4];
+            uv[0] = new Vector2(0, 0);
+            uv[1] = new Vector2(1, 0);
+            uv[2] = new Vector2(0, 1);
+            uv[3] = new Vector2(1, 1);
+            
+            Vector3[] ver = new Vector3[4];
+            ver[0] = emitter_pos;
+            ver[1] = emitter_pos;
+            ver[2] = emitter_pos;
+            ver[3] = emitter_pos;
+            
+            for (int i = 0; i < 10000; i++){
+                
+                ParticleMesh p = new ParticleMesh();
+                
+                p.tri    = new int[6];
+                p.id     = new Vector2[4];
+                p.ver    = ver;
+                p.uv     = uv;
+                p.in_use = false;
+                
+                p_mesh.Add(p);
+            }
+        }
+    }
+    
+    private void setMesh(int size)
+    {
+        allocateParticles();
+
+        List<Vector3> ver = new List<Vector3>();
+        List<int>     tri = new List<int>();
+        List<Vector2> uv  = new List<Vector2>();
+        List<Vector2> id  = new List<Vector2>();
 
         for (int i = 0; i < size; i++)
         {
-            int idx4 = i * 4;
-            int index6 = i * 6;
-
-            vertices[idx4 + 0] = emitter_pos;
-            vertices[idx4 + 1] = emitter_pos;
-            vertices[idx4 + 2] = emitter_pos;
-            vertices[idx4 + 3] = emitter_pos;
-    
-            tri[index6 + 0] = idx4 + 0;
-            tri[index6 + 1] = idx4 + 2;
-            tri[index6 + 2] = idx4 + 1;
-            tri[index6 + 3] = idx4 + 2;
-            tri[index6 + 4] = idx4 + 3;
-            tri[index6 + 5] = idx4 + 1;
-    
-            uv[idx4 + 0] = new Vector2(0, 0);
-            uv[idx4 + 1] = new Vector2(1, 0);
-            uv[idx4 + 2] = new Vector2(0, 1);
-            uv[idx4 + 3] = new Vector2(1, 1);
+            ParticleMesh p = getParticleMesh();
             
+            int idx4 = i * 4;
+            p.tri[0] = idx4 + 0;
+            p.tri[1] = idx4 + 2;
+            p.tri[2] = idx4 + 1;
+            p.tri[3] = idx4 + 2;
+            p.tri[4] = idx4 + 3;
+            p.tri[5] = idx4 + 1;
+    
             // Passing ID as UV2.
             Vector2 id_val = new Vector2(i + 1, 0);
-            id[idx4 + 0] = id_val;
-            id[idx4 + 1] = id_val;
-            id[idx4 + 2] = id_val;
-            id[idx4 + 3] = id_val;
-        }
+            p.id[0] = id_val;
+            p.id[1] = id_val;
+            p.id[2] = id_val;
+            p.id[3] = id_val;
 
+            ver.AddRange(p.ver);
+            uv.AddRange(p.uv);
+            tri.AddRange(p.tri);
+            id.AddRange(p.id);
+
+            p.in_use = true;
+        }
+        
         mesh.Clear();
-        mesh.vertices  = vertices;
-        mesh.triangles = tri;
-        mesh.uv        = uv;
-        mesh.uv2       = id;
+        mesh.vertices  = ver.ToArray();
+        mesh.triangles = tri.ToArray();
+        mesh.uv        = uv.ToArray();
+        mesh.uv2       = id.ToArray();
         
         float bound_val = startLifetime * startSpeed;
-        mesh.bounds = new Bounds(emitter_pos, new Vector3(bound_val, bound_val, bound_val));
+        mesh.bounds = new Bounds(transform.position, new Vector3(bound_val, bound_val, bound_val));
     }
     
     void Awake()
@@ -110,6 +168,7 @@ public class ParticleCircle : MonoBehaviour
         MeshFilter mf = GetComponent<MeshFilter>();
         Mesh meshCopy = Mesh.Instantiate(mf.sharedMesh) as Mesh;
         mesh = mf.mesh = meshCopy;
+        mesh.name = "Particle Quad (Editor)";
 #else
         mesh = GetComponent<MeshFilter>().mesh;
 #endif
@@ -118,7 +177,7 @@ public class ParticleCircle : MonoBehaviour
         if (max_p > maxParticles){
             max_p = maxParticles;
         }
-        allocateParticles(max_p);
+        setMesh(max_p);
     }
 
     public void TriggerUpdate()
@@ -132,9 +191,11 @@ public class ParticleCircle : MonoBehaviour
 #if UNITY_EDITOR
         
         Renderer renderer = GetComponent<Renderer>();
-        var tempMaterial = new Material(Shader.Find("Unlit/ParticleCircle"));
+
+        Material tempMaterial = new Material(renderer.sharedMaterial);
         
         if (tempMaterial.GetFloat("_StartSize") != startSize){
+            Debug.Log("changed");
             tempMaterial.SetFloat("_StartSize", startSize);
         }
         if (tempMaterial.GetFloat("_RateOverTime") != emission.rateOverTime){
@@ -188,17 +249,15 @@ public class ParticleCircle : MonoBehaviour
                 tempMaterial.SetVector("_CollisionPlaneEquation"+i, plane_eq);
             }
         }
-
+        
         renderer.sharedMaterial = tempMaterial;
 
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
         if (max_p > maxParticles){
             max_p = maxParticles;
         }
-
-        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
         if (max_p != (mesh.vertexCount/4)){
-            allocateParticles(max_p);
+            setMesh(max_p);
         }
 #endif
     }

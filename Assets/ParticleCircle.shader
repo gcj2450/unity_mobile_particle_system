@@ -238,7 +238,6 @@
                 
                 if (time <= 0.01f){
                     // Time doesn't changed that much => particle is rolling.
-                    //p.v0 += normal * _StartSize/4;
                     // Update gravity.
                     g = (GRAVITY_COEFF*pow(p.t, 2)) * GRAVITY_VEC;
                     // Project vector g+v onto plane.
@@ -389,6 +388,9 @@
 
             fragmentInput vert (vertexInput v)
             {
+                fragmentInput o;
+                o.uv  = v.uv.xy - fixed2(0.5, 0.5);
+            
                 fixed3 v_pos = v.pos.xyz;
                 fixed4 p_pos = fixed4(v_pos, 1.f);
                 int id = v.id.x;
@@ -426,12 +428,8 @@
                     v_pos = getBillboardVertex(center_pos, v.uv);
                     
                     // View-Projection transformation (Model transformation already been done previously).
-                    p_pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
+                    o.pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
                 }
-
-                fragmentInput o;
-                o.pos = p_pos;
-                o.uv  = v.uv.xy - fixed2(0.5, 0.5);
 
                 return o;
             }

@@ -98,11 +98,11 @@ MonoBehaviour:
   startLifetime: 5
   startSpeed: 5
   startSize: 1
-  maxParticles: 1000
+  maxParticles: 10
   startColor: {r: 1, g: 1, b: 1, a: 1}
   gravityModifier: 0
   emission:
-    rateOverTime: 10
+    rateOverTime: 100
   shape: 0
   cone:
     angle: 25
