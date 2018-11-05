@@ -84,7 +84,7 @@ public class ParticleCircle : MonoBehaviour
         if (p_mesh.Count == 0) {
             Debug.Log("Allocating...");
 
-            Vector3 emitter_pos = transform.position;
+            Vector3 emitter_pos = new Vector3(0,0,0);
 
             Vector2[] uv = new Vector2[4];
             uv[0] = new Vector2(0, 0);
@@ -116,7 +116,7 @@ public class ParticleCircle : MonoBehaviour
     private void setMesh(int size)
     {
         allocateParticles();
-
+        
         List<Vector3> ver = new List<Vector3>();
         List<int>     tri = new List<int>();
         List<Vector2> uv  = new List<Vector2>();
@@ -156,13 +156,13 @@ public class ParticleCircle : MonoBehaviour
         mesh.uv2       = id.ToArray();
         
         float bound_val = startLifetime * startSpeed;
-        mesh.bounds = new Bounds(transform.position, new Vector3(bound_val, bound_val, bound_val));
+        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
     }
     
     void Awake()
     {
         GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleCircle"));
-
+        
 #if UNITY_EDITOR
         MeshFilter mf = GetComponent<MeshFilter>();
         Mesh meshCopy = Mesh.Instantiate(mf.sharedMesh) as Mesh;
@@ -194,6 +194,9 @@ public class ParticleCircle : MonoBehaviour
         }
 
         Renderer renderer = GetComponent<Renderer>();
+        if (renderer.sharedMaterial == null){
+            return;
+        }
         Material tempMat = new Material(renderer.sharedMaterial);
 
         tempMat.SetFloat("_StartSize", startSize);
@@ -231,7 +234,7 @@ public class ParticleCircle : MonoBehaviour
                 tempMat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
         }
 
-        renderer.sharedMaterial = tempMat;
+        renderer.material = tempMat;
 
         int max_p = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
         if (max_p > maxParticles)
