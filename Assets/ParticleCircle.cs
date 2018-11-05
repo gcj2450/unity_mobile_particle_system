@@ -17,39 +17,32 @@ public class ParticleCircle : MonoBehaviour
     public float gravityModifier    = 0.0f;    
 
     [System.Serializable]
-    public struct Emission
-    {
+    public struct Emission{
         public float rateOverTime;
     }
-
     public Emission emission;
     
     public enum ShapeType{ Cone, Sphere }
-
     public ShapeType shape;
 
     [System.Serializable]
-    public struct Cone
-    {
+    public struct Cone{
         public float angle;
     }
     public Cone cone;
     
     [System.Serializable]
-    public struct Sphere
-    {}
+    public struct Sphere{}
     public Sphere sphere;
     
     [System.Serializable]
-    public struct Collision
-    {
+    public struct Collision{
         public MeshFilter[] planes; // Unity cannot serialize "Plane"
     }
-
     public Collision collision;
 
     private Mesh mesh;
-    private List<ParticleMesh> meshes = new List<ParticleMesh>();
+    private List<ParticleMesh> meshes_in_use = new List<ParticleMesh>();
     private static int MAX_COLLISION_PLANES = 4;
     
     void Awake()
@@ -66,7 +59,6 @@ public class ParticleCircle : MonoBehaviour
 #endif
         int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
         if (max_p > maxParticles) max_p = maxParticles;
-        
         setMesh(max_p);
 
         OnValidate();
@@ -132,9 +124,15 @@ public class ParticleCircle : MonoBehaviour
         int max_p = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
         if (max_p > maxParticles)
             max_p = maxParticles;
-
         if (max_p != (mesh.vertexCount / 4))
             setMesh(max_p);
+    }
+
+    private void clearMeshesInUse()
+    {
+        for (int i = 0; i < meshes_in_use.Count; i++)
+            meshes_in_use[i].in_use = false;
+        meshes_in_use.Clear();
     }
     
     private void setMesh(int size)
@@ -143,10 +141,6 @@ public class ParticleCircle : MonoBehaviour
         List<int>     tri = new List<int>();
         List<Vector2> uv  = new List<Vector2>();
         List<Vector2> id  = new List<Vector2>();
-
-        for (int i = 0; i < meshes.Count; i++)
-            meshes[i].in_use = false;
-        meshes.Clear();
 
         for (int i = 0; i < size; i++)
         {
@@ -172,7 +166,7 @@ public class ParticleCircle : MonoBehaviour
             tri.AddRange(p.tri);
             id.AddRange(p.id);
             
-            meshes.Add(p);
+            meshes_in_use.Add(p);
 
             p.in_use = true;
         }
@@ -185,5 +179,10 @@ public class ParticleCircle : MonoBehaviour
         
         float bound_val = startLifetime * startSpeed;
         mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
+    }
+
+    private void OnDestroy()
+    {
+        clearMeshesInUse();
     }
 }
