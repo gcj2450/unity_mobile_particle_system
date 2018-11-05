@@ -57,10 +57,6 @@ public class ParticleCircle : MonoBehaviour
 #else
         mesh = GetComponent<MeshFilter>().mesh;
 #endif
-        int max_p = (int)Mathf.Ceil(startLifetime*emission.rateOverTime);
-        if (max_p > maxParticles) max_p = maxParticles;
-        setMesh(max_p);
-
         OnValidate();
     }
 
@@ -121,11 +117,7 @@ public class ParticleCircle : MonoBehaviour
 
         renderer.material = tempMat;
 
-        int max_p = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
-        if (max_p > maxParticles)
-            max_p = maxParticles;
-        if (max_p != (mesh.vertexCount / 4))
-            setMesh(max_p);
+        setMesh();
     }
 
     private void clearMeshesInUse()
@@ -135,8 +127,14 @@ public class ParticleCircle : MonoBehaviour
         meshes_in_use.Clear();
     }
     
-    private void setMesh(int size)
+    private void setMesh()
     {
+        int size = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
+        if (size > maxParticles)size = maxParticles;
+        
+        if (size == (mesh.vertexCount / 4))
+            return;
+        
         List<Vector3> ver = new List<Vector3>();
         List<int>     tri = new List<int>();
         List<Vector2> uv  = new List<Vector2>();
