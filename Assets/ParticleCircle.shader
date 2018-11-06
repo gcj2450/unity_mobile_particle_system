@@ -239,7 +239,7 @@
                 if (time <= 0.01f){
                     // Time doesn't changed that much => particle is rolling.
                     // Update gravity.
-                    g = (GRAVITY_COEFF*pow(p.t, 2)) * GRAVITY_VEC;
+                    g = (0.5*pow(p.t, 2)) * GRAVITY_VEC;
                     // Project vector g+v onto plane.
                     fixed3 u = g + p.v;
                     fixed3 proj_uN = normal * dot(u, normal);

@@ -95,15 +95,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startDelay: 0
-  startLifetime: 5
+  startLifetime: 1
   startSpeed: 5
-  startSize: 1
-  maxParticles: 10
+  startSize: 0.1
+  maxParticles: 2147483647
   startColor: {r: 1, g: 1, b: 1, a: 1}
   gravityModifier: 0
   emission:
     rateOverTime: 1
-  shape: 0
+  shape: 1
   cone:
     angle: 25
   collision:

@@ -5,7 +5,7 @@ public static class ParticleMeshPool
     public static int MAX_PARTICLES = 1000000;
     private static ParticleMesh pool;
     
-    public static ParticleMesh GetParticleMeshes()
+    public static ParticleMesh GetPool()
     {
         allocateParticles();
         return pool;

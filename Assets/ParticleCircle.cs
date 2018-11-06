@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -63,7 +64,21 @@ public class ParticleCircle : MonoBehaviour
     {
         EditorUtility.SetDirty(this);
     }
-    
+
+    private void Update()
+    {
+        for (int i = 0; i < MAX_COLLISION_PLANES; i++){
+            if (collision.planes.Length > i && collision.planes[i] != null){
+                if (collision.planes[i].transform.hasChanged){
+                    collision.planes[i].transform.hasChanged = false;
+                    Debug.Log("OnVal");
+                    OnValidate();
+                    break;
+                }
+            }
+        }
+    }
+
     void OnValidate()
     {
         EditorApplication.update = TriggerUpdate;
@@ -96,7 +111,7 @@ public class ParticleCircle : MonoBehaviour
             if (collision.planes.Length > i && collision.planes[i] != null) {
                 Vector3 plane_center = collision.planes[i].transform.position;
                 Vector3 plane_up = collision.planes[i].transform.up;
-
+                
                 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
                 plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
 
@@ -132,7 +147,7 @@ public class ParticleCircle : MonoBehaviour
             return;
         
         // Retrieve particles from pool.
-        var pool = ParticleMeshPool.GetParticleMeshes();
+        var pool = ParticleMeshPool.GetPool();
 
         mesh.Clear();
         mesh.vertices  = pool.pos.Take(size * 4).ToArray();
