@@ -1,4 +1,6 @@
 Temp
 .idea
+Scene*
+*.meta
 Library/ShaderCache
 

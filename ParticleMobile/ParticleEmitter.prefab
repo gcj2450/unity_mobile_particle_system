@@ -91,7 +91,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1985980185983840}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37c75e56b6cf54641a2b02ea31df6c9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 11cbf435ec4e74182bde485428d0e209, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   startDelay: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
   startColor: {r: 1, g: 1, b: 1, a: 1}
   gravityModifier: 0
   emission:
-    rateOverTime: 1
+    rateOverTime: 10
   shape: 0
   cone:
     angle: 25
