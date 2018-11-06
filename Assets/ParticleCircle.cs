@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -121,33 +121,28 @@ public class ParticleCircle : MonoBehaviour
 
     private void setMesh()
     {
+        // Min number particles needed:
+        // If particles lives 5s and we spawn 2 per sec that means 10 particles at same time being rendered.
+        // When a particle "die" it's reused by the shader.
         int size = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
+        // Check/Adjust size.
         if (size > maxParticles) size = maxParticles;
         if (size > ParticleMeshPool.MAX_PARTICLES) size = ParticleMeshPool.MAX_PARTICLES;
-        if (size == (mesh.vertexCount / 4))
+        if (mesh == null || size == (mesh.vertexCount / 4))
             return;
         
-        List<Vector3> ver = new List<Vector3>();
-        List<int>     tri = new List<int>();
-        List<Vector2> uv  = new List<Vector2>();
-        List<Vector2> id  = new List<Vector2>();
+        // Retrieve particles from pool.
+        var pool = ParticleMeshPool.GetParticleMeshes();
 
-        ParticleMesh[] p = ParticleMeshPool.GetParticleMeshes(size);
-
-        for (int i = 0; i < p.Length; i++){
-            ver.AddRange(p[i].ver);
-            uv.AddRange(p[i].uv);
-            tri.AddRange(p[i].tri);
-            id.AddRange(p[i].id);
-        }
-        
         mesh.Clear();
-        mesh.vertices  = ver.ToArray();
-        mesh.triangles = tri.ToArray();
-        mesh.uv        = uv.ToArray();
-        mesh.uv2       = id.ToArray();
-        
-        float bound_val = startLifetime * startSpeed;
-        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_val, bound_val, bound_val));
+        mesh.vertices  = pool.pos.Take(size * 4).ToArray();
+        mesh.uv        = pool.uv .Take(size * 4).ToArray();
+        mesh.triangles = pool.tri.Take(size * 6).ToArray();
+        mesh.uv2       = pool.id .Take(size * 4).ToArray();
+
+        Debug.Log(mesh.vertexCount.ToString());
+
+        float bound_len = startLifetime * startSpeed;
+        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
     }
 }
