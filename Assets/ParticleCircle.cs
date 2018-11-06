@@ -46,7 +46,12 @@ public class ParticleCircle : MonoBehaviour
     void Awake()
     {
         GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleCircle"));
-        
+        setMesh();
+        updateUniforms();
+    }
+    
+    private void setMesh()
+    {
 #if UNITY_EDITOR
         MeshFilter mf = GetComponent<MeshFilter>();
         Mesh meshCopy = Mesh.Instantiate(mf.sharedMesh) as Mesh;
@@ -55,7 +60,13 @@ public class ParticleCircle : MonoBehaviour
 #else
         mesh = GetComponent<MeshFilter>().mesh;
 #endif
-        OnValidate();
+        var pool = ParticleMeshPool.GetPool();
+
+        mesh.Clear();
+        mesh.vertices  = pool.pos;
+        mesh.uv        = pool.uv ;
+        mesh.triangles = pool.tri;
+        mesh.uv2       = pool.id ;
     }
 
     public void TriggerUpdate()
@@ -65,12 +76,12 @@ public class ParticleCircle : MonoBehaviour
 
     private void Update()
     {
-        // Call OnValidate() if any of collision planes was changed.
+        // Call updateUniforms() if any of collision planes was changed.
         for (int i = 0; i < MAX_COLLISION_PLANES; i++){
             if (collision.planes.Length > i && collision.planes[i] != null){
                 if (collision.planes[i].transform.hasChanged){
                     collision.planes[i].transform.hasChanged = false;
-                    OnValidate();
+                    updateUniforms();
                     break;
                 }
             }
@@ -86,6 +97,11 @@ public class ParticleCircle : MonoBehaviour
             System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
         }
 
+        updateUniforms();
+    }
+
+    void updateUniforms()
+    {
         Renderer renderer = GetComponent<Renderer>();
         if (renderer.sharedMaterial == null){
             return;
@@ -103,6 +119,11 @@ public class ParticleCircle : MonoBehaviour
         tempMat.SetVector("_StartColor", startColor);
         tempMat.SetFloat("_GravityModifier", gravityModifier);
 
+        if (mesh != null){
+            float bound_len = startLifetime * startSpeed;
+            mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
+        }
+        
         for (int i = 0; i < MAX_COLLISION_PLANES; i++){
             Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
             Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -129,32 +150,5 @@ public class ParticleCircle : MonoBehaviour
         }
 
         renderer.material = tempMat;
-
-        setMesh();
-    }
-
-    private void setMesh()
-    {
-        // Min number particles needed:
-        // If particles lives 5s and we spawn 2 per sec that means 10 particles at same time being rendered.
-        // When a particle "die" it's reused by the shader.
-        int size = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
-        // Check/Adjust size.
-        if (size > maxParticles) size = maxParticles;
-        if (size > ParticleMeshPool.POOL_SIZE) size = ParticleMeshPool.POOL_SIZE;
-        if (mesh == null || size == (mesh.vertexCount / 4))
-            return;
-        
-        // Retrieve particles from pool.
-        var pool = ParticleMeshPool.GetPool();
-
-        mesh.Clear();
-        mesh.vertices  = pool.pos;//.Take(size * 4).ToArray();
-        mesh.uv        = pool.uv ;//.Take(size * 4).ToArray();
-        mesh.triangles = pool.tri;//.Take(size * 6).ToArray();
-        mesh.uv2       = pool.id ;//.Take(size * 4).ToArray();
-
-        float bound_len = startLifetime * startSpeed;
-        mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
     }
 }
