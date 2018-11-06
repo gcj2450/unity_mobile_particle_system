@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class ParticleMeshPool
 {
-    public static int MAX_PARTICLES = 1000000;
+    public static int POOL_SIZE = 10000;
     private static ParticleMesh pool;
     
     public static ParticleMesh GetPool()
@@ -18,12 +18,12 @@ public static class ParticleMeshPool
             pool = new ParticleMesh();
 
             Vector3 pos = new Vector3(0, 0, 0);
-            pool.pos = new Vector3[4 * MAX_PARTICLES];
-            pool.uv  = new Vector2[4 * MAX_PARTICLES];
-            pool.tri = new int    [6 * MAX_PARTICLES];
-            pool.id  = new Vector2[4 * MAX_PARTICLES];
+            pool.pos = new Vector3[4 * POOL_SIZE];
+            pool.uv  = new Vector2[4 * POOL_SIZE];
+            pool.tri = new int    [6 * POOL_SIZE];
+            pool.id  = new Vector2[4 * POOL_SIZE];
 
-            for (int i = 0; i < MAX_PARTICLES; i++){
+            for (int i = 0; i < POOL_SIZE; i++){
                 
                 int idx4 = i * 4;
                 int idx6 = i * 6;

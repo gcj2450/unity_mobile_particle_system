@@ -7,10 +7,11 @@
         _StartLifeTime("Start Life Time", Float) = 5.0
         _StartDelay("Start Delay", Float) = 0.0
         _GravityModifier("Gravity Modifier", Float) = 0.0
+        _MaxParticles("Max Particles", Int) = 1000
        
         _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
 
-        _Shape("Shape", int) = 0
+        _Shape("Shape", Int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
 
         _CollisionPlaneEquation0("Collision Plane Equation 0", Vector) = (0.0, 0.0, 0.0, 0.0)
@@ -42,6 +43,7 @@
             uniform fixed _StartLifeTime = 5.f;
             uniform fixed _StartDelay = 0.f;
             uniform fixed _GravityModifier = 0.0f;
+            uniform int   _MaxParticles = 1000;
 
             uniform fixed4 _StartColor = fixed4(0.f, 0.f, 0.f, 1.f);
 
@@ -389,8 +391,8 @@
             fragmentInput vert (vertexInput v)
             {
                 fragmentInput o;
-                o.uv  = v.uv.xy - fixed2(0.5, 0.5);
-            
+                o.uv = v.uv.xy - fixed2(0.5, 0.5);
+                
                 fixed3 v_pos = v.pos.xyz;
                 fixed4 p_pos = fixed4(v_pos, 1.f);
                 int id = v.id.x;
@@ -398,38 +400,37 @@
                 // _Time.y+1: id starts equal 1 and _Time.y equal 0. We want both starting together.
                 fixed time = _Time.y + 1 - _StartDelay;
 
-                // If a particle doesn't fit upper_bound, all vertices will be equal thus not rasterized.
-                fixed upper_bound = time * _RateOverTime;
-                
-                if (id <= upper_bound){
-                    
-                    // Relative time: particles must spawn from time equal zero.
-                    fixed relative_time = time - (id / _RateOverTime);
-                    
-                    // Relative id to time window to increase randomness.
-                    id = id * randomSin(fixed2(id, id)) * (int)ceil(relative_time / _StartLifeTime);
-                    
-                    // Normalize relative time.
-                    relative_time = relative_time % _StartLifeTime;
-                    
-                    // Object position coordinates to World coordinates.
-                    v_pos = mul(unity_ObjectToWorld, fixed4(v_pos, 1.f)).xyz;
-                     
-                    fixed3 center_pos = fixed3(0.f, 0.f, 0.f);
-                    if (_Shape == 1){
-                        center_pos = sphereMovement(v_pos, id, relative_time);
-                    } else {
-                        // Default shape (Cone)
-                        center_pos = coneMovement(v_pos, id, relative_time);
-                    }
-                    
-                    // Get quad center new position (time has changed).
-                    // With the center, get quad vertex position based on vertex uv.
-                    v_pos = getBillboardVertex(center_pos, v.uv);
-                    
-                    // View-Projection transformation (Model transformation already been done previously).
-                    o.pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
+                // If a particle doesn't fit all of these upper bounds, all vertices will be equal thus not rasterized.
+                if (id > time*_RateOverTime || id > (_StartLifeTime*_RateOverTime) || id > _MaxParticles){
+                    return o;
                 }
+                
+                // Relative time: particles must spawn from time equal zero.
+                fixed relative_time = time - (id / _RateOverTime);
+                    
+                // Relative id to time window to increase randomness.
+                id *= randomSin(fixed2(id, id)) * (int)ceil(relative_time / _StartLifeTime);
+                    
+                // Normalize relative time.
+                relative_time = relative_time % _StartLifeTime;
+                    
+                // Object position coordinates to World coordinates.
+                v_pos = mul(unity_ObjectToWorld, fixed4(v_pos, 1.f)).xyz;
+                     
+                fixed3 center_pos = fixed3(0.f, 0.f, 0.f);
+                if (_Shape == 1){
+                    center_pos = sphereMovement(v_pos, id, relative_time);
+                } else {
+                    // Default shape (Cone)
+                    center_pos = coneMovement(v_pos, id, relative_time);
+                }
+                    
+                // Get quad center new position (time has changed).
+                // With the center, get quad vertex position based on vertex uv.
+                v_pos = getBillboardVertex(center_pos, v.uv);
+                    
+                // View-Projection transformation (Model transformation already been done previously).
+                o.pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
 
                 return o;
             }

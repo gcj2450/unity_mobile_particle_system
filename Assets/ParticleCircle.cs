@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -67,11 +65,11 @@ public class ParticleCircle : MonoBehaviour
 
     private void Update()
     {
+        // Call OnValidate() if any of collision planes was changed.
         for (int i = 0; i < MAX_COLLISION_PLANES; i++){
             if (collision.planes.Length > i && collision.planes[i] != null){
                 if (collision.planes[i].transform.hasChanged){
                     collision.planes[i].transform.hasChanged = false;
-                    Debug.Log("OnVal");
                     OnValidate();
                     break;
                 }
@@ -100,6 +98,7 @@ public class ParticleCircle : MonoBehaviour
         tempMat.SetFloat("_StartLifeTime", startLifetime);
         tempMat.SetFloat("_StartDelay", startDelay);
         tempMat.SetInt("_Shape", (int)shape);
+        tempMat.SetInt("_MaxParticles", maxParticles);
         tempMat.SetFloat("_ConeAngle", cone.angle);
         tempMat.SetVector("_StartColor", startColor);
         tempMat.SetFloat("_GravityModifier", gravityModifier);
@@ -142,7 +141,7 @@ public class ParticleCircle : MonoBehaviour
         int size = (int) Mathf.Ceil(startLifetime * emission.rateOverTime);
         // Check/Adjust size.
         if (size > maxParticles) size = maxParticles;
-        if (size > ParticleMeshPool.MAX_PARTICLES) size = ParticleMeshPool.MAX_PARTICLES;
+        if (size > ParticleMeshPool.POOL_SIZE) size = ParticleMeshPool.POOL_SIZE;
         if (mesh == null || size == (mesh.vertexCount / 4))
             return;
         
@@ -150,12 +149,10 @@ public class ParticleCircle : MonoBehaviour
         var pool = ParticleMeshPool.GetPool();
 
         mesh.Clear();
-        mesh.vertices  = pool.pos.Take(size * 4).ToArray();
-        mesh.uv        = pool.uv .Take(size * 4).ToArray();
-        mesh.triangles = pool.tri.Take(size * 6).ToArray();
-        mesh.uv2       = pool.id .Take(size * 4).ToArray();
-
-        Debug.Log(mesh.vertexCount.ToString());
+        mesh.vertices  = pool.pos;//.Take(size * 4).ToArray();
+        mesh.uv        = pool.uv ;//.Take(size * 4).ToArray();
+        mesh.triangles = pool.tri;//.Take(size * 6).ToArray();
+        mesh.uv2       = pool.id ;//.Take(size * 4).ToArray();
 
         float bound_len = startLifetime * startSpeed;
         mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
