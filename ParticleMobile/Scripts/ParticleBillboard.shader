@@ -273,29 +273,14 @@
             }
             
             /**
-            * Apply unity_ObjectToWorld transf matrix with no translations.
-            */
-            fixed3 objctToWorldNoTranslation(fixed3 v)
-            {
-                fixed4x4 i_model_rotation = unity_ObjectToWorld;
-                i_model_rotation[0][3] = 0.f; // Prevent translation:
-                i_model_rotation[1][3] = 0.f; // set model transform matrix translation vec to 0.
-                i_model_rotation[2][3] = 0.f;
-                
-                return mul(i_model_rotation, fixed4(v, 1.f)).xyz;
-            }
-            
-            /**
             * Calc new point position given its id and the current time.
             */
             fixed3 sphereMovement(fixed3 initial_pos, fixed id, fixed time)
             {
                 fixed3 v = getRandomVelocity(id);
 
-                // Scale velocity
-                v = _StartSpeed * v;
-                
-                v = objctToWorldNoTranslation(v);
+                // Scale and rotate velocity 
+                v = mul(unity_ObjectToWorld, _StartSpeed * normalize(v));
                                 
                 parabola p;
                 p.v0    = initial_pos;
@@ -320,10 +305,8 @@
                 v.x = max_distance_fac * v.x;
                 v.y = max_distance_fac * v.y;
                 
-                // Scale velocity
-                v = _StartSpeed * normalize(v);
-
-                v = objctToWorldNoTranslation(v);
+                // Scale and rotate velocity 
+                v = mul(unity_ObjectToWorld, _StartSpeed * normalize(v));
 
                 parabola p;
                 p.v0    = initial_pos;
