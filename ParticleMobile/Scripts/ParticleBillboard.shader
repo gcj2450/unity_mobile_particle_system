@@ -76,11 +76,6 @@
                 fixed2 uv  : TEXCOORD0;
             };
             
-            struct basis {
-                fixed3 b0;
-                fixed3 b1;
-            };
-            
             struct parabola {
                 fixed3 v0;
                 fixed3 v;
@@ -125,9 +120,9 @@
                 v = v / ITERATIONS; // Normalize
 
                 // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
-                if (v.x >= .5f) v.x = -1 * (v.x - .5f);
-                if (v.y >= .5f) v.y = -1 * (v.y - .5f);
-                if (v.z >= .5f) v.z = -1 * (v.z - .5f);
+                v.x = -1 * (v.x - .5f);
+                v.y = -1 * (v.y - .5f);
+                v.z = -1 * (v.z - .5f);
                 v = 2.f * v;
                
                 return normalize(v);
@@ -138,10 +133,6 @@
             {
                 fixed delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
     
-                if (delta < 0){
-                    return fixed2(-1, -1);
-                }
-
                 fixed2 sol;
                 sol[0] = (-coefficients[1] + sqrt(delta)) / (2*coefficients[0]);
                 sol[1] = (-coefficients[1] - sqrt(delta)) / (2*coefficients[0]);
@@ -344,51 +335,14 @@
                 return getParticlePosition(p);
             }
             
-            /**
-            * Given the normal and the center of a plane, 
-            * return an Orthonormal Basis.
-            */
-            basis getPlaneOrthonormalBasis(fixed3 center, fixed3 normal)
+            fixed3 getBillboardVertex(fixed3 quad_center, float2 square_vertices)
             {
-                fixed plane_d = -dot(normal, center);
-                
-                basis b;
-                b.b0 = normalize(fixed3(0.f, 0.f, -(plane_d/normal.z)) - center);
-                b.b1 = normalize(cross(b.b0, normal));
-                
-                return b;
-            }
+                float3 CameraRight_worldspace = {UNITY_MATRIX_V[0][0], UNITY_MATRIX_V[0][1], UNITY_MATRIX_V[0][2]};
+                float3 CameraUp_worldspace    = {UNITY_MATRIX_V[1][0], UNITY_MATRIX_V[1][1], UNITY_MATRIX_V[1][2]};
             
-            /**
-            * Given an center point, calc quad vertex that corresponds to particle uv.
-            * Billboard are orthogonal to the Main Camera and has _StartSize lenght.
-            */
-            fixed3 getBillboardVertex(fixed3 quad_center, fixed2 uv)
-            {
-                fixed3 plane_normal = normalize(_WorldSpaceCameraPos - quad_center); 
-                fixed circumradius = _StartSize / 2.f;
-                
-                // Orthonormal basis vectors of the circle plane.
-                basis b = getPlaneOrthonormalBasis(quad_center, plane_normal);
-
-                // Based on uv, use clockwise rule and the basis to draw a square from center_pos.
-                fixed3 v_pos = {0.f,0.f, 0.f};
-                
-                if(uv.x == 0) {
-                    if(uv.y == 0) {
-                        v_pos = quad_center - circumradius*b.b1;
-                    } else if(uv.y == 1){
-                        v_pos = quad_center - circumradius*b.b0;
-                    }
-                } else if(uv.x == 1) {
-                    if(uv.y == 0) {
-                        v_pos = quad_center + circumradius*b.b0;
-                    } else if(uv.y == 1){
-                        v_pos = quad_center + circumradius*b.b1;
-                    }
-                }
-                
-                return v_pos;
+                return quad_center 
+                        + CameraRight_worldspace * square_vertices.x * _StartSize 
+                        + CameraUp_worldspace    * square_vertices.y * _StartSize;
             }
 
             fragmentInput vert (vertexInput v)
@@ -430,7 +384,7 @@
                     
                 // Get quad center new position (time has changed).
                 // With the center, get quad vertex position based on vertex uv.
-                v_pos = getBillboardVertex(center_pos, v.uv);
+                 v_pos = getBillboardVertex(center_pos, v.pos.xy);
                     
                 // View-Projection transformation (Model transformation already been done previously).
                 o.pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
@@ -443,13 +397,13 @@
                 return tex2D(_Texture, i.uv);
 
                 // Discard pixels far from quad center: draw circle.
-                fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
-                if (distance > 0.4f)
-                    discard;
-                
-                fixed alpha = 1.f - 2.5*distance;
-                
-                return fixed4(_StartColor.xyz, alpha);
+                //fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
+                //if (distance > 0.4f)
+                //    discard;
+                //
+                //fixed alpha = 1.f - 2.5*distance;
+                //
+                //return fixed4(_StartColor.xyz, alpha);
             }
 
             ENDCG

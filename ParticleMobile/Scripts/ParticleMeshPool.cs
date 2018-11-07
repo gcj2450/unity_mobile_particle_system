@@ -18,7 +18,6 @@ public static class ParticleMeshPool
     {
         pool = new ParticleMesh();
 
-        Vector3 pos = new Vector3(0, 0, 0);
         pool.pos = new Vector3[4 * POOL_SIZE];
         pool.uv  = new Vector2[4 * POOL_SIZE];
         pool.tri = new int    [6 * POOL_SIZE];
@@ -29,10 +28,10 @@ public static class ParticleMeshPool
             int idx4 = i * 4;
             int idx6 = i * 6;
                 
-            pool.pos[idx4 + 0] = pos;
-            pool.pos[idx4 + 1] = pos;
-            pool.pos[idx4 + 2] = pos;
-            pool.pos[idx4 + 3] = pos;
+            pool.pos[idx4 + 0] = new Vector3( -0.5f, -0.5f, 0.0f);
+            pool.pos[idx4 + 1] = new Vector3(  0.5f, -0.5f, 0.0f);
+            pool.pos[idx4 + 2] = new Vector3( -0.5f,  0.5f, 0.0f);
+            pool.pos[idx4 + 3] = new Vector3(  0.5f,  0.5f, 0.0f);
 
             pool.uv[idx4 + 0] = new Vector2(0, 0);
             pool.uv[idx4 + 1] = new Vector2(1, 0);
