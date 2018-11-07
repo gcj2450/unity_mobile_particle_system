@@ -64,6 +64,8 @@ public class ParticleBillboard : MonoBehaviour
 #endif
         }
         var pool = ParticleMeshPool.GetPool();
+        
+        EditorApplication.update += () => EditorUtility.SetDirty(this);
 
         mesh.Clear();
         mesh.vertices  = pool.pos;
@@ -90,8 +92,6 @@ public class ParticleBillboard : MonoBehaviour
 
     void OnValidate()
     {
-        EditorApplication.update = () => EditorUtility.SetDirty(this);
-
         if (collision.planes != null && collision.planes.Length > MAX_COLLISION_PLANES) {
             Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
             System.Array.Resize(ref collision.planes, MAX_COLLISION_PLANES);
