@@ -313,6 +313,10 @@
                 return getParticlePosition(p);
             }
             
+            /**
+            * The "2D way" from:
+            * http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
+            */
             fixed3 getBillboardVertex(fixed3 quad_center, float2 square_vertices)
             {
                 float3 CameraRight_worldspace = UNITY_MATRIX_V[0];
