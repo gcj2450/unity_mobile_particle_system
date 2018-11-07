@@ -52,14 +52,16 @@ public class ParticleCircle : MonoBehaviour
     
     private void setMesh()
     {
+        if (mesh == null) {
 #if UNITY_EDITOR
-        MeshFilter mf = GetComponent<MeshFilter>();
-        Mesh meshCopy = Mesh.Instantiate(mf.sharedMesh) as Mesh;
-        mesh = mf.mesh = meshCopy;
-        mesh.name = "Particle Quad (Editor)";
+            MeshFilter mf = GetComponent<MeshFilter>();
+            Mesh meshCopy = Mesh.Instantiate(mf.sharedMesh) as Mesh;
+            mesh = mf.mesh = meshCopy;
+            mesh.name = "Particle Quad (Editor)";
 #else
-        mesh = GetComponent<MeshFilter>().mesh;
+            mesh = GetComponent<MeshFilter>().mesh;
 #endif
+        }
         var pool = ParticleMeshPool.GetPool();
 
         mesh.Clear();
@@ -67,11 +69,6 @@ public class ParticleCircle : MonoBehaviour
         mesh.uv        = pool.uv ;
         mesh.triangles = pool.tri;
         mesh.uv2       = pool.id ;
-    }
-
-    public void TriggerUpdate()
-    {
-        EditorUtility.SetDirty(this);
     }
 
     private void Update()
@@ -90,7 +87,7 @@ public class ParticleCircle : MonoBehaviour
 
     void OnValidate()
     {
-        EditorApplication.update = TriggerUpdate;
+        EditorApplication.update = () => EditorUtility.SetDirty(this);
 
         if (collision.planes != null && collision.planes.Length > MAX_COLLISION_PLANES) {
             Debug.LogWarning("Up to " + MAX_COLLISION_PLANES + " collision planes!");
