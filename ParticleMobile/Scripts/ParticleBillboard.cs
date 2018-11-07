@@ -4,7 +4,7 @@ using UnityEditor;
 #endif
 
 [ExecuteInEditMode]
-public class ParticleCircle : MonoBehaviour
+public class ParticleBillboard : MonoBehaviour
 {
     public float startDelay         = 0.0f;
     public float startLifetime      = 5.0f;
@@ -45,7 +45,7 @@ public class ParticleCircle : MonoBehaviour
     
     void Awake()
     {
-        GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleCircle"));
+        GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleBillboard"));
         setMesh();
         updateUniforms();
     }

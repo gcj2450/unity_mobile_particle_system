@@ -1,4 +1,4 @@
-﻿Shader "Unlit/ParticleCircle"
+﻿Shader "Unlit/ParticleBillboard"
 {
     Properties {
         _RateOverTime ("Rate Over Time", Float) = 10

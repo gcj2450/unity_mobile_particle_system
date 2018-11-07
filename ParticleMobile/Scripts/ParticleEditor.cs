@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-[CustomEditor(typeof(ParticleCircle))]
+[CustomEditor(typeof(ParticleBillboard))]
 [CanEditMultipleObjects]
 public class ParticleCircleEditor : Editor
 {
@@ -39,7 +39,7 @@ public class ParticleCircleEditor : Editor
 	
 	public override void OnInspectorGUI()
 	{
-		ParticleCircle pc = (ParticleCircle)target;
+		ParticleBillboard pc = (ParticleBillboard)target;
 		
 		serializedObject.Update();
 		EditorGUILayout.PropertyField(startDelay);
@@ -55,7 +55,7 @@ public class ParticleCircleEditor : Editor
 
 		EditorGUILayout.PropertyField(shape);
 		if (pc != null){
-			if (pc.shape == ParticleCircle.ShapeType.Sphere) {
+			if (pc.shape == ParticleBillboard.ShapeType.Sphere) {
 				EditorGUILayout.PropertyField(sphere, true);
 			} else {
 				// Default Shape Cone
