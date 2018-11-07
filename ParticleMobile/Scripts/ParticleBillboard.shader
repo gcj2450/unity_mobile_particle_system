@@ -10,7 +10,8 @@
         _MaxParticles("Max Particles", Int) = 1000
        
         _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
-
+        _Texture ("Texture", 2D) = "white" {}
+        
         _Shape("Shape", Int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
 
@@ -36,6 +37,8 @@
             #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
+            
+            sampler2D _Texture;
 
             uniform fixed _StartSize = 1.0f;
             uniform fixed _RateOverTime = 10.f;
@@ -391,7 +394,7 @@
             fragmentInput vert (vertexInput v)
             {
                 fragmentInput o;
-                o.uv = v.uv.xy - fixed2(0.5, 0.5);
+                o.uv = v.uv.xy;
                 
                 fixed3 v_pos = v.pos.xyz;
                 fixed4 p_pos = fixed4(v_pos, 1.f);
@@ -437,6 +440,8 @@
 
             fixed4 frag(fragmentInput i) : SV_Target
             {
+                return tex2D(_Texture, i.uv);
+
                 // Discard pixels far from quad center: draw circle.
                 fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
                 if (distance > 0.4f)

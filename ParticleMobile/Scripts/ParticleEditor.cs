@@ -11,6 +11,7 @@ public class ParticleCircleEditor : Editor
 	SerializedProperty maxParticles;
 
 	SerializedProperty startColor;
+	SerializedProperty texture;
 	SerializedProperty gravityModifier;
 	SerializedProperty emission;
 
@@ -28,6 +29,7 @@ public class ParticleCircleEditor : Editor
 		maxParticles  = serializedObject.FindProperty("maxParticles");
 
 		startColor 		= serializedObject.FindProperty("startColor");
+		texture			= serializedObject.FindProperty("texture");
 		gravityModifier = serializedObject.FindProperty("gravityModifier");
 		emission 		= serializedObject.FindProperty("emission");
 		
@@ -49,6 +51,7 @@ public class ParticleCircleEditor : Editor
 		EditorGUILayout.PropertyField(maxParticles);
 
 		EditorGUILayout.PropertyField(startColor);
+		EditorGUILayout.PropertyField(texture);
 		EditorGUILayout.PropertyField(gravityModifier);
 	
 		EditorGUILayout.PropertyField(emission, true);

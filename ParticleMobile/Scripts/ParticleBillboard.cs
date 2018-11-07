@@ -13,6 +13,7 @@ public class ParticleBillboard : MonoBehaviour
     public int   maxParticles       = 1000;
 
     public Color startColor         = Color.white;
+    public Texture2D texture;
     public float gravityModifier    = 0.0f;    
 
     [System.Serializable]
@@ -115,6 +116,7 @@ public class ParticleBillboard : MonoBehaviour
         tempMat.SetFloat("_ConeAngle", cone.angle);
         tempMat.SetVector("_StartColor", startColor);
         tempMat.SetFloat("_GravityModifier", gravityModifier);
+        tempMat.SetTexture("_Texture", texture);
 
         if (mesh != null){
             float bound_len = startLifetime * startSpeed;
