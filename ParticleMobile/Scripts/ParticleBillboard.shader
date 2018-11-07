@@ -109,22 +109,16 @@
             }
             
             // Calc initial velocity/direction to a particle given its id.
-            // Return an fixed3 vec. Elements range: (0 <= p <= 1)
+            // Return an fixed3 vec. Elements range: (-1 < Vi < 1)
             // >>> This number will be the same for each particle, in all frames. <<<
             fixed3 getRandomVelocity(fixed id)
             {
                 fixed3 v = fixed3(0.f, 0.f, 0.f);
                 for (int t = 0; t < ITERATIONS; t++) {
                     v += hash31(id);
+                    v -= hash31(id * 2.f);
                 }
-                v = v / ITERATIONS; // Normalize
-
-                // Map range from (0 <= x <= 1) to (-1 <= x <= 1)
-                v.x = -1 * (v.x - .5f);
-                v.y = -1 * (v.y - .5f);
-                v.z = -1 * (v.z - .5f);
-                v = 2.f * v;
-               
+                
                 return normalize(v);
             }
 
@@ -300,7 +294,7 @@
                 fixed3 v = getRandomVelocity(id);
 
                 // Cone coordinates transformations.
-                if (v.z < 0.f) v.z = -1 * v.z;
+                v.z = abs(v.z);
                 fixed max_distance_fac = v.z * tan(radians(_ConeAngle));
                 v.x = max_distance_fac * v.x;
                 v.y = max_distance_fac * v.y;
@@ -367,7 +361,7 @@
                     
                 // Get quad center new position (time has changed).
                 // With the center, get quad vertex position based on vertex uv.
-                 v_pos = getBillboardVertex(center_pos, v.pos.xy);
+                v_pos = getBillboardVertex(center_pos, v.uv - 0.5f);
                     
                 // View-Projection transformation (Model transformation already been done previously).
                 o.pos = mul(UNITY_MATRIX_VP, fixed4(v_pos, 1.f));
@@ -382,11 +376,11 @@
                 // Discard pixels far from quad center: draw circle.
                 //fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
                 //if (distance > 0.4f)
-                //    discard;
-                //
+                    //discard;
+              
                 //fixed alpha = 1.f - 2.5*distance;
-                //
-                //return fixed4(_StartColor.xyz, alpha);
+                
+                return fixed4(_StartColor.xyz, 1.f);
             }
 
             ENDCG
