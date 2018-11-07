@@ -72,6 +72,7 @@ public class ParticleBillboard : MonoBehaviour
         mesh.uv2       = pool.id ;
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         // Call updateUniforms() if any of collision planes was changed.
@@ -85,6 +86,7 @@ public class ParticleBillboard : MonoBehaviour
             }
         }
     }
+#endif
 
     void OnValidate()
     {
