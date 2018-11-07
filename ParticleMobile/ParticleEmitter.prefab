@@ -100,6 +100,7 @@ MonoBehaviour:
   startSize: 1
   maxParticles: 1000
   startColor: {r: 1, g: 1, b: 1, a: 1}
+  texture: {fileID: 0}
   gravityModifier: 0
   emission:
     rateOverTime: 10

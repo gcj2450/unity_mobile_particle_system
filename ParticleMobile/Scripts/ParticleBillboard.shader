@@ -84,8 +84,10 @@
                 bool final;
             };
             
-            // Hash functions to generate entropy by David Hoskins
-            // https://www.shadertoy.com/view/4djSRW
+            /**
+            * Hash functions to generate entropy by David Hoskins
+            * https://www.shadertoy.com/view/4djSRW
+            */
             fixed hash11(fixed p)
             {
                 fixed frac_p = frac(p);
@@ -108,9 +110,11 @@
                 return frac(sin(dot(_st.xy, fixed2(12.9898f,78.233f)))*43758.5453123f);
             }
             
-            // Calc initial velocity/direction to a particle given its id.
-            // Return an fixed3 vec. Elements range: (-1 < Vi < 1)
-            // >>> This number will be the same for each particle, in all frames. <<<
+            /** 
+            * Calc initial velocity/direction to a particle given its id.
+            * Return an fixed3 vec. Elements range: (-1 < Vi < 1)
+            * >>> This vec will be the same for each particle, in all frames. <<<
+            */
             fixed3 getRandomVelocity(fixed id)
             {
                 fixed3 v = fixed3(0.f, 0.f, 0.f);
@@ -147,10 +151,7 @@
                 if (a != 0.f){
                     // Has acceleration => quadratic
                     fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
-                    if (time[0] >= 0.f){
-                        return time[0];
-                    }
-                    return time[1];
+                    return max(time.x, time.y);
                 } else {
                     // No acceleration => linear
                     return -c/b;
@@ -314,8 +315,8 @@
             
             fixed3 getBillboardVertex(fixed3 quad_center, float2 square_vertices)
             {
-                float3 CameraRight_worldspace = {UNITY_MATRIX_V[0][0], UNITY_MATRIX_V[0][1], UNITY_MATRIX_V[0][2]};
-                float3 CameraUp_worldspace    = {UNITY_MATRIX_V[1][0], UNITY_MATRIX_V[1][1], UNITY_MATRIX_V[1][2]};
+                float3 CameraRight_worldspace = UNITY_MATRIX_V[0];
+                float3 CameraUp_worldspace    = UNITY_MATRIX_V[1];
             
                 return quad_center 
                         + CameraRight_worldspace * square_vertices.x * _StartSize 
