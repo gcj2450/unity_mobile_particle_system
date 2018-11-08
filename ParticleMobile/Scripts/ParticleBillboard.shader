@@ -61,7 +61,7 @@
             static const fixed  HASHSCALE1 = 0.1031;
             static const fixed3 HASHSCALE3 = fixed3(.1031, .1030, .0973);
             static const fixed  ITERATIONS = 4.f;
-            static const fixed  GRAVITY_COEFF = 4.f;
+            static const fixed  GRAVITY_COEFF = 5.f;
             static const fixed3 GRAVITY_VEC = fixed3(0.f, -_GravityModifier, 0.f);
             
             struct fragmentInput {
@@ -144,7 +144,7 @@
             */
             fixed getCollisionTime(fixed4 plane_equation, parabola p)
             {
-                fixed a = dot(plane_equation.xyz, GRAVITY_VEC) * GRAVITY_COEFF;
+                fixed a = dot(plane_equation.xyz, p.acc) * GRAVITY_COEFF;
                 fixed b = dot(plane_equation.xyz, p.v);
                 fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w - _StartSize/2;
                 
@@ -210,29 +210,29 @@
                 
                 // Get normal and collision time of the nearest plane.
                 fixed3 normal = normalize(plane_normal_time.xyz);
-                fixed time = plane_normal_time.w;
+                fixed collision_time = plane_normal_time.w;
                 
                 // There is no collision. Return unmodified parabola.
-                if (time == _StartLifeTime){
+                if (collision_time == _StartLifeTime){
                     p.final = true;
                     return p;
                 }
                 
-                fixed3 g = (GRAVITY_COEFF*pow(time, 2)) * GRAVITY_VEC;
+                // Current velocity: derivate Position by time (parabola equation):
+                // dP/dy = V = Vo + 2at
+                fixed3 v = p.v + (2.f*GRAVITY_COEFF*collision_time)*p.acc;
 
                 // Update initial_pos to collision point.
-                p.v0 += p.v*time + g;
+                p.v0 += p.v*collision_time + (GRAVITY_COEFF*pow(collision_time, 2)) * p.acc;
                 // Reflect direction vector.
-                p.v = reflect(p.v + GRAVITY_VEC*time, normal);
+                p.v = reflect(v, normal);
                 // New parabola starts from collision time.
-                p.t -= time;
+                p.t -= collision_time;
                 
-                if (time <= 0.01f){
+                if (collision_time <= 0.01f){
                     // Time doesn't changed that much => particle is rolling.
-                    // Update gravity.
-                    g = (0.5*pow(p.t, 2)) * GRAVITY_VEC;
                     // Project vector g+v onto plane.
-                    fixed3 u = g + p.v;
+                    fixed3 u = (0.5*pow(p.t, 2)) * p.acc + p.v;
                     fixed3 proj_uN = normal * dot(u, normal);
                     p.v = u - proj_uN;
                     p.final = true;
