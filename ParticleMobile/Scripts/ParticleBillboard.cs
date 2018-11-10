@@ -47,6 +47,9 @@ public class ParticleBillboard : MonoBehaviour
     void Awake()
     {
         GetComponent<Renderer>().material = new Material(Shader.Find("Unlit/ParticleBillboard"));
+        
+        EditorApplication.update += () => EditorUtility.SetDirty(this);
+
         setMesh();
         updateUniforms();
     }
@@ -64,8 +67,6 @@ public class ParticleBillboard : MonoBehaviour
 #endif
         }
         var pool = ParticleMeshPool.GetPool();
-        
-        EditorApplication.update += () => EditorUtility.SetDirty(this);
 
         mesh.Clear();
         mesh.vertices  = pool.pos;
@@ -88,7 +89,6 @@ public class ParticleBillboard : MonoBehaviour
             }
         }
     }
-#endif
 
     void OnValidate()
     {
@@ -150,13 +150,13 @@ public class ParticleBillboard : MonoBehaviour
         }
 
         if (tempMat.GetTexture("_Texture") != null){
-            tempMat.DisableKeyword("FRAG_COLOR");
             tempMat.EnableKeyword("FRAG_TEXTURE");
         } else {
             tempMat.DisableKeyword("FRAG_TEXTURE");
-            tempMat.EnableKeyword("FRAG_COLOR");
         }
 
         renderer.material = tempMat;
     }
+
+#endif
 }

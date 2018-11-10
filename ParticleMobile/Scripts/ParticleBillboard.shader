@@ -38,7 +38,7 @@
             #pragma vertex vert
             #pragma fragment frag
             
-            #pragma multi_compile FRAG_TEXTURE
+            #pragma shader_feature FRAG_TEXTURE
             
             sampler2D _Texture;
 
@@ -128,14 +128,16 @@
                 return normalize(v);
             }
 
-            // Bhaskara method
+            /**
+            * Muller's method ('a' can be zero. So we dont need to branch).
+            */
             fixed2 solveQuadraticEquation(fixed3 coefficients)
             {
                 fixed delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
     
                 fixed2 sol;
-                sol[0] = (-coefficients[1] + sqrt(delta)) / (2*coefficients[0]);
-                sol[1] = (-coefficients[1] - sqrt(delta)) / (2*coefficients[0]);
+                sol[0] = (-2 * coefficients[2]) / (coefficients[1] + sqrt(delta));
+                sol[1] = (-2 * coefficients[2]) / (coefficients[1] - sqrt(delta));
 
                 return sol;
             }
@@ -150,14 +152,11 @@
                 fixed b = dot(plane_equation.xyz, p.v);
                 fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w - _StartSize/2;
                 
-                if (a != 0.f){
-                    // Has acceleration => quadratic
-                    fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
-                    return max(time.x, time.y);
-                } else {
-                    // No acceleration => linear
-                    return -c/b;
-                }
+                fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
+                fixed max_t = max(time.x, time.y);
+                fixed min_t = min(time.x, time.y);
+                
+                return lerp(max_t, min_t, isinf(max_t));
             }
             
             /**
@@ -396,9 +395,9 @@
             {
             #if FRAG_TEXTURE 
                 return fragTexture(i);
-            #endif
-
+            #else
                 return fragColor(i);
+            #endif
             }
 
             ENDCG
