@@ -168,19 +168,19 @@
 
                 fixed plane_collision_time = getCollisionTime(plane_equation, p);
                 
-                // time_threshold prevents the particle go through the plane.
+                // set 1 if plane_collision_time greater then time_threshold (prevents the particle go through the plane).
                 fixed cond1 = max(sign(plane_collision_time - time_threshold), 0);
-                // actual time must be greater than collision time.
+                // set 1 if actual time is be greater than collision time.
                 fixed cond2 = max(sign(p.t - plane_collision_time), 0);
-                // check if collision time found this plane is lower than that found with other planes.
+                // set 1 if collision time found this plane is lower than that found with other planes.
                 fixed cond3 = max(sign(lower.w - plane_collision_time), 0);
                 
-                // pass equal 1 if all cond passed otherwise 0.
+                // passed equal 1 if all cond passed otherwise 0.
                 fixed4 passed = cond1 * cond2 * cond3;
-                 
+                // set candidate with plane equation and collision time found. 
                 fixed4 candidate = fixed4(plane_equation.xyz, plane_collision_time - time_threshold);
                 
-                // check if passed in conditions and return candidate to lower. 
+                // Check if passed in conditions and return candidate as lower. 
                 // Otherwise return same lower.
                 return lerp(lower, candidate, passed);
             }
