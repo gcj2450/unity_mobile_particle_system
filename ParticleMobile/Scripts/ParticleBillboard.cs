@@ -112,8 +112,7 @@ public class ParticleBillboard : MonoBehaviour
         tempMat.SetFloat("_RateOverTime", emission.rateOverTime);
         tempMat.SetFloat("_StartSpeed", startSpeed);
         tempMat.SetFloat("_StartLifeTime", startLifetime);
-        tempMat.SetFloat("_StartDelay", startDelay);
-        tempMat.SetInt("_Shape", (int)shape);
+        tempMat.SetFloat("_StartDelay", startDelay);        
         tempMat.SetInt("_MaxParticles", maxParticles);
         tempMat.SetFloat("_ConeAngle", cone.angle);
         tempMat.SetVector("_StartColor", startColor);
@@ -154,7 +153,16 @@ public class ParticleBillboard : MonoBehaviour
         } else {
             tempMat.DisableKeyword("FRAG_TEXTURE");
         }
-
+        
+        switch (shape){
+            case ShapeType.Sphere:
+                tempMat.EnableKeyword("SHAPE_SPHERE");
+                break;
+            default:
+                tempMat.DisableKeyword("SHAPE_SPHERE");
+                break;
+        }
+        
         renderer.material = tempMat;
     }
 

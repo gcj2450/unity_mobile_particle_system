@@ -12,7 +12,6 @@
         _StartColor("Start Color", Vector) = (0.0, 0.0, 0.0, 1.0)
         _Texture ("Texture", 2D) = "white" {}
         
-        _Shape("Shape", Int) = 0
         _ConeAngle("Cone Angle", Float) = 45.0
 
         _CollisionPlaneEquation0("Collision Plane Equation 0", Vector) = (0.0, 0.0, 0.0, 0.0)
@@ -39,6 +38,7 @@
             #pragma fragment frag
             
             #pragma shader_feature FRAG_TEXTURE
+            #pragma shader_feature SHAPE_SPHERE
             
             sampler2D _Texture;
 
@@ -52,7 +52,6 @@
 
             uniform fixed4 _StartColor = fixed4(0.f, 0.f, 0.f, 1.f);
 
-            uniform int   _Shape = 0;
             uniform fixed _ConeAngle = 0.f;
 
             uniform fixed4 _CollisionPlaneEquation0 = fixed4(0.f, 0.f, 0.f, 0.f);
@@ -358,12 +357,12 @@
                 v_pos = mul(unity_ObjectToWorld, fixed4(v_pos, 1.f)).xyz;
                      
                 fixed3 center_pos = fixed3(0.f, 0.f, 0.f);
-                if (_Shape == 1){
+                #if SHAPE_SPHERE
                     center_pos = sphereMovement(v_pos, id, relative_time);
-                } else {
+                #else
                     // Default shape (Cone)
                     center_pos = coneMovement(v_pos, id, relative_time);
-                }
+                #endif
                     
                 // Get quad center new position (time has changed).
                 // With the center, get quad vertex position based on vertex uv.
