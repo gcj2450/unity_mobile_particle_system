@@ -31,12 +31,14 @@
 
         Pass {
             Cull Back
-
+            
             CGPROGRAM
-
+            
             #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
+            
+            #pragma multi_compile FRAG_TEXTURE
             
             sampler2D _Texture;
 
@@ -374,18 +376,29 @@
                 return o;
             }
 
-            fixed4 frag(fragmentInput i) : SV_Target
+            fixed4 fragColor(fragmentInput i) : SV_Target
+            {
+                i.uv -= 0.5f;
+                // Discard pixels far from quad center: draw circle.
+                fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
+                fixed alpha = 0.5f - distance;
+                alpha = max(alpha, 0);
+
+                return fixed4(_StartColor.xyz, alpha);
+            }
+
+            fixed4 fragTexture(fragmentInput i) 
             {
                 return tex2D(_Texture, i.uv);
+            }
+            
+            fixed4 frag (fragmentInput i) : SV_Target 
+            {
+            #if FRAG_TEXTURE 
+                return fragTexture(i);
+            #endif
 
-                // Discard pixels far from quad center: draw circle.
-                //fixed distance = sqrt(pow(i.uv.x, 2) + pow(i.uv.y, 2));
-                //if (distance > 0.4f)
-                    //discard;
-              
-                //fixed alpha = 1.f - 2.5*distance;
-                
-                return fixed4(_StartColor.xyz, 1.f);
+                return fragColor(i);
             }
 
             ENDCG

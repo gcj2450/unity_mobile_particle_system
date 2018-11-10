@@ -146,8 +146,15 @@ public class ParticleBillboard : MonoBehaviour
             float plane_d = -1 * Vector3.Dot(normal, plane_center4);
             Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
 
-            if (tempMat.GetVector("_CollisionPlaneEquation" + i) != plane_eq)
-                tempMat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
+            tempMat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
+        }
+
+        if (tempMat.GetTexture("_Texture") != null){
+            tempMat.DisableKeyword("FRAG_COLOR");
+            tempMat.EnableKeyword("FRAG_TEXTURE");
+        } else {
+            tempMat.DisableKeyword("FRAG_TEXTURE");
+            tempMat.EnableKeyword("FRAG_COLOR");
         }
 
         renderer.material = tempMat;
