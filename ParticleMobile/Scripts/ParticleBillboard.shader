@@ -162,27 +162,27 @@
             /**
             * Return updated fixed4(normal.x, normal.y, normal.z, lower_time) if has collision in lower time.
             */
-            fixed4 updateNearPlaneTime(fixed4 plane_equation, fixed4 lower_plane_normal_time, const parabola p)
+            fixed4 updateNearPlaneTime(fixed4 plane_equation, fixed4 lower, const parabola p)
             {
                 const fixed time_threshold = 0.01f;
 
                 fixed plane_collision_time = getCollisionTime(plane_equation, p);
                 
                 // time_threshold prevents the particle go through the plane.
-                if (plane_collision_time > time_threshold){
-                    // actual time must be greater than collision time.
-                    if (p.t > plane_collision_time){
-                        // check if collision time found this plane is lower than that found with other planes.
-                        if (plane_collision_time < lower_plane_normal_time.w){
-                            // particle collision time outside plane.
-                            plane_collision_time = plane_collision_time - time_threshold;
-                            // set lower_plane_normal_time with lower time and plane normal.
-                            lower_plane_normal_time = fixed4(plane_equation.xyz, plane_collision_time);
-                        }
-                    }
-                }
+                fixed cond1 = max(sign(plane_collision_time - time_threshold), 0);
+                // actual time must be greater than collision time.
+                fixed cond2 = max(sign(p.t - plane_collision_time), 0);
+                // check if collision time found this plane is lower than that found with other planes.
+                fixed cond3 = max(sign(lower.w - plane_collision_time), 0);
                 
-                return lower_plane_normal_time;
+                // pass equal 1 if all cond passed otherwise 0.
+                fixed4 passed = cond1 * cond2 * cond3;
+                 
+                fixed4 candidate = fixed4(plane_equation.xyz, plane_collision_time - time_threshold);
+                
+                // check if passed in conditions and return candidate to lower. 
+                // Otherwise return same lower.
+                return lerp(lower, candidate, passed);
             }
             
             /**
