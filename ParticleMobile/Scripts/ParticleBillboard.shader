@@ -135,9 +135,10 @@
                 fixed delta = pow(coefficients[1], 2) - 4*coefficients[0]*coefficients[2];
     
                 fixed2 sol;
-                sol[0] = (-2 * coefficients[2]) / (coefficients[1] + sqrt(delta));
-                sol[1] = (-2 * coefficients[2]) / (coefficients[1] - sqrt(delta));
-
+                // max and min prevent NaN result
+                sol[0] = max(-1, (-2 * coefficients[2]) / (coefficients[1] + sqrt(delta)));
+                sol[1] = max(-1, (-2 * coefficients[2]) / (coefficients[1] - sqrt(delta)));
+                
                 return sol;
             }
             
