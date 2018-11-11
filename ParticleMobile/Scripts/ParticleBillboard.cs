@@ -75,6 +75,81 @@ public class ParticleBillboard : MonoBehaviour
         mesh.uv2       = pool.id ;
     }
 
+    void updateUniforms()
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer.sharedMaterial == null){
+            return;
+        }
+        Material tempMat = new Material(renderer.sharedMaterial);
+
+        tempMat.SetFloat("_StartSize", startSize);
+        tempMat.SetFloat("_RateOverTime", emission.rateOverTime);
+        tempMat.SetFloat("_StartSpeed", startSpeed);
+        tempMat.SetFloat("_StartLifeTime", startLifetime);
+        tempMat.SetFloat("_StartDelay", startDelay);        
+        tempMat.SetInt("_MaxParticles", maxParticles);
+        tempMat.SetFloat("_ConeAngle", cone.angle);
+        tempMat.SetVector("_StartColor", startColor);
+        tempMat.SetFloat("_GravityModifier", gravityModifier);
+        tempMat.SetTexture("_Texture", texture);
+
+        updateCollisionPlanes(tempMat);
+        updateKeywords(tempMat);
+        
+        renderer.material = tempMat;
+        
+        if (mesh != null){
+            float bound_len = startLifetime * startSpeed;
+            mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
+        }
+    }
+
+    void updateCollisionPlanes(Material mat)
+    {
+        for (int i = 0; i < MAX_COLLISION_PLANES; i++){
+            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+
+            if (collision.planes.Length > i && collision.planes[i] != null) {
+                Vector3 plane_center = collision.planes[i].transform.position;
+                Vector3 plane_up = collision.planes[i].transform.up;
+                
+                plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
+                plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
+
+                // Fix Unity normal precision
+                if (plane_normal4.x < 0.000001f && plane_normal4.x > -0.000001f) plane_normal4.x = 0;
+                if (plane_normal4.y < 0.000001f && plane_normal4.y > -0.000001f) plane_normal4.y = 0;
+                if (plane_normal4.z < 0.000001f && plane_normal4.z > -0.000001f) plane_normal4.z = 0;
+            }
+
+            Vector3 normal = Vector3.Normalize(plane_normal4);
+            float plane_d = -1 * Vector3.Dot(normal, plane_center4);
+            Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
+
+            mat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
+        }   
+    }
+
+    void updateKeywords(Material mat)
+    {
+        if (mat.GetTexture("_Texture") != null){
+            mat.EnableKeyword("FRAG_TEXTURE");
+        } else {
+            mat.DisableKeyword("FRAG_TEXTURE");
+        }
+        
+        switch (shape){
+            case ShapeType.Sphere:
+                mat.EnableKeyword("SHAPE_SPHERE");
+                break;
+            default:
+                mat.DisableKeyword("SHAPE_SPHERE");
+                break;
+        }
+    }
+
 #if UNITY_EDITOR
     private void Update()
     {
@@ -99,72 +174,5 @@ public class ParticleBillboard : MonoBehaviour
 
         updateUniforms();
     }
-
-    void updateUniforms()
-    {
-        Renderer renderer = GetComponent<Renderer>();
-        if (renderer.sharedMaterial == null){
-            return;
-        }
-        Material tempMat = new Material(renderer.sharedMaterial);
-
-        tempMat.SetFloat("_StartSize", startSize);
-        tempMat.SetFloat("_RateOverTime", emission.rateOverTime);
-        tempMat.SetFloat("_StartSpeed", startSpeed);
-        tempMat.SetFloat("_StartLifeTime", startLifetime);
-        tempMat.SetFloat("_StartDelay", startDelay);        
-        tempMat.SetInt("_MaxParticles", maxParticles);
-        tempMat.SetFloat("_ConeAngle", cone.angle);
-        tempMat.SetVector("_StartColor", startColor);
-        tempMat.SetFloat("_GravityModifier", gravityModifier);
-        tempMat.SetTexture("_Texture", texture);
-
-        if (mesh != null){
-            float bound_len = startLifetime * startSpeed;
-            mesh.bounds = new Bounds(new Vector3(0, 0, 0), new Vector3(bound_len, bound_len, bound_len));
-        }
-        
-        for (int i = 0; i < MAX_COLLISION_PLANES; i++){
-            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-
-            if (collision.planes.Length > i && collision.planes[i] != null) {
-                Vector3 plane_center = collision.planes[i].transform.position;
-                Vector3 plane_up = collision.planes[i].transform.up;
-                
-                plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
-                plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
-
-                // Fix Unity normal precision
-                if (plane_normal4.x < 0.000001f && plane_normal4.x > -0.000001f) plane_normal4.x = 0;
-                if (plane_normal4.y < 0.000001f && plane_normal4.y > -0.000001f) plane_normal4.y = 0;
-                if (plane_normal4.z < 0.000001f && plane_normal4.z > -0.000001f) plane_normal4.z = 0;
-            }
-
-            Vector3 normal = Vector3.Normalize(plane_normal4);
-            float plane_d = -1 * Vector3.Dot(normal, plane_center4);
-            Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
-
-            tempMat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
-        }
-
-        if (tempMat.GetTexture("_Texture") != null){
-            tempMat.EnableKeyword("FRAG_TEXTURE");
-        } else {
-            tempMat.DisableKeyword("FRAG_TEXTURE");
-        }
-        
-        switch (shape){
-            case ShapeType.Sphere:
-                tempMat.EnableKeyword("SHAPE_SPHERE");
-                break;
-            default:
-                tempMat.DisableKeyword("SHAPE_SPHERE");
-                break;
-        }
-        
-        renderer.material = tempMat;
-    }
-
 #endif
 }
