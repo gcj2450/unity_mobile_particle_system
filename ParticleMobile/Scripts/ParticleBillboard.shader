@@ -39,6 +39,10 @@
             
             #pragma shader_feature FRAG_TEXTURE
             #pragma shader_feature SHAPE_SPHERE
+            #pragma shader_feature COL_PLANE_0
+            #pragma shader_feature COL_PLANE_1
+            #pragma shader_feature COL_PLANE_2
+            #pragma shader_feature COL_PLANE_3
             
             sampler2D _Texture;
 
@@ -193,21 +197,21 @@
                 fixed4 plane_normal_time = fixed4(0.f, 0.f, 0.f, _StartLifeTime);
                 
                 // Check collision Plane 0 and if its near emitter than the others.
-                if (_CollisionPlaneEquation0.x != 0.f || _CollisionPlaneEquation0.y != 0 || _CollisionPlaneEquation0.z != 0){
-                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation0, plane_normal_time, p);
-                }
+            #if COL_PLANE_0
+                plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation0, plane_normal_time, p);
+            #endif
                 // Check collision Plane 1 and if its near emitter than the others.
-                if (_CollisionPlaneEquation1.x != 0.f || _CollisionPlaneEquation1.y != 0 || _CollisionPlaneEquation1.z != 0){
-                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation1, plane_normal_time, p);
-                }
+            #if COL_PLANE_1
+                plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation1, plane_normal_time, p);
+            #endif
                 // Check collision Plane 2 and if its near emitter than the others.
-                if (_CollisionPlaneEquation2.x != 0.f || _CollisionPlaneEquation2.y != 0 || _CollisionPlaneEquation2.z != 0){
-                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation2, plane_normal_time, p);
-                }
+            #if COL_PLANE_2
+                plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation2, plane_normal_time, p);
+            #endif
                 // Check collision Plane 3 and if its near emitter than the others.
-                if (_CollisionPlaneEquation3.x != 0.f || _CollisionPlaneEquation3.y != 0 || _CollisionPlaneEquation3.z != 0){
-                    plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation3, plane_normal_time, p);
-                }
+            #if COL_PLANE_3
+                plane_normal_time = updateNearPlaneTime(_CollisionPlaneEquation3, plane_normal_time, p);
+            #endif
                 
                 // Get normal and collision time of the nearest plane.
                 fixed3 normal = normalize(plane_normal_time.xyz);

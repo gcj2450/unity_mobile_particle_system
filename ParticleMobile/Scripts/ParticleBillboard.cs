@@ -108,27 +108,23 @@ public class ParticleBillboard : MonoBehaviour
     void updateCollisionPlanes(Material mat)
     {
         for (int i = 0; i < MAX_COLLISION_PLANES; i++){
-            Vector4 plane_center4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-            Vector4 plane_normal4 = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 
             if (collision.planes.Length > i && collision.planes[i] != null) {
                 Vector3 plane_center = collision.planes[i].transform.position;
                 Vector3 plane_up = collision.planes[i].transform.up;
                 
-                plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
-                plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
+                Vector4 plane_center4 = new Vector4(plane_center.x, plane_center.y, plane_center.z, 1.0f);
+                Vector4 plane_normal4 = new Vector4(plane_up.x, plane_up.y, plane_up.z, 1.0f);
 
-                // Fix Unity normal precision
-                if (plane_normal4.x < 0.000001f && plane_normal4.x > -0.000001f) plane_normal4.x = 0;
-                if (plane_normal4.y < 0.000001f && plane_normal4.y > -0.000001f) plane_normal4.y = 0;
-                if (plane_normal4.z < 0.000001f && plane_normal4.z > -0.000001f) plane_normal4.z = 0;
+                Vector3 normal = Vector3.Normalize(plane_normal4);
+                float plane_d = -1 * Vector3.Dot(normal, plane_center4);
+                Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
+
+                mat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
+                mat.EnableKeyword("COL_PLANE_" + i);
+            } else {
+                mat.DisableKeyword("COL_PLANE_" + i);
             }
-
-            Vector3 normal = Vector3.Normalize(plane_normal4);
-            float plane_d = -1 * Vector3.Dot(normal, plane_center4);
-            Vector4 plane_eq = new Vector4(normal.x, normal.y, normal.z, plane_d);
-
-            mat.SetVector("_CollisionPlaneEquation" + i, plane_eq);
         }   
     }
 
