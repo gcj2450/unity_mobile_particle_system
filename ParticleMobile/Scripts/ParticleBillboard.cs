@@ -135,14 +135,11 @@ public class ParticleBillboard : MonoBehaviour
         } else {
             mat.DisableKeyword("FRAG_TEXTURE");
         }
-        
-        switch (shape){
-            case ShapeType.Sphere:
-                mat.EnableKeyword("SHAPE_SPHERE");
-                break;
-            default:
-                mat.DisableKeyword("SHAPE_SPHERE");
-                break;
+
+        if (shape == ShapeType.Sphere) {
+            mat.EnableKeyword("SHAPE_SPHERE");
+        }else {
+            mat.DisableKeyword("SHAPE_SPHERE");
         }
     }
 
