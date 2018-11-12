@@ -9,4 +9,4 @@ Highly efficient/compatible Unity Particle System
 - Clone project
 - In Unity 2018.2: `Assets > Import Package > Custom Package...`
 - Select `ParticleMobile.unitypackage`
-- In `Project` tab open `ParticleMobile` and drag `ParticleEmitter` prefab to your Scene
+- In `Project` tab open `ParticleMobile` folder and drag `ParticleEmitter` prefab to your Scene
