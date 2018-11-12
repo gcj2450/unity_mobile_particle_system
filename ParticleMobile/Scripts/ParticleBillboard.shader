@@ -345,7 +345,7 @@
                 fixed time = _Time.y + 1 - _StartDelay;
 
                 // If a particle doesn't fit all of these upper bounds, all vertices will be equal thus not rasterized.
-                if (id > time*_RateOverTime || id > (_StartLifeTime*_RateOverTime) || id > _MaxParticles){
+                [branch] if (id > time*_RateOverTime || id > (_StartLifeTime*_RateOverTime) || id > _MaxParticles){
                     return o;
                 }
                 
