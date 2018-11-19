@@ -152,9 +152,14 @@
             */
             fixed getCollisionTime(fixed4 plane_equation, parabola p)
             {
+                fixed dot_eq_v0 = dot(plane_equation.xyz, p.v0);
+                fixed cos_eq_v0 = dot_eq_v0 / (length(plane_equation.xyz) * length(p.v0));
+                
+                fixed distance_center = sign(cos_eq_v0) * _StartSize/2;
+            
                 fixed a = dot(plane_equation.xyz, p.acc) * GRAVITY_COEFF;
                 fixed b = dot(plane_equation.xyz, p.v);
-                fixed c = dot(plane_equation.xyz, p.v0) + plane_equation.w - _StartSize/2;
+                fixed c = dot_eq_v0 + plane_equation.w - distance_center;
                 
                 fixed2 time = solveQuadraticEquation(fixed3(a, b, c));
                 fixed max_t = max(time.x, time.y);
